@@ -6,22 +6,15 @@ export interface RenderControlsProps {
   status: RenderStatus;
   /** Failure message from the server when `status` is `failed`. */
   error: string | null;
-  /** `false` when the server has no photoreal renderer configured. */
-  isAvailable: boolean;
-  isCheckingAvailability: boolean;
   isRequesting: boolean;
   onGenerate: () => void;
 }
 
-/** The "Generate photoreal render" button with its progress, failure and unavailable states. */
-export function RenderControls({
-  status,
-  error,
-  isAvailable,
-  isCheckingAvailability,
-  isRequesting,
-  onGenerate,
-}: RenderControlsProps) {
+/**
+ * The "Generate photoreal render" button with its progress and failure states. Only shown when
+ * the server has a renderer (see `photorealOptions`).
+ */
+export function RenderControls({ status, error, isRequesting, onGenerate }: RenderControlsProps) {
   const isPending = status === 'pending';
 
   return (
@@ -30,22 +23,22 @@ export function RenderControls({
         <Button
           variant="secondary"
           icon="image"
-          disabled={!isAvailable || isPending}
+          disabled={isPending}
           isLoading={isRequesting || isPending}
           onClick={onGenerate}
         >
           {status === 'done' ? 'Regenerate photoreal render' : 'Generate photoreal render'}
         </Button>
         <p className="min-w-0 flex-1 basis-56 text-sm leading-relaxed text-stone-600">
-          {isAvailable || isCheckingAvailability
-            ? 'The instant preview updates as you click. A photoreal render takes about a minute and adds realistic light and texture.'
-            : 'Photoreal rendering is not configured on this server. The instant preview still shows every finish you apply.'}
+          Adds realistic light and texture to the finishes in about 10 seconds (up to 30 the first
+          time). Everything else stays exactly as in your photo.
         </p>
       </div>
 
       {isPending && (
         <Alert tone="info" title="Creating your photoreal render…">
-          This usually takes under a minute. You can keep working; it appears here when ready.
+          This takes about 10 seconds, or up to 30 if the renderer was idle. You can keep working;
+          it appears here when ready.
         </Alert>
       )}
       {status === 'failed' && (

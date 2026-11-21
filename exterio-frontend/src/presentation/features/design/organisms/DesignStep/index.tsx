@@ -16,6 +16,7 @@ import {
 import { useEnsureDefaultDesign } from '@/presentation/features/design/hooks/useEnsureDefaultDesign';
 import { DesignCostSummary } from '@/presentation/features/design/molecules/DesignCostSummary';
 import { RenderControls } from '@/presentation/features/design/molecules/RenderControls';
+import { photorealOptions } from '@/presentation/features/design/utils/photoreal';
 import { CompareSlider } from '@/presentation/features/design/organisms/CompareSlider';
 import { DesignCanvas } from '@/presentation/features/design/organisms/DesignCanvas';
 import { DesignTabs } from '@/presentation/features/design/organisms/DesignTabs';
@@ -95,7 +96,7 @@ function DesignWorkspace({
 }: DesignWorkspaceProps) {
   const view = useDesignView();
   const nameTags = useStoredToggle('exterio.showRegionNames', true);
-  const { capabilities, isLoading: isLoadingCapabilities } = useCapabilities();
+  const { capabilities } = useCapabilities();
   const {
     materials,
     isLoading: isLoadingMaterials,
@@ -109,7 +110,9 @@ function DesignWorkspace({
   const originalUrl = resolveFileUrl(image.url);
   const previewUrl = resolveFileUrl(design.previewUrl) ?? originalUrl;
   const renderUrl = resolveFileUrl(design.renderUrl);
-  const showsRender = view.imageSource === 'render' && renderUrl !== null;
+  const photoreal = photorealOptions(capabilities.photorealRender, renderUrl !== null);
+  const showsRender =
+    photoreal.showsSourceSwitch && view.imageSource === 'render' && renderUrl !== null;
   const displayedUrl = showsRender ? renderUrl : previewUrl;
   const selectedRegion =
     project.regions.find((region) => region.id === view.selectedRegionId) ?? null;
@@ -158,13 +161,15 @@ function DesignWorkspace({
           {view.viewMode !== 'compare' && (
             <NameTagToggle isOn={nameTags.isOn} onToggle={nameTags.toggle} />
           )}
-          <Tabs
-            items={sourceTabs}
-            value={showsRender ? 'render' : 'preview'}
-            onValueChange={view.setImageSource}
-            variant="pill"
-            label="Picture type"
-          />
+          {photoreal.showsSourceSwitch && (
+            <Tabs
+              items={sourceTabs}
+              value={showsRender ? 'render' : 'preview'}
+              onValueChange={view.setImageSource}
+              variant="pill"
+              label="Picture type"
+            />
+          )}
         </div>
       </div>
 
@@ -214,14 +219,14 @@ function DesignWorkspace({
             </p>
           )}
 
-          <RenderControls
-            status={design.renderStatus}
-            error={design.renderError}
-            isAvailable={capabilities.photorealRender}
-            isCheckingAvailability={isLoadingCapabilities}
-            isRequesting={isRequestingRender}
-            onGenerate={handleGenerateRender}
-          />
+          {photoreal.showsGenerate && (
+            <RenderControls
+              status={design.renderStatus}
+              error={design.renderError}
+              isRequesting={isRequestingRender}
+              onGenerate={handleGenerateRender}
+            />
+          )}
         </div>
 
         <MaterialPanel
