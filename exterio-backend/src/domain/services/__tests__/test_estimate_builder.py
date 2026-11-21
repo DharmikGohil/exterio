@@ -45,3 +45,21 @@ def test_default_scale_and_overrides_are_called_out_in_assumptions():
     assert "rough default" in actual_text
     assert "1 surface(s) use a measurement you entered" in actual_text
     assert actual.totals.grand_total == 0.0
+
+
+def test_a_measured_roof_is_flagged_as_seen_from_the_front():
+    input_project = build_project((build_region("roof", RegionLabel.ROOF),))
+
+    actual = build_estimate(input_project, build_design({}), build_scale(), build_surface({}), {})
+
+    assert any("sloped roof is larger than it looks" in note for note in actual.assumptions)
+
+
+def test_a_roof_with_a_typed_area_needs_no_warning():
+    input_project = build_project(
+        (build_region("roof", RegionLabel.ROOF, area_override_sqft=900.0),)
+    )
+
+    actual = build_estimate(input_project, build_design({}), build_scale(), build_surface({}), {})
+
+    assert not any("sloped roof" in note for note in actual.assumptions)

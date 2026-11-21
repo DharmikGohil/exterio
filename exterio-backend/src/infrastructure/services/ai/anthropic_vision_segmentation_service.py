@@ -20,22 +20,31 @@ from infrastructure.utils.logger import logger
 
 COORDINATE_RANGE = 1000.0
 MAX_REGIONS = 60
+KNOWN_LABELS = frozenset(label.value for label in RegionLabel)
 MIN_AREA_RATIO = 0.0005
 DEFAULT_SCORE = 0.5
 
 DETECTION_PROMPT = """You are mapping the exterior of a house for a renovation planning tool.
 
-Outline every visible building component in this photo. Use exactly these labels:
+Outline every visible building component in this photo that a homeowner could refinish. Use
+these labels where they fit:
 - wall: each main exterior wall surface, as one polygon per wall plane (the whole wall, ignoring
   the windows and doors on it)
 - window: each window, including glazed balcony doors
 - door: each entrance door
+- garage_door: each garage or shutter door
+- roof: each visible roof plane (sloped tiles, metal sheet or shingles), one polygon per plane
+- roof_edge: a projecting roof slab edge, fascia, eave or cornice band
+- parapet: the low wall around a flat roof or terrace
+- chimney: each chimney
 - balcony: the slab or solid front face of a balcony
 - railing: each railing or balustrade
 - pillar: each pillar or column
-- parapet: the low wall around the roof or terrace
-- roof_edge: a projecting roof slab edge, fascia or cornice band
 - gate: each entrance gate
+- fence: a boundary fence or compound wall
+- other: any other distinct exterior part a homeowner might refinish that fits none of the labels
+  above (for example solar panels, a water tank, entrance steps, a porch canopy, wall cladding
+  panels, shutters). Give it a short plain "name", like "Solar panels" or "Entrance steps".
 
 Rules:
 - Coordinates are normalised to the image: x from 0 (left edge) to 1000 (right edge), y from 0
@@ -45,12 +54,15 @@ Rules:
   component's real corners, so a polygon is usually a slanted quadrilateral, not an upright box.
 - Be precise: place each corner on the actual edge of the component.
 - Include only components that belong to the main house and its boundary. Skip sky, ground,
-  vegetation, vehicles and neighbouring buildings.
+  lawn, trees and plants, vehicles, people and neighbouring buildings.
+- Prefer a specific label over "other"; use "other" only when none fits.
 - If nothing can be identified, return an empty "regions" list.
 
 Output shape (the key names matter):
 {"regions": [{"label": "window", "polygon": [{"x": 120, "y": 340}, {"x": 210, "y": 338},
-{"x": 211, "y": 455}, {"x": 121, "y": 458}]}]}"""
+{"x": 211, "y": 455}, {"x": 121, "y": 458}]}, {"label": "other", "name": "Solar panels",
+"polygon": [{"x": 400, "y": 120}, {"x": 520, "y": 118}, {"x": 522, "y": 170},
+{"x": 401, "y": 172}]}]}"""
 
 DETECTION_SCHEMA = {
     "type": "object",
@@ -61,6 +73,7 @@ DETECTION_SCHEMA = {
                 "type": "object",
                 "properties": {
                     "label": {"type": "string", "enum": [label.value for label in RegionLabel]},
+                    "name": {"type": "string"},
                     "polygon": {
                         "type": "array",
                         "items": {
@@ -88,6 +101,7 @@ class DetectedPoint(BaseModel):
 
 class DetectedPolygon(BaseModel):
     label: RegionLabel
+    name: str | None = None
     polygon: list[DetectedPoint]
 
 
@@ -120,7 +134,7 @@ class AnthropicVisionSegmentationService(ISegmentationService):
             raise AiProviderError("Region detection returned an unreadable answer.") from error
 
         regions = [
-            DetectedRegion(label=item.label, polygon=polygon, score=DEFAULT_SCORE)
+            DetectedRegion(label=item.label, polygon=polygon, score=DEFAULT_SCORE, name=item.name)
             for item in parsed.regions[:MAX_REGIONS]
             if (polygon := self._to_pixels(item.polygon, width, height)) is not None
         ]
@@ -134,7 +148,9 @@ class AnthropicVisionSegmentationService(ISegmentationService):
     def _normalise(raw: dict[str, Any]) -> dict[str, Any]:
         """Accept the common shape variations of an endpoint that does not enforce the schema.
 
-        Polygons may arrive under "points" or "corners", and a point as [x, y].
+        Polygons may arrive under "points" or "corners", and a point as [x, y]. A label outside
+        the list is not an error: the part is kept as `other`, named after what the model called
+        it, so a new kind of part is never thrown away.
         """
         regions = []
         for item in raw.get("regions") or []:
@@ -146,7 +162,8 @@ class AnthropicVisionSegmentationService(ISegmentationService):
                 for point in corners
                 if isinstance(point, dict) or (isinstance(point, (list, tuple)) and len(point) == 2)
             ]
-            regions.append({"label": item.get("label"), "polygon": polygon})
+            label, name = _resolve_label(item.get("label"), item.get("name"))
+            regions.append({"label": label, "name": name, "polygon": polygon})
         return {"regions": regions}
 
     @staticmethod
@@ -170,3 +187,15 @@ class AnthropicVisionSegmentationService(ISegmentationService):
         if abs(area) / 2 < MIN_AREA_RATIO * width * height:
             return None
         return polygon
+
+
+def _resolve_label(raw_label: object, raw_name: object) -> tuple[str, str | None]:
+    """Map the model's label onto ours; anything unknown becomes a named `other` part."""
+    name = raw_name.strip() if isinstance(raw_name, str) and raw_name.strip() else None
+    text = raw_label.strip().lower() if isinstance(raw_label, str) else ""
+    key = text.replace(" ", "_").replace("-", "_")
+    if key in KNOWN_LABELS:
+        return key, name
+    if not text:
+        return RegionLabel.OTHER.value, name
+    return RegionLabel.OTHER.value, name or text.replace("_", " ").capitalize()

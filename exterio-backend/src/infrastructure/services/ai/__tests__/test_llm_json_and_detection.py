@@ -58,6 +58,7 @@ def test_detection_accepts_points_as_pairs_and_alternative_key_names():
 
     assert actual["regions"][0] == {
         "label": "window",
+        "name": None,
         "polygon": [
             {"x": 100, "y": 100},
             {"x": 200, "y": 100},
@@ -66,6 +67,31 @@ def test_detection_accepts_points_as_pairs_and_alternative_key_names():
         ],
     }
     assert len(actual["regions"]) == 2
+
+
+SQUARE_POINTS = [[100, 100], [200, 100], [200, 200], [100, 200]]
+
+
+@pytest.mark.parametrize(
+    ("raw_label", "raw_name", "expected"),
+    [
+        ("roof", None, ("roof", None)),
+        ("Garage door", None, ("garage_door", None)),
+        ("garage-door", None, ("garage_door", None)),
+        ("other", "Solar panels", ("other", "Solar panels")),
+        ("solar_panel", None, ("other", "Solar panel")),
+        ("water tank", "Overhead tank", ("other", "Overhead tank")),
+        (None, None, ("other", None)),
+    ],
+)
+def test_any_label_is_kept_known_ones_mapped_new_ones_named(raw_label, raw_name, expected):
+    item = {"label": raw_label, "points": SQUARE_POINTS}
+    if raw_name is not None:
+        item["name"] = raw_name
+
+    actual = AnthropicVisionSegmentationService._normalise({"regions": [item]})["regions"][0]
+
+    assert (actual["label"], actual["name"]) == expected
 
 
 def test_normalised_corners_are_scaled_to_pixels_and_clamped():

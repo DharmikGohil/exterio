@@ -28,6 +28,10 @@ LABEL_PROMPTS: dict[RegionLabel, str] = {
     RegionLabel.GATE: "gate",
     RegionLabel.ROOF_EDGE: "roof edge",
     RegionLabel.RAILING: "railing",
+    RegionLabel.ROOF: "roof of the house",
+    RegionLabel.CHIMNEY: "chimney",
+    RegionLabel.GARAGE_DOOR: "garage door",
+    RegionLabel.FENCE: "boundary fence or compound wall",
 }
 
 MAX_MASKS_PER_LABEL = 16

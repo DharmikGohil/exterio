@@ -14,6 +14,7 @@ from domain.use_cases.project.project_refresher import ProjectRefresher
 
 # A free-standing or porch pillar usually shows one face of three that need finishing.
 DEFAULT_MULTIPLIERS: dict[RegionLabel, float] = {RegionLabel.PILLAR: 3.0}
+MAX_NAME_LENGTH = 40
 
 
 class DetectRegionsUseCase:
@@ -65,15 +66,22 @@ class DetectRegionsUseCase:
             if len(item.polygon) < MIN_POLYGON_POINTS:
                 continue
             counters[item.label] = counters.get(item.label, 0) + 1
-            title = item.label.replace("_", " ").capitalize()
             regions.append(
                 Region(
                     id=str(uuid4()),
                     label=item.label,
-                    name=f"{title} {counters[item.label]}",
+                    name=_region_name(item, counters[item.label]),
                     polygon=item.polygon,
                     source=RegionSource.AUTO,
                     surface_multiplier=DEFAULT_MULTIPLIERS.get(item.label, 1.0),
                 )
             )
         return regions
+
+
+def _region_name(item: DetectedRegion, number: int) -> str:
+    """Stock parts are numbered ("Window 2"); an `other` part keeps the detector's own name."""
+    if item.label == RegionLabel.OTHER:
+        name = " ".join((item.name or "").split())[:MAX_NAME_LENGTH].strip()
+        return name[:1].upper() + name[1:] if name else f"Other part {number}"
+    return f"{item.label.replace('_', ' ').capitalize()} {number}"

@@ -18,6 +18,13 @@ class RegionLabel(StrEnum):
     GATE = "gate"
     ROOF_EDGE = "roof_edge"
     RAILING = "railing"
+    ROOF = "roof"
+    CHIMNEY = "chimney"
+    GARAGE_DOOR = "garage_door"
+    FENCE = "fence"
+    # Anything else a homeowner might refinish (solar panels, a water tank, entrance steps).
+    # The detector names it; it is measured and priced by area like a wall.
+    OTHER = "other"
 
 
 class RegionSource(StrEnum):
@@ -29,14 +36,19 @@ class RegionSource(StrEnum):
 # removes that area from the wall, so openings are never painted or costed.
 REGION_PRIORITY: dict[RegionLabel, int] = {
     RegionLabel.WALL: 1,
-    RegionLabel.ROOF_EDGE: 2,
-    RegionLabel.PARAPET: 3,
-    RegionLabel.BALCONY: 4,
-    RegionLabel.PILLAR: 5,
-    RegionLabel.GATE: 6,
-    RegionLabel.RAILING: 7,
-    RegionLabel.DOOR: 8,
-    RegionLabel.WINDOW: 9,
+    RegionLabel.ROOF: 2,
+    RegionLabel.FENCE: 2,
+    RegionLabel.ROOF_EDGE: 3,
+    RegionLabel.PARAPET: 4,
+    RegionLabel.OTHER: 5,
+    RegionLabel.CHIMNEY: 6,
+    RegionLabel.BALCONY: 7,
+    RegionLabel.PILLAR: 8,
+    RegionLabel.GATE: 9,
+    RegionLabel.GARAGE_DOOR: 10,
+    RegionLabel.RAILING: 11,
+    RegionLabel.DOOR: 12,
+    RegionLabel.WINDOW: 13,
 }
 
 # Openings are detected so they can be subtracted and used as scale references,

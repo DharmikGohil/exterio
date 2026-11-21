@@ -15,7 +15,11 @@
       "pillar",
       "balcony",
       "roof_edge",
-      "gate"
+      "gate",
+      "garage_door",
+      "chimney",
+      "fence",
+      "other"
     ],
     "durability": "5-7 years before repainting",
     "maintenance": "Wash down once a year. Touch up chips before the monsoon.",
@@ -47,7 +51,11 @@
       "pillar",
       "balcony",
       "roof_edge",
-      "gate"
+      "gate",
+      "garage_door",
+      "chimney",
+      "fence",
+      "other"
     ],
     "durability": "5-7 years before repainting",
     "maintenance": "Wash down once a year. Touch up chips before the monsoon.",
@@ -79,7 +87,11 @@
       "pillar",
       "balcony",
       "roof_edge",
-      "gate"
+      "gate",
+      "garage_door",
+      "chimney",
+      "fence",
+      "other"
     ],
     "durability": "5-7 years before repainting",
     "maintenance": "Wash down once a year. Touch up chips before the monsoon.",
@@ -111,7 +123,11 @@
       "pillar",
       "balcony",
       "roof_edge",
-      "gate"
+      "gate",
+      "garage_door",
+      "chimney",
+      "fence",
+      "other"
     ],
     "durability": "5-7 years before repainting",
     "maintenance": "Wash down once a year. Touch up chips before the monsoon.",
@@ -143,7 +159,11 @@
       "pillar",
       "balcony",
       "roof_edge",
-      "gate"
+      "gate",
+      "garage_door",
+      "chimney",
+      "fence",
+      "other"
     ],
     "durability": "5-7 years before repainting",
     "maintenance": "Wash down once a year. Touch up chips before the monsoon.",
@@ -175,7 +195,11 @@
       "pillar",
       "balcony",
       "roof_edge",
-      "gate"
+      "gate",
+      "garage_door",
+      "chimney",
+      "fence",
+      "other"
     ],
     "durability": "5-7 years before repainting",
     "maintenance": "Wash down once a year. Touch up chips before the monsoon.",
@@ -207,7 +231,11 @@
       "pillar",
       "balcony",
       "roof_edge",
-      "gate"
+      "gate",
+      "garage_door",
+      "chimney",
+      "fence",
+      "other"
     ],
     "durability": "8-10 years before repainting",
     "maintenance": "Wash down once a year. Bridges hairline cracks, so fewer touch-ups.",
@@ -237,7 +265,10 @@
       "wall",
       "parapet",
       "pillar",
-      "balcony"
+      "balcony",
+      "chimney",
+      "fence",
+      "other"
     ],
     "durability": "8-10 years",
     "maintenance": "Hides minor cracks. Rough surface holds dust; pressure-wash yearly.",
@@ -267,7 +298,10 @@
       "wall",
       "parapet",
       "pillar",
-      "balcony"
+      "balcony",
+      "chimney",
+      "fence",
+      "other"
     ],
     "durability": "8-10 years",
     "maintenance": "Hides minor cracks. Rough surface holds dust; pressure-wash yearly.",
@@ -297,7 +331,10 @@
       "wall",
       "parapet",
       "pillar",
-      "balcony"
+      "balcony",
+      "chimney",
+      "fence",
+      "other"
     ],
     "durability": "25+ years",
     "maintenance": "Seal every 2-3 years. Adds weight: check the wall can carry it.",
@@ -327,7 +364,10 @@
       "wall",
       "parapet",
       "pillar",
-      "balcony"
+      "balcony",
+      "chimney",
+      "fence",
+      "other"
     ],
     "durability": "25+ years",
     "maintenance": "Seal every 2-3 years. Deep joints collect dust; brush before sealing.",
@@ -357,7 +397,10 @@
       "wall",
       "parapet",
       "pillar",
-      "balcony"
+      "balcony",
+      "chimney",
+      "fence",
+      "other"
     ],
     "durability": "20+ years",
     "maintenance": "Low maintenance. Re-point joints if they crack.",
@@ -387,7 +430,9 @@
       "wall",
       "parapet",
       "pillar",
-      "balcony"
+      "balcony",
+      "chimney",
+      "other"
     ],
     "durability": "15-20 years",
     "maintenance": "Wipe clean. Check for hollow tiles every few years.",
@@ -418,7 +463,9 @@
       "wall",
       "parapet",
       "pillar",
-      "balcony"
+      "balcony",
+      "chimney",
+      "other"
     ],
     "durability": "15-20 years",
     "maintenance": "Wipe clean. Dark tiles show water marks; seal the grout.",
@@ -449,7 +496,9 @@
       "wall",
       "parapet",
       "pillar",
-      "balcony"
+      "balcony",
+      "chimney",
+      "other"
     ],
     "durability": "15-20 years",
     "maintenance": "Wipe clean. No polishing needed, unlike real wood.",
@@ -479,7 +528,8 @@
     "appliesTo": [
       "wall",
       "parapet",
-      "balcony"
+      "balcony",
+      "other"
     ],
     "durability": "15-20 years",
     "maintenance": "Wash with mild soap. Check sealant joints every 3-4 years.",
@@ -509,7 +559,8 @@
     "appliesTo": [
       "wall",
       "parapet",
-      "balcony"
+      "balcony",
+      "other"
     ],
     "durability": "10-15 years",
     "maintenance": "Wipe clean. Colour can fade on walls facing strong afternoon sun.",
@@ -605,6 +656,88 @@
       "tileSizeFt": 1.6,
       "opacity": 1,
       "secondaryColorHex": "#2B2D30"
+    }
+  },
+  {
+    "id": "roof-coating-terracotta",
+    "category": "paint",
+    "name": "Roof coating - Terracotta",
+    "description": "Elastomeric waterproof roof coating, two coats over primer",
+    "unit": "sqft",
+    "colorHex": "#A4553B",
+    "materialRate": 24,
+    "labourRate": 14,
+    "wastagePct": 8,
+    "appliesTo": [
+      "roof"
+    ],
+    "durability": "6-8 years before recoating",
+    "maintenance": "Clear leaves and debris before the monsoon. Recoat worn patches early.",
+    "quantity": {
+      "rule": "coverage",
+      "purchaseUnit": "litre",
+      "coverageSqftPerUnit": 40,
+      "note": "About 40 sq ft per litre for two coats on a roof"
+    },
+    "texture": {
+      "pattern": "flat",
+      "tileSizeFt": 4,
+      "opacity": 1
+    }
+  },
+  {
+    "id": "roof-clay-tile",
+    "category": "tile",
+    "name": "Clay roof tiles - Mangalore",
+    "description": "Interlocking terracotta roof tiles on battens",
+    "unit": "sqft",
+    "colorHex": "#B5562F",
+    "materialRate": 55,
+    "labourRate": 30,
+    "wastagePct": 10,
+    "appliesTo": [
+      "roof"
+    ],
+    "durability": "30+ years",
+    "maintenance": "Replace cracked tiles after storms. Check ridges each year.",
+    "quantity": {
+      "rule": "piece",
+      "purchaseUnit": "tile",
+      "pieceAreaSqft": 1.4,
+      "note": "About 1.4 sq ft of roof per Mangalore tile"
+    },
+    "texture": {
+      "pattern": "brick",
+      "tileSizeFt": 1.2,
+      "opacity": 1,
+      "secondaryColorHex": "#8E3F22"
+    }
+  },
+  {
+    "id": "roof-metal-sheet",
+    "category": "panel",
+    "name": "Metal roofing sheet - Charcoal",
+    "description": "0.5 mm colour-coated galvalume profile sheet with screws and seals",
+    "unit": "sqft",
+    "colorHex": "#3A3F45",
+    "materialRate": 75,
+    "labourRate": 25,
+    "wastagePct": 7,
+    "appliesTo": [
+      "roof"
+    ],
+    "durability": "20-25 years",
+    "maintenance": "Tighten loose screws and reseal laps every few years.",
+    "quantity": {
+      "rule": "area",
+      "purchaseUnit": "sq ft",
+      "note": "Bought by the square foot of sheet"
+    },
+    "texture": {
+      "pattern": "bars",
+      "tileSizeFt": 0.8,
+      "opacity": 1,
+      "secondaryColorHex": "#2B2F34"
     }
   }
 ]

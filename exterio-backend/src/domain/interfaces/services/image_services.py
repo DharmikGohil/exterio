@@ -25,6 +25,8 @@ class DetectedRegion:
     label: RegionLabel
     polygon: tuple[Point, ...]
     score: float
+    # The detector's own name for the part. Used for `other` parts, which have no stock name.
+    name: str | None = None
 
 
 @dataclass(frozen=True)

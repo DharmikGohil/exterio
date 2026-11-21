@@ -5,6 +5,7 @@ from dataclasses import replace
 from domain.entities.design_entity import Design
 from domain.entities.material_entity import Material
 from domain.entities.project_entity import Project
+from domain.entities.region_entity import RegionLabel
 from domain.entities.scale_reference_entity import ScaleReference
 from domain.interfaces.dtos.estimate_dto import EstimateDTO, RegionAreaDTO, ResolvedScaleDTO
 from domain.interfaces.dtos.measurement_dto import RectifiedSurface
@@ -80,6 +81,11 @@ def _assumptions(
     notes = [f"{scale.note} Totals carry a band of about ±{scale.confidence_pct:g}%."]
     if scale_is_default:
         notes.append("No scale was set for this photo, so a rough default was used.")
+    if any(area.label == RegionLabel.ROOF and not area.is_override for area in areas):
+        notes.append(
+            "Roofs are measured as they appear in the photo. A sloped roof is larger than it "
+            "looks from the front, so type its real area in the breakdown if you know it."
+        )
     override_count = sum(1 for area in areas if area.is_override)
     if override_count:
         notes.append(f"{override_count} surface(s) use a measurement you entered by hand.")
