@@ -131,6 +131,8 @@ interface Estimate {
     regionId: string; label: RegionLabel; name: string;
     areaSqft: number; lengthFt: number; isOverride: boolean;
     materialId: string | null; materialName: string | null;
+    // This part's share of its material line; 0 when it has no finish. Parts add up to the total.
+    materialCost: number; labourCost: number; totalCost: number;
   }>;
   surfaces: Array<{ label: RegionLabel; count: number; areaSqft: number; lengthFt: number }>;
   lines: Array<{

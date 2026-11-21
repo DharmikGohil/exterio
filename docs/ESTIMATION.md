@@ -177,6 +177,21 @@ total                                 = ₹2,349.60
 
 This exact case is a unit test (`test_estimate_builder.py`).
 
+### Cost per part
+
+Lines are priced per material, but the Estimate step shows what each part of the house costs.
+Every part gets the fraction of its material's line equal to its fraction of that line's measure
+(running feet for railings and other RFT materials, square feet otherwise):
+
+```
+part cost = line total × part measure / sum of the measures of every part with that material
+```
+
+Purchase rounding (whole litres, whole tiles) is shared out the same way, so the parts of a line
+always add up to the line and the parts of the house add up to the grand total. Parts without a
+finish cost nothing and are shown as not in the estimate. This is `allocate_to_regions` in
+`cost_calculator.py`, covered by unit tests.
+
 ## Default rate card
 
 Indicative 2026 figures in INR, researched from public cost guides. They are starting points to be

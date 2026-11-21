@@ -10,12 +10,12 @@ How the interface looks and why. The tokens live in
 | **Product** | Plan, picture and price an exterior renovation, for a homeowner in India |
 | **Character** | Exact, grounded, a little warm |
 | **World** | The drafting desk: a green cutting mat, an elevation drawing, a scale ruler |
-| **Moments** | The house photo with its finishes; the estimate total on a piece of cutting mat |
+| **Moments** | The house photo with its finishes; the estimate drawn on the house, part by part |
 | **Signature** | Measurements written the way an architect writes them: a dimension line with end ticks |
 
 The rule behind every choice: **the content leads, the page stays quiet.** Text is dark on white,
 headings are set in a heavier weight, and the work uses the full width of the screen. The
-drafting-paper backdrop is felt, not seen; green is spent on the primary action, the estimate total and the sign-in story.
+drafting-paper backdrop is felt, not seen; green is spent on the primary action, the current step and the sign-in story.
 
 ## Colour
 
@@ -30,7 +30,7 @@ drafting-paper backdrop is felt, not seen; green is spent on the primary action,
 Rules:
 
 - Cards, panels, tables, dialogs and inputs are white with a `stone-200` hairline.
-- One accent per screen. If two things are green, one of them is wrong (the estimate total's mat is the exception it was made for).
+- One accent per screen. If two things are green, one of them is wrong.
 - Materials and the photo keep their own colours; they are content, not chrome.
 - No hue-to-hue gradients, glows, coloured shadows or gradient text.
 
@@ -51,35 +51,68 @@ Rules:
 | `AuthLayout` | A split screen: the product story on the cutting mat fills the left half edge to edge, the sign-in form sits on plain white in the right half (phones get the form only). It fits one screen from 1280×760 up |
 | `CenteredLayout` | One card in the middle, for single-message pages like the 404 |
 
-## The studio fits one screen
+## The studio: tools live on the photo
 
-The studio header is kept compact so the photo, its side panel and the pinned step bar are all
-in view without scrolling, on screens from 1366×768 up:
+Every studio step has the same shape: a big title with one line of description, the photo on the
+left with its tools floating on it, a panel on the right, and the step bar pinned at the bottom.
+Everything is in view without scrolling on screens from 1280×720 up.
 
-- **Top bar** (`StudioTopBar`): a breadcrumb back to all projects with the project name, the
-  stepper and the advisor. Projects are renamed only on the home screen (the pencil on each
-  project card), never in the studio.
-- **Stepper** (`StudioStepper`): every step has the same 20px round badge, so the row lines up:
-  done is a green tint with a check, current is solid green with its number, upcoming is an
-  outlined number. Connectors are one width.
-- **Step title**: 26px, one line of description, actions on the right.
-- **One tool row** in the Design step: the design options on the left and how the picture is
-  shown (Design / Before-after, names, preview or render) on the right, so no row is half empty.
-  The photo below it has no toolbar of its own (`ImageCanvas toolbarAbove="none"`) and grows into
-  that room.
-- **Account** (`AccountMenu`): the header shows one avatar with the person's initials. Clicking it
-  opens their name, their email (or that a guest session is saved in this browser) and Sign out.
-  It closes on Escape or a click outside.
-- **Photo** (`ImageCanvas`): its height is capped at `100dvh − 24rem` (never below 22rem), and the
-  side panels at `100dvh − 21rem`, so their bottoms meet the step bar.
+- **Header**: the studio puts its breadcrumb and stepper into the app header through a header slot
+  (`HeaderSlot`, a portal), so there is no second bar. The stepper (`StudioStepper`) is plain text:
+  done steps carry a check, the current step is a green pill with its number, upcoming steps show
+  their number. Projects are renamed only on the home screen (the pencil on each project card).
+- **Material advisor**: "Ask about materials" sits in the step header (Photo, Regions, Estimate)
+  or in the panel header (Design). Its chat panel is mounted once for the studio
+  (`AdvisorDockProvider`), so the conversation survives moving between steps.
+- **Tools float on the photo** (white cards with one soft shadow):
+  - top left, the step's own tools: Draw region and Auto-detect (Regions); Design or Before / after
+    and Preview or Photoreal (Design);
+  - top right, the names toggle, an eye button (`NameTagToggle`);
+  - top centre, a short hint or progress note (drawing help, "Updating preview…");
+  - bottom centre, the one action the photo is waiting for: the unsaved-changes bar with Discard
+    and Save regions (`FloatingSaveBar`, Regions, shown only when something changed) or Generate
+    render (Design); on Scale, the instruction to drag the corners sits bottom left.
+- **Design picker** (`DesignSwitcher`): the current design in a dark dropdown listing all designs,
+  a "⋯" menu (`DropdownMenu`) to rename, duplicate or delete it, and New design.
+- **Scale saves itself**: a segmented control picks how the size is known (Wall size, One length,
+  Door, Floors); a valid change is saved 0.7 s after typing pauses, and a line under the inputs says
+  "Saving…" or "Scale saves automatically. Estimates use it." Leaving the step sends a pending
+  change at once; it only asks before leaving when the values are invalid and cannot be saved.
+- **Panels**: the title with its count ("Regions · 14"), groups in small capitals ("WALLS · 1"),
+  rows with a colour dot (Regions) or a finish swatch (Design).
+- **Render state**: the render button shows "Rendering…" while it runs, and a failure shows as a
+  banner with Try again above the photo. What the render does is in the button's tooltip. Tooltips
+  open on hover or keyboard focus, not after a mouse click.
+- **Account** (`AccountMenu`): one avatar with the person's initials; clicking it opens their name,
+  their email (or that a guest session is saved in this browser) and Sign out.
+- **Photo height** (`ImageCanvas`): capped at `100dvh − 18.5rem` (never below 22rem), or
+  `100dvh − 22rem` when a row of controls sits above it (`rowAbove`, the Design step); the side
+  panels use the same caps so their bottoms meet the photo's.
+
+## The estimate is drawn on the house
+
+The Estimate step answers "where does the money go?" on the house itself (`EstimateDiagram`):
+
+- **Summary** (`EstimateSummary`): the total in one big figure, "Most likely between … and …",
+  Materials and Labour as two chips, and what the sizes rest on ("Based on a wall of 30 × 20 ft")
+  with Adjust size.
+- **The drawing**: the design's preview in the middle, one card per kind of part on either side
+  (`PartCard`: colour, "Two pillars", the finish, the size, the cost), and a thin leader line from
+  each card to a dot on that part. Parts with no finish are amber cards saying "Not in estimate".
+- **Placement** (`utils/partGroups`): a card goes on the side of the photo its part is on, the
+  sides are balanced to within one card, each side runs top to bottom, and the dot lands on the
+  part of the group nearest the card, so lines rarely cross. Lines are measured from the live
+  layout (`useLeaderLines`) and redrawn on resize; on narrow screens the photo comes first and the
+  cards stack under it without lines.
+- **Below**: one sentence on what is not counted, and See the full breakdown, which opens the
+  editable tables, the assumptions and the design comparison. Download PDF report is the step
+  bar's main button.
 
 ## The cutting mat
 
-`MatPanel` is the product's material, used in two places only:
-
-1. **The estimate total** (`GrandTotalCard`): the moment where the house becomes a price.
-2. **The sign-in story** (`LoginPage`): the left half of the sign-in screen, the headline with the
-   elevation drawing lying on the mat as a sheet of paper.
+`MatPanel` is the product's material, used in one place: **the sign-in story** (`LoginPage`), the
+left half of the sign-in screen, with the headline and the elevation drawing lying on the mat as a
+sheet of paper.
 
 It draws mat green, a 12px cream grid with a heavier line every 60px, and the 30°, 45° and 60°
 guides (`MatAngleGuides`) real mats print in one corner. It is never a page background: a
@@ -103,7 +136,7 @@ Wherever the interface states a measured or estimated quantity, it can draw it a
 | Step titles | Nohemi | 30px, 500, −0.01em |
 | Panel and section titles | Nohemi | 15–18px, 500 |
 | Hero headline (sign-in) | Nohemi | 46px, 500 |
-| Big figure (estimate total) | Nohemi | 40px, 400 |
+| Big figure (estimate total) | Nohemi | 52px, 500, −0.02em |
 
 Nohemi (Befonts, commercial use allowed; licence in `exterio-frontend/public/fonts`) ships in two
 weights, Regular and Medium. `font-semibold` and `font-bold` map to Medium rather than a faked
@@ -134,11 +167,16 @@ No sparkle or wand icons; each icon says what its button does.
 | Component | Where | Role |
 |---|---|---|
 | `MatAngleGuides` | `shared/atoms` | The 30°, 45° and 60° guides in a mat's corner |
-| `MatPanel` | `shared/molecules` | A piece of cutting mat, for the estimate total and the sign-in story |
+| `MatPanel` | `shared/molecules` | A piece of cutting mat, for the sign-in story |
+| `EstimateDiagram`, `PartCard`, `EstimateSummary` | `features/estimate` | The estimate drawn on the house; grouping in `utils/partGroups` |
 | `AppLayout`, `AuthLayout`, `CenteredLayout` | `shared/layouts` | How each kind of page is laid out |
 | `Avatar`, `AccountMenu` | `shared/atoms`, `features/auth` | Initials badge, and the account menu built on it |
 | `PAGE_FRAME`, `PAGE_FRAME_BLEED` | `shared/utils/pageFrame` | The full-width frame shared by the app bar, pages and the step bar |
-| `AppHeader` | `shared/organisms` | The logo and user menu above the page |
+| `AppHeader` | `shared/organisms` | The logo, the page's header slot and the user menu |
+| `HeaderSlot` | `shared/contexts/HeaderSlotContext` | Lets a page (the studio) put its navigation into the app header |
+| `DropdownMenu`, `FloatingSaveBar`, `NameTagToggle` | `shared/molecules` | The menus, the unsaved-changes bar and the eye button used on the photo |
+| `DesignSwitcher` | `features/design` | Design dropdown, ⋯ menu and New design |
+| `AdvisorDockProvider`, `AdvisorButton` | `features/advisor` | One advisor panel for the studio, opened from any step |
 | `PageBackdrop` | `shared/organisms` | The quiet drafting-paper grid behind every page |
 | `DimensionLine` | `shared/molecules` | A figure written as a dimension, light or mat tone |
 | `SvgDimension` | `shared/molecules` | A dimension line drawn on the photo |
