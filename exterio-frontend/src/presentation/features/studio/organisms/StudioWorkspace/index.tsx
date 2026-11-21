@@ -1,4 +1,5 @@
-import { AdvisorLauncher } from '@/presentation/features/advisor/organisms/AdvisorLauncher';
+import { HeaderSlot } from '@/presentation/shared/contexts/HeaderSlotContext';
+import { AdvisorDockProvider } from '@/presentation/features/advisor/contexts/AdvisorDockContext';
 import { useActiveDesign } from '@/presentation/features/design/hooks/useActiveDesign';
 import { DesignStep } from '@/presentation/features/design/organisms/DesignStep';
 import { EstimateStep } from '@/presentation/features/estimate/organisms/EstimateStep';
@@ -6,7 +7,7 @@ import { useStudioStep } from '@/presentation/features/studio/hooks/useStudioSte
 import { PhotoStep } from '@/presentation/features/studio/organisms/PhotoStep';
 import { RegionsStep } from '@/presentation/features/studio/organisms/RegionsStep';
 import { ScaleStep } from '@/presentation/features/studio/organisms/ScaleStep';
-import { StudioTopBar } from '@/presentation/features/studio/organisms/StudioTopBar';
+import { StudioHeaderNav } from '@/presentation/features/studio/organisms/StudioHeaderNav';
 import type { StudioStep } from '@/presentation/routes/paths';
 import type { Project, ProjectImage } from '@/domain/models/project';
 
@@ -38,29 +39,31 @@ function StepContent({ step, project, image, onStepChange }: StepContentProps) {
   }
 }
 
-/** The Studio for one loaded project: top bar, the current step and the advisor. */
+/**
+ * The Studio for one loaded project: its breadcrumb and stepper in the app header, the current
+ * step, and the material advisor (whose panel outlives step changes).
+ */
 export function StudioWorkspace({ project }: StudioWorkspaceProps) {
   const { step, goToStep, hasPhoto } = useStudioStep(project);
   const { activeDesign } = useActiveDesign(project);
 
   return (
-    <>
-      <StudioTopBar
-        project={project}
-        currentStep={step}
-        hasPhoto={hasPhoto}
-        onStepChange={goToStep}
-        actions={
-          <AdvisorLauncher
-            projectId={project.id}
-            designId={activeDesign?.id}
-            designName={activeDesign?.name}
-          />
-        }
-      />
-      <div className="flex w-full flex-1 flex-col pt-4">
+    <AdvisorDockProvider
+      projectId={project.id}
+      designId={activeDesign?.id}
+      designName={activeDesign?.name}
+    >
+      <HeaderSlot>
+        <StudioHeaderNav
+          project={project}
+          currentStep={step}
+          hasPhoto={hasPhoto}
+          onStepChange={goToStep}
+        />
+      </HeaderSlot>
+      <div className="flex w-full flex-1 flex-col pt-7">
         <StepContent step={step} project={project} image={project.image} onStepChange={goToStep} />
       </div>
-    </>
+    </AdvisorDockProvider>
   );
 }

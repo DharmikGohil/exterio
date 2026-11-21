@@ -23,6 +23,20 @@ describe('StepFooter', () => {
     expect(screen.getByRole('button', { name: /back/i })).toBeInTheDocument();
   });
 
+  it('shows the main action and wording of the last step', () => {
+    render(
+      <StepFooter
+        step="estimate"
+        onStepChange={vi.fn()}
+        meta="Step 5 of 5 · Estimates are advisory"
+        primaryAction={<button type="button">Download PDF report</button>}
+      />
+    );
+
+    expect(screen.getByText('Step 5 of 5 · Estimates are advisory')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Download PDF report' })).toBeInTheDocument();
+  });
+
   it('shows the hint and makes Continue secondary while work is unsaved', () => {
     render(<StepFooter step="scale" onStepChange={vi.fn()} hint="Save the scale first" />);
 

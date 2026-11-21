@@ -14,6 +14,7 @@ import { QualityReportCard } from '@/presentation/features/studio/organisms/Qual
 import type { StudioStep } from '@/presentation/routes/paths';
 import { config } from '@/config';
 import type { Project } from '@/domain/models/project';
+import { AdvisorButton } from '@/presentation/features/advisor/molecules/AdvisorButton';
 
 const PHOTO_TIPS = [
   'Stand straight in front of the house, far enough to fit the whole front.',
@@ -40,13 +41,14 @@ export function PhotoStep({ project, onStepChange }: PhotoStepProps) {
         title="House photo"
         description="Everything starts from one clear photo of the front of the house. We check it right away and tell you if a better shot would help."
         actions={
-          image &&
-          !isChecking &&
-          !photo.rejection && (
-            <Button variant="outline" icon="image-plus" onClick={photo.requestReplace}>
-              Replace photo
-            </Button>
-          )
+          <>
+            <AdvisorButton />
+            {image && !isChecking && !photo.rejection && (
+              <Button variant="outline" icon="image-plus" onClick={photo.requestReplace}>
+                Replace photo
+              </Button>
+            )}
+          </>
         }
       />
 
