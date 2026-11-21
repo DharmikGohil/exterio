@@ -21,19 +21,19 @@ export function DesignCostSummary({
   return (
     <div aria-live="polite" className="min-w-[10rem] text-right">
       <div>
-        <p className="text-xs text-stone-500">Estimated total</p>
-        {isLoading && <Skeleton className="ml-auto mt-1 h-7 w-28" />}
+        <p className="text-sm text-stone-500">Estimated total</p>
+        {isLoading && <Skeleton className="ml-auto mt-1 h-10 w-36" />}
         {!isLoading && totals && (
           <>
             <p
               className={cn(
-                'text-2xl leading-tight text-stone-900 transition-opacity',
+                'text-4xl font-medium leading-tight tracking-[-0.01em] text-stone-900 transition-opacity',
                 isRefreshing && 'opacity-50'
               )}
             >
               {formatInr(totals.grandTotal)}
             </p>
-            <p className="font-mono text-xs text-stone-500">
+            <p className="text-sm text-stone-500">
               {formatInr(totals.lowEstimate)} – {formatInr(totals.highEstimate)}
             </p>
           </>

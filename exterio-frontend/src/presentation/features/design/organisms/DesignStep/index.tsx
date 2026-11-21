@@ -5,6 +5,7 @@ import { Spinner } from '@/presentation/shared/atoms/Spinner';
 import { Tabs, type TabItem } from '@/presentation/shared/atoms/Tabs';
 import { ErrorState } from '@/presentation/shared/molecules/ErrorState';
 import { resolveFileUrl } from '@/presentation/shared/utils/fileUrl';
+import { AdvisorButton } from '@/presentation/features/advisor/molecules/AdvisorButton';
 import { useActiveDesign } from '@/presentation/features/design/hooks/useActiveDesign';
 import { useDesignAssignments } from '@/presentation/features/design/hooks/useDesignAssignments';
 import { useDesignRender } from '@/presentation/features/design/hooks/useDesignRender';
@@ -15,11 +16,11 @@ import {
 } from '@/presentation/features/design/hooks/useDesignView';
 import { useEnsureDefaultDesign } from '@/presentation/features/design/hooks/useEnsureDefaultDesign';
 import { DesignCostSummary } from '@/presentation/features/design/molecules/DesignCostSummary';
-import { RenderControls } from '@/presentation/features/design/molecules/RenderControls';
+import { RenderButton } from '@/presentation/features/design/molecules/RenderButton';
 import { photorealOptions } from '@/presentation/features/design/utils/photoreal';
 import { CompareSlider } from '@/presentation/features/design/organisms/CompareSlider';
 import { DesignCanvas } from '@/presentation/features/design/organisms/DesignCanvas';
-import { DesignTabs } from '@/presentation/features/design/organisms/DesignTabs';
+import { DesignSwitcher } from '@/presentation/features/design/organisms/DesignSwitcher';
 import { MaterialPanel } from '@/presentation/features/design/organisms/MaterialPanel';
 import { useEstimate } from '@/presentation/features/estimate/hooks/useEstimate';
 import { useMaterials } from '@/presentation/features/materials/hooks/useMaterials';
@@ -32,14 +33,16 @@ import type { StudioStep } from '@/presentation/routes/paths';
 import type { Design } from '@/domain/models/design';
 import type { Project, ProjectImage } from '@/domain/models/project';
 
+/** Pill tabs floating over the photo: a soft lift so they read as resting on it. */
+const FLOATING_TABS = 'shadow-raised ring-1 ring-black/5';
+
 const VIEW_TABS: TabItem<DesignViewMode>[] = [
-  { value: 'design', label: 'Design', icon: 'palette' },
-  { value: 'compare', label: 'Before / after', icon: 'compare' },
+  { value: 'design', label: 'Design' },
+  { value: 'compare', label: 'Before / after' },
 ];
 
 const TITLE = 'Design your exterior';
-const DESCRIPTION =
-  'Pick a part of the house, then a finish. The picture and the cost update as you go. Make a few designs to compare.';
+const DESCRIPTION = 'Pick a part, then a finish. Make a few designs to compare.';
 
 export interface DesignStepProps {
   project: Project;
@@ -104,7 +107,7 @@ function DesignWorkspace({
     refetch,
   } = useMaterials();
   const { assignMaterial, clearMaterial, isUpdating } = useDesignAssignments(design);
-  const { requestRender, isRequestingRender, isRendering } = useDesignRender(design);
+  const { requestRender, isRequestingRender } = useDesignRender(design);
   const estimate = useEstimate(design.id);
 
   const originalUrl = resolveFileUrl(image.url);
@@ -118,10 +121,11 @@ function DesignWorkspace({
     project.regions.find((region) => region.id === view.selectedRegionId) ?? null;
 
   const sourceTabs: TabItem<DesignImageSource>[] = [
-    { value: 'preview', label: 'Instant preview' },
+    // Short labels: the switch sits beside the render button, which supplies the context.
+    { value: 'preview', label: 'Preview' },
     {
       value: 'render',
-      label: 'Photoreal render',
+      label: 'Photoreal',
       disabled: renderUrl === null,
       disabledReason: 'Generate a photoreal render first',
     },
@@ -133,7 +137,7 @@ function DesignWorkspace({
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <StepHeader
         title={TITLE}
         description={DESCRIPTION}
@@ -147,31 +151,7 @@ function DesignWorkspace({
         }
       />
 
-      {/* One row: the design options on the left, how the picture is shown on the right. */}
-      <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
-        <DesignTabs project={project} activeDesign={design} onSelect={onSelectDesign} />
-        <div className="flex flex-wrap items-center gap-2">
-          <Tabs
-            items={VIEW_TABS}
-            value={view.viewMode}
-            onValueChange={view.setViewMode}
-            variant="pill"
-            label="Canvas view"
-          />
-          {view.viewMode !== 'compare' && (
-            <NameTagToggle isOn={nameTags.isOn} onToggle={nameTags.toggle} />
-          )}
-          {photoreal.showsSourceSwitch && (
-            <Tabs
-              items={sourceTabs}
-              value={showsRender ? 'render' : 'preview'}
-              onValueChange={view.setImageSource}
-              variant="pill"
-              label="Picture type"
-            />
-          )}
-        </div>
-      </div>
+      <DesignSwitcher project={project} activeDesign={design} onSelect={onSelectDesign} />
 
       {project.regions.length === 0 && (
         <Alert
@@ -187,49 +167,91 @@ function DesignWorkspace({
         </Alert>
       )}
 
-      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_24rem]">
-        <div className="min-w-0 space-y-3">
-          <div className="relative">
-            {view.viewMode === 'compare' ? (
-              <CompareSlider image={image} beforeUrl={originalUrl} afterUrl={displayedUrl} />
-            ) : (
-              <DesignCanvas
-                image={image}
-                imageUrl={displayedUrl}
-                regions={project.regions}
-                selectedRegionId={view.selectedRegionId}
-                hoveredRegionId={view.hoveredRegionId}
-                onSelectRegion={view.selectRegion}
-                onHoverRegion={view.setHoveredRegionId}
-                showNames={nameTags.isOn}
+      {design.renderStatus === 'failed' && (
+        <Alert
+          tone="error"
+          title="The photoreal render failed"
+          action={
+            <Button size="sm" variant="outline" onClick={handleGenerateRender}>
+              Try again
+            </Button>
+          }
+        >
+          {design.renderError ?? 'Something went wrong while rendering.'} The instant preview is
+          still accurate.
+        </Alert>
+      )}
+
+      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_26rem]">
+        <div className="relative min-w-0">
+          {view.viewMode === 'compare' ? (
+            <CompareSlider image={image} beforeUrl={originalUrl} afterUrl={displayedUrl} />
+          ) : (
+            <DesignCanvas
+              image={image}
+              imageUrl={displayedUrl}
+              regions={project.regions}
+              selectedRegionId={view.selectedRegionId}
+              hoveredRegionId={view.hoveredRegionId}
+              onSelectRegion={view.selectRegion}
+              onHoverRegion={view.setHoveredRegionId}
+              showNames={nameTags.isOn}
+            />
+          )}
+
+          {/*
+            The picture's own controls float on it. Top left: how you look at it (design or
+            before / after) and which picture it is (preview or the photoreal render). Top
+            right: names. Bottom centre: the button that makes the render.
+          */}
+          <div className="absolute left-4 top-4 z-10 flex flex-wrap items-center gap-2">
+            <Tabs
+              items={VIEW_TABS}
+              value={view.viewMode}
+              onValueChange={view.setViewMode}
+              variant="pill"
+              label="Canvas view"
+              className={`bg-white/95 p-1 ${FLOATING_TABS}`}
+            />
+            {photoreal.showsSourceSwitch && (
+              <Tabs
+                items={sourceTabs}
+                value={showsRender ? 'render' : 'preview'}
+                onValueChange={view.setImageSource}
+                variant="pill"
+                label="Picture type"
+                className={`bg-white/95 p-1 ${FLOATING_TABS}`}
               />
-            )}
-            {(isUpdating || isRendering) && (
-              <div className="pointer-events-none absolute right-3 top-3 flex h-7 items-center gap-2 rounded-md bg-ink px-2.5 text-xs text-white">
-                <Spinner size="sm" label={isUpdating ? 'Updating preview' : 'Rendering'} />
-                {isUpdating ? 'Updating preview…' : 'Rendering…'}
-              </div>
             )}
           </div>
 
-          {showsRender && (
-            <p className="text-xs leading-relaxed text-stone-500">
-              The photoreal render shows the design as it was when you generated it. Regenerate it
-              after changing finishes.
-            </p>
+          <NameTagToggle
+            isOn={nameTags.isOn}
+            onToggle={nameTags.toggle}
+            disabled={view.viewMode === 'compare'}
+            className="absolute right-4 top-4 z-10"
+          />
+
+          {isUpdating && (
+            <div className="pointer-events-none absolute left-1/2 top-4 z-10 hidden h-9 -translate-x-1/2 items-center gap-2 rounded-xl bg-ink/85 px-3 text-sm text-white md:flex">
+              <Spinner size="sm" label="Updating preview" />
+              Updating preview…
+            </div>
           )}
 
           {photoreal.showsGenerate && (
-            <RenderControls
-              status={design.renderStatus}
-              error={design.renderError}
-              isRequesting={isRequestingRender}
-              onGenerate={handleGenerateRender}
-            />
+            <div className="absolute inset-x-0 bottom-4 z-10 flex justify-center px-4">
+              <RenderButton
+                status={design.renderStatus}
+                isRequesting={isRequestingRender}
+                onGenerate={handleGenerateRender}
+              />
+            </div>
           )}
         </div>
 
         <MaterialPanel
+          headerAction={<AdvisorButton />}
           regions={project.regions}
           selectedRegion={selectedRegion}
           assignments={design.assignments}

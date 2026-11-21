@@ -1,3 +1,5 @@
+import type { ReactNode } from 'react';
+
 import { Badge } from '@/presentation/shared/atoms/Badge';
 import { Button } from '@/presentation/shared/atoms/Button';
 import { ColorDot } from '@/presentation/shared/atoms/ColorDot';
@@ -33,6 +35,8 @@ export interface MaterialPanelProps {
   onHoverRegion: (regionId: string | null) => void;
   onAssign: (regionIds: string[], materialId: string) => void;
   onClear: (regionIds: string[]) => void;
+  /** Shown at the right of the panel title, e.g. the material advisor button. */
+  headerAction?: ReactNode;
 }
 
 /**
@@ -53,25 +57,25 @@ export function MaterialPanel({
   onHoverRegion,
   onAssign,
   onClear,
+  headerAction,
 }: MaterialPanelProps) {
   const materialsById = indexMaterialsById(materials);
 
   if (!selectedRegion) {
     return (
-      <aside className="flex max-h-[max(22rem,calc(100dvh-21rem))] min-h-64 flex-col self-start overflow-hidden rounded-xl border border-stone-200 bg-white lg:sticky lg:top-20">
-        <div className="flex h-12 items-center justify-between border-b border-stone-200 px-4">
-          <h3 className="text-[15px] font-medium text-stone-900">Parts of the house</h3>
-          <span className="font-mono text-xs font-medium text-stone-500">{regions.length}</span>
+      <aside className="flex max-h-[max(22rem,calc(100dvh-22rem))] min-h-64 flex-col self-start overflow-hidden rounded-2xl border border-stone-200 bg-white lg:sticky lg:top-6">
+        <div className="mx-4 flex min-h-16 items-center justify-between gap-3 border-b border-stone-200 px-1 py-3">
+          <h3 className="whitespace-nowrap text-lg font-medium text-stone-900">
+            Parts of the house
+            <span className="ml-1.5 text-sm font-normal text-stone-500">· {regions.length}</span>
+          </h3>
+          {headerAction}
         </div>
-        <p className="px-4 pt-3 text-xs leading-relaxed text-stone-500">
-          Choose a part here or on the photo to pick its finish
-        </p>
-        <div className="overflow-y-auto px-2 pb-2">
+        <div className="overflow-y-auto px-2 pb-3">
           {groupRegionsByLabel(regions).map((group) => (
             <section key={group.label} className="pt-3">
-              <h4 className="flex h-6 items-center justify-between px-2 text-xs text-stone-500">
-                {REGION_LABEL_META[group.label].plural}
-                <span className="font-mono">{group.regions.length}</span>
+              <h4 className="flex h-7 items-center px-3 text-xs font-medium uppercase tracking-[0.08em] text-stone-500">
+                {REGION_LABEL_META[group.label].plural} · {group.regions.length}
               </h4>
               <ul className="space-y-0.5">
                 {group.regions.map((region) => {
@@ -85,22 +89,22 @@ export function MaterialPanel({
                         onClick={() => onSelectRegion(region.id)}
                         onPointerEnter={() => onHoverRegion(region.id)}
                         onPointerLeave={() => onHoverRegion(null)}
-                        className="flex h-11 w-full items-center gap-3 rounded-lg px-2 text-left transition-colors hover:bg-stone-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                        className="flex h-14 w-full items-center gap-3 rounded-lg px-3 text-left transition-colors hover:bg-stone-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
                       >
                         {material ? (
                           <img
                             src={resolveFileUrl(material.swatchUrl)}
                             alt=""
-                            className="h-7 w-7 shrink-0 rounded-md border border-stone-200 object-cover"
+                            className="h-10 w-10 shrink-0 rounded-lg border border-stone-200 object-cover"
                           />
                         ) : (
                           <span
                             aria-hidden
-                            className="h-7 w-7 shrink-0 rounded-md border border-dashed border-stone-300"
+                            className="h-10 w-10 shrink-0 rounded-lg border border-dashed border-stone-300"
                           />
                         )}
                         <span className="min-w-0 flex-1">
-                          <span className="block truncate text-sm text-stone-900">
+                          <span className="block truncate text-[15px] font-medium text-stone-900">
                             {region.name}
                           </span>
                           <span className="block truncate text-xs text-stone-500">
@@ -133,8 +137,8 @@ export function MaterialPanel({
   const groups = groupMaterialsForLabel(materials, selectedRegion.label);
 
   return (
-    <aside className="flex max-h-[max(22rem,calc(100dvh-21rem))] min-h-64 flex-col self-start overflow-hidden rounded-xl border border-stone-200 bg-white lg:sticky lg:top-20">
-      <div className="space-y-3 border-b border-stone-200 px-4 py-3">
+    <aside className="flex max-h-[max(22rem,calc(100dvh-22rem))] min-h-64 flex-col self-start overflow-hidden rounded-2xl border border-stone-200 bg-white lg:sticky lg:top-6">
+      <div className="space-y-3 border-b border-stone-200 px-5 py-4">
         <Button variant="link" size="inline" icon="arrow-left" onClick={() => onSelectRegion(null)}>
           All parts
         </Button>
