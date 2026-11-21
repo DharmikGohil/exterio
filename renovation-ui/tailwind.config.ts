@@ -1,0 +1,124 @@
+import type { Config } from 'tailwindcss';
+
+const config: Config = {
+  content: ['./index.html', './src/**/*.{ts,tsx}'],
+  theme: {
+    extend: {
+      colors: {
+        /**
+         * Graphite: the one neutral ramp for every surface, hairline and text role. Content is
+         * dark on white; the page around it stays quiet so the eye goes to the work.
+         */
+        stone: {
+          50: '#f6f7f5', // page background
+          100: '#eff1ee', // raised: inputs, active rows, table heads
+          200: '#e3e6e2', // hairline
+          300: '#cfd3ce', // strong hairline, input border
+          400: '#9da39c',
+          500: '#6b716a', // muted text and icons
+          600: '#4b504a', // secondary text
+          700: '#353934',
+          800: '#232622',
+          900: '#141714', // primary text
+          950: '#0b0d0b',
+        },
+        /**
+         * The self-healing cutting mat, kept for the product's moments only: the estimate total
+         * and the sign-in story. Cream `line` is its grid and text, `ink` its brightest text.
+         */
+        mat: {
+          DEFAULT: '#2b6656',
+          deep: '#245747',
+          line: '#dfe9c6',
+          ink: '#f4f6ea',
+        },
+        /** Dark ink: labels, handles and chips drawn over the house photo. */
+        ink: '#10241d',
+        /**
+         * Mat green: the single accent. Primary action, the current step, selection and the
+         * one figure that matters. 700 carries white text at about 8:1.
+         */
+        brand: {
+          50: '#eef5f2',
+          100: '#d7e8e0',
+          200: '#afd0c3',
+          300: '#80b19e',
+          400: '#4f8f78',
+          500: '#367862',
+          600: '#2b6656',
+          700: '#245747',
+          800: '#1c463a',
+          900: '#15362d',
+        },
+      },
+      fontFamily: {
+        sans: [
+          'Nohemi',
+          '"IBM Plex Sans"',
+          'ui-sans-serif',
+          'system-ui',
+          'Segoe UI',
+          'Roboto',
+          'sans-serif',
+        ],
+        mono: ['"IBM Plex Mono"', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace'],
+      },
+      boxShadow: {
+        card: '0 1px 2px rgb(0 0 0 / 0.05)',
+        raised: '0 8px 24px rgb(0 0 0 / 0.08)',
+      },
+      backgroundImage: {
+        // Major lines every 60px, minor every 12px, like a mat ruled in inches and tenths.
+        'cutting-mat': [
+          'linear-gradient(to right, rgb(223 233 198 / 0.22) 1px, transparent 1px)',
+          'linear-gradient(to bottom, rgb(223 233 198 / 0.22) 1px, transparent 1px)',
+          'linear-gradient(to right, rgb(223 233 198 / 0.08) 1px, transparent 1px)',
+          'linear-gradient(to bottom, rgb(223 233 198 / 0.08) 1px, transparent 1px)',
+        ].join(', '),
+        // The page: a drafting grid so faint it reads as paper texture, never as a pattern.
+        'paper-grid': [
+          'linear-gradient(to right, rgb(20 23 20 / 0.055) 1px, transparent 1px)',
+          'linear-gradient(to bottom, rgb(20 23 20 / 0.055) 1px, transparent 1px)',
+          'linear-gradient(to right, rgb(20 23 20 / 0.025) 1px, transparent 1px)',
+          'linear-gradient(to bottom, rgb(20 23 20 / 0.025) 1px, transparent 1px)',
+        ].join(', '),
+      },
+      backgroundSize: {
+        'mat-grid': '60px 60px, 60px 60px, 12px 12px, 12px 12px',
+      },
+      transitionTimingFunction: {
+        DEFAULT: 'cubic-bezier(0.22, 1, 0.36, 1)',
+      },
+      transitionDuration: {
+        DEFAULT: '160ms',
+      },
+      keyframes: {
+        'fade-in': {
+          from: { opacity: '0', transform: 'translateY(6px)' },
+          to: { opacity: '1', transform: 'translateY(0)' },
+        },
+        'slide-up': {
+          from: { opacity: '0', transform: 'translateY(8px)' },
+          to: { opacity: '1', transform: 'translateY(0)' },
+        },
+        'slide-in-right': {
+          from: { transform: 'translateX(100%)' },
+          to: { transform: 'translateX(0)' },
+        },
+        shimmer: {
+          from: { transform: 'translateX(-100%)' },
+          to: { transform: 'translateX(100%)' },
+        },
+      },
+      animation: {
+        'fade-in': 'fade-in 320ms cubic-bezier(0.22, 1, 0.36, 1)',
+        'slide-up': 'slide-up 200ms cubic-bezier(0.22, 1, 0.36, 1)',
+        'slide-in-right': 'slide-in-right 300ms cubic-bezier(0.22, 1, 0.36, 1)',
+        shimmer: 'shimmer 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite',
+      },
+    },
+  },
+  plugins: [],
+};
+
+export default config;
