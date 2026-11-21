@@ -36,8 +36,8 @@ Rules:
 
 ## The page and the frame
 
-- **Backdrop** (`PageBackdrop`): drafting paper, `stone-50` with a 12px grid and a heavier line
-  every 60px, drawn at 2.5% and 5.5% ink. It is texture, not a pattern; if it is the first thing you
+- **Backdrop** (`PageBackdrop`): drafting paper, `stone-50` with one 60px grid drawn at 3.5% ink.
+  There are no fine lines; they made the page busier than the work on it. It is texture, not a pattern; if it is the first thing you
   notice, it is too strong. It is fixed while the page scrolls. There are no edge rulers or
   printed numbers: they caught the eye before the work did.
 - **Header** (`AppHeader`): the logo and the user menu on the page, 56px tall, in the frame.
@@ -50,6 +50,28 @@ Rules:
 | `AppLayout` | The header, then the routed page in the frame |
 | `AuthLayout` | A split screen: the product story on the cutting mat fills the left half edge to edge, the sign-in form sits on plain white in the right half (phones get the form only). It fits one screen from 1280×760 up |
 | `CenteredLayout` | One card in the middle, for single-message pages like the 404 |
+
+## The studio fits one screen
+
+The studio header is kept compact so the photo, its side panel and the pinned step bar are all
+in view without scrolling, on screens from 1366×768 up:
+
+- **Top bar** (`StudioTopBar`): a breadcrumb back to all projects with the project name, the
+  stepper and the advisor. Projects are renamed only on the home screen (the pencil on each
+  project card), never in the studio.
+- **Stepper** (`StudioStepper`): every step has the same 20px round badge, so the row lines up:
+  done is a green tint with a check, current is solid green with its number, upcoming is an
+  outlined number. Connectors are one width.
+- **Step title**: 26px, one line of description, actions on the right.
+- **One tool row** in the Design step: the design options on the left and how the picture is
+  shown (Design / Before-after, names, preview or render) on the right, so no row is half empty.
+  The photo below it has no toolbar of its own (`ImageCanvas toolbarAbove="none"`) and grows into
+  that room.
+- **Account** (`AccountMenu`): the header shows one avatar with the person's initials. Clicking it
+  opens their name, their email (or that a guest session is saved in this browser) and Sign out.
+  It closes on Escape or a click outside.
+- **Photo** (`ImageCanvas`): its height is capped at `100dvh − 24rem` (never below 22rem), and the
+  side panels at `100dvh − 21rem`, so their bottoms meet the step bar.
 
 ## The cutting mat
 
@@ -114,6 +136,7 @@ No sparkle or wand icons; each icon says what its button does.
 | `MatAngleGuides` | `shared/atoms` | The 30°, 45° and 60° guides in a mat's corner |
 | `MatPanel` | `shared/molecules` | A piece of cutting mat, for the estimate total and the sign-in story |
 | `AppLayout`, `AuthLayout`, `CenteredLayout` | `shared/layouts` | How each kind of page is laid out |
+| `Avatar`, `AccountMenu` | `shared/atoms`, `features/auth` | Initials badge, and the account menu built on it |
 | `PAGE_FRAME`, `PAGE_FRAME_BLEED` | `shared/utils/pageFrame` | The full-width frame shared by the app bar, pages and the step bar |
 | `AppHeader` | `shared/organisms` | The logo and user menu above the page |
 | `PageBackdrop` | `shared/organisms` | The quiet drafting-paper grid behind every page |
