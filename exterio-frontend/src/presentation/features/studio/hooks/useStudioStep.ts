@@ -38,6 +38,8 @@ export function useStudioStep(project: Project) {
       setSearchParams((current) => {
         const params = new URLSearchParams(current);
         params.set(STUDIO_PARAMS.step, next);
+        // A sub-view belongs to the step it was opened on.
+        params.delete(STUDIO_PARAMS.view);
         return params;
       });
     },

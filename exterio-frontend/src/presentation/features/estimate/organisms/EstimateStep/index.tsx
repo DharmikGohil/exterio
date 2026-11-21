@@ -6,20 +6,16 @@ import { Skeleton } from '@/presentation/shared/atoms/Skeleton';
 import { DropdownMenu } from '@/presentation/shared/molecules/DropdownMenu';
 import { EmptyState } from '@/presentation/shared/molecules/EmptyState';
 import { ErrorState } from '@/presentation/shared/molecules/ErrorState';
-import { useDisclosure } from '@/presentation/shared/hooks/useDisclosure';
-import { cn } from '@/presentation/shared/utils/cn';
 import { resolveFileUrl } from '@/presentation/shared/utils/fileUrl';
 import { useActiveDesign } from '@/presentation/features/design/hooks/useActiveDesign';
 import { useAreaOverrides } from '@/presentation/features/estimate/hooks/useAreaOverrides';
 import { useEstimate } from '@/presentation/features/estimate/hooks/useEstimate';
+import { useEstimateView } from '@/presentation/features/estimate/hooks/useEstimateView';
 import { useRateOverrides } from '@/presentation/features/estimate/hooks/useRateOverrides';
 import { useReportDownload } from '@/presentation/features/estimate/hooks/useReportDownload';
-import { AssumptionsList } from '@/presentation/features/estimate/organisms/AssumptionsList';
-import { BillOfQuantitiesTable } from '@/presentation/features/estimate/organisms/BillOfQuantitiesTable';
-import { CompareDesigns } from '@/presentation/features/estimate/organisms/CompareDesigns';
+import { EstimateBreakdown } from '@/presentation/features/estimate/organisms/EstimateBreakdown';
 import { EstimateDiagram } from '@/presentation/features/estimate/organisms/EstimateDiagram';
 import { EstimateSummary } from '@/presentation/features/estimate/organisms/EstimateSummary';
-import { SurfacesTable } from '@/presentation/features/estimate/organisms/SurfacesTable';
 import { StepFooter } from '@/presentation/features/studio/molecules/StepFooter';
 import { StepHeader } from '@/presentation/features/studio/molecules/StepHeader';
 import {
@@ -82,7 +78,7 @@ function EstimateWorkspace({
   const areas = useAreaOverrides(project);
   const rates = useRateOverrides(project);
   const { downloadReport, isDownloading } = useReportDownload(project.name);
-  const breakdown = useDisclosure();
+  const { view, openBreakdown, openOverview } = useEstimateView();
 
   const image = project.image;
   const groups = useMemo(
@@ -90,6 +86,40 @@ function EstimateWorkspace({
     [estimate, image, project.regions]
   );
   const imageUrl = resolveFileUrl(design.previewUrl) ?? resolveFileUrl(image?.url ?? null) ?? '';
+  const downloadButton = (
+    <Button
+      icon="download"
+      disabled={!estimate}
+      isLoading={isDownloading}
+      onClick={() => downloadReport(design)}
+    >
+      Download PDF report
+    </Button>
+  );
+
+  if (view === 'breakdown' && estimate) {
+    return (
+      <div className="space-y-6">
+        <EstimateBreakdown
+          project={project}
+          design={design}
+          estimate={estimate}
+          groups={groups}
+          syncToken={dataUpdatedAt}
+          rates={rates}
+          areas={areas}
+          onBack={openOverview}
+          onSelectDesign={onSelectDesign}
+        />
+        <StepFooter
+          step="estimate"
+          onStepChange={onStepChange}
+          meta="Rates are typical market rates. Change any rate you have a quote for."
+          primaryAction={downloadButton}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -154,49 +184,11 @@ function EstimateWorkspace({
             <p className="max-w-3xl text-[15px] leading-relaxed text-stone-600">
               {describeExclusions(groups)}
             </p>
-            <Button
-              variant="outline"
-              size="lg"
-              aria-expanded={breakdown.isOpen}
-              aria-controls="estimate-breakdown"
-              onClick={breakdown.toggle}
-            >
-              {breakdown.isOpen ? 'Hide the full breakdown' : 'See the full breakdown'}
-              <Icon
-                name="chevron-down"
-                className={cn('h-4 w-4 transition-transform', breakdown.isOpen && 'rotate-180')}
-              />
+            <Button variant="outline" size="lg" onClick={openBreakdown}>
+              See the full breakdown
+              <Icon name="arrow-right" className="h-4 w-4" />
             </Button>
           </div>
-
-          {breakdown.isOpen && (
-            <div id="estimate-breakdown" className="animate-fade-in space-y-6">
-              <SurfacesTable
-                rows={estimate.regions}
-                surfaces={estimate.surfaces}
-                regions={project.regions}
-                syncToken={dataUpdatedAt}
-                isSaving={areas.isSavingOverrides}
-                onAreaChange={areas.setAreaOverride}
-                onLengthChange={areas.setLengthOverride}
-                onReset={areas.resetOverrides}
-              />
-              <BillOfQuantitiesTable
-                lines={estimate.lines}
-                overrides={rates.overrides}
-                syncToken={dataUpdatedAt}
-                isSaving={rates.isSavingRates}
-                onRateChange={rates.setRate}
-                onReset={rates.resetRates}
-              />
-              <AssumptionsList assumptions={estimate.assumptions} />
-              <CompareDesigns
-                designs={project.designs}
-                activeDesignId={design.id}
-                onSelectDesign={onSelectDesign}
-              />
-            </div>
-          )}
         </>
       )}
 
@@ -204,16 +196,7 @@ function EstimateWorkspace({
         step="estimate"
         onStepChange={onStepChange}
         meta="Step 5 of 5 · Estimates are advisory, not a binding quotation"
-        primaryAction={
-          <Button
-            icon="download"
-            disabled={!estimate}
-            isLoading={isDownloading}
-            onClick={() => downloadReport(design)}
-          >
-            Download PDF report
-          </Button>
-        }
+        primaryAction={downloadButton}
       />
     </div>
   );

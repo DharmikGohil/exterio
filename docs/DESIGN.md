@@ -104,9 +104,15 @@ The Estimate step answers "where does the money go?" on the house itself (`Estim
   part of the group nearest the card, so lines rarely cross. Lines are measured from the live
   layout (`useLeaderLines`) and redrawn on resize; on narrow screens the photo comes first and the
   cards stack under it without lines.
-- **Below**: one sentence on what is not counted, and See the full breakdown, which opens the
-  editable tables, the assumptions and the design comparison. Download PDF report is the step
-  bar's main button.
+- **Below**: one sentence on what is not counted, and See the full breakdown. Download PDF report
+  is the step bar's main button.
+- **Full breakdown** (`EstimateBreakdown`, `?view=breakdown`): its own page in the step, with
+  "Back to your estimate", the total, materials and labour as chips, and three tabs. What to buy
+  (`WhatToBuyTable`) lists each material with where it goes ("Three walls"), how much to buy and
+  the exact need plus the waste allowance, the material and labour rates (editable, "per sq ft"),
+  and the cost split, with a total row. Part sizes has the editable areas; Compare designs puts
+  the designs side by side. Good to know (`GoodToKnow`) beside it says what the sizes rest on,
+  what is not counted, the parts left out (amber) and that this is a guide, not a quotation.
 
 ## The cutting mat
 
@@ -169,6 +175,7 @@ No sparkle or wand icons; each icon says what its button does.
 | `MatAngleGuides` | `shared/atoms` | The 30°, 45° and 60° guides in a mat's corner |
 | `MatPanel` | `shared/molecules` | A piece of cutting mat, for the sign-in story |
 | `EstimateDiagram`, `PartCard`, `EstimateSummary` | `features/estimate` | The estimate drawn on the house; grouping in `utils/partGroups` |
+| `EstimateBreakdown`, `WhatToBuyTable`, `GoodToKnow` | `features/estimate` | The full breakdown page; its wording in `utils/estimateCopy` |
 | `AppLayout`, `AuthLayout`, `CenteredLayout` | `shared/layouts` | How each kind of page is laid out |
 | `Avatar`, `AccountMenu` | `shared/atoms`, `features/auth` | Initials badge, and the account menu built on it |
 | `PAGE_FRAME`, `PAGE_FRAME_BLEED` | `shared/utils/pageFrame` | The full-width frame shared by the app bar, pages and the step bar |
