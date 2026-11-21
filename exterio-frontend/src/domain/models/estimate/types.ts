@@ -19,6 +19,10 @@ export interface EstimateRegion {
   isOverride: boolean;
   materialId: string | null;
   materialName: string | null;
+  /** This part's share of its material line; zero when it has no finish. */
+  materialCost: number;
+  labourCost: number;
+  totalCost: number;
 }
 
 export interface EstimateSurface {
