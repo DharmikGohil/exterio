@@ -70,9 +70,10 @@ cd exterio-backend && cp .env.example .env && uv sync && make dev
 cd exterio-frontend && cp .env.example .env && npm install && npm run dev
 ```
 
-Open http://localhost:5173 and press **Sign in with the demo account** (`demo@example.com` /
-`review-2026` by default, set with `DEMO_ACCOUNT_EMAIL` and `DEMO_ACCOUNT_PASSWORD`). It already
-holds a finished sample house.
+Open http://localhost:5173 and press **Try it with a sample house**. It signs in to the demo
+account (`demo@example.com` / `review-2026` by default, set with `DEMO_ACCOUNT_EMAIL` and
+`DEMO_ACCOUNT_PASSWORD`, which also work in the sign-in form), and that account already holds a
+finished sample house.
 API docs are at http://localhost:8000/api/docs.
 
 No API keys are needed to run the full flow. Adding them switches on the AI features:

@@ -118,7 +118,10 @@ The Estimate step answers "where does the money go?" on the house itself (`Estim
 
 `MatPanel` is the product's material, used in one place: **the sign-in story** (`LoginPage`), the
 left half of the sign-in screen, with the headline and the elevation drawing lying on the mat as a
-sheet of paper.
+sheet of paper. The drawing (`ElevationDrawing`) shows three parts in their new finish, each with
+a callout giving the finish and its cost, the way the estimate is drawn on the house. The right
+half has the Sign in / Create account form with Sign in as the one green button, then "or" and
+Try it with a sample house as an outline button (`SampleHouseAccess`).
 
 It draws mat green, a 12px cream grid with a heavier line every 60px, and the 30°, 45° and 60°
 guides (`MatAngleGuides`) real mats print in one corner. It is never a page background: a

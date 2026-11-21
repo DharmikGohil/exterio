@@ -5,7 +5,7 @@ revisited once a photo exists, and every change is saved to the project.
 
 ```mermaid
 flowchart TD
-  S([Sign in, or use the demo account]) --> L[Project list<br/>New project / Try with a sample house]
+  S([Sign in, or try it with a sample house]) --> L[Project list<br/>New project / Try with a sample house]
   L --> A[1. Photo<br/>upload a picture of the house]
   A --> Q{Quality gate}
   Q -- rejected --> G[Show the reasons and how to retake it] --> A
@@ -33,9 +33,10 @@ flowchart TD
 
 ## Design choices made for non-technical users
 
-- **A demo account.** The sign-in page shows a shared reviewer email and password, and one button
-  signs in with them. The account already holds a finished sample house. Deployments without one
-  fall back to one-click guest access, so nobody has to register to try it.
+- **Try it with a sample house.** One button on the sign-in page, with no sign-up. It signs in to
+  the shared reviewer account, which already holds a finished sample house; deployments without
+  one start a guest session and create the sample house for it first, so either way the first
+  screen has a house to open.
 - **Steady sign-in form.** The form is anchored to the top, so switching between Sign in and
   Create account never moves the tabs, and the password fields have a show/hide button. Create account asks for the
   password twice and says as soon as the two differ.

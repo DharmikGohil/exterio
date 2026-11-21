@@ -3,7 +3,7 @@ import { AuthLayout } from '@/presentation/shared/layouts/AuthLayout';
 import { MatPanel } from '@/presentation/shared/molecules/MatPanel';
 import { ElevationDrawing } from '@/presentation/features/auth/molecules/ElevationDrawing';
 import { EmailAuthForm } from '@/presentation/features/auth/organisms/EmailAuthForm';
-import { QuickAccess } from '@/presentation/features/auth/organisms/QuickAccess';
+import { SampleHouseAccess } from '@/presentation/features/auth/organisms/SampleHouseAccess';
 
 function ProductStory() {
   return (
@@ -17,7 +17,7 @@ function ProductStory() {
           get quantities and a rupee estimate to take to your contractor.
         </p>
       </div>
-      <div className="max-w-md 2xl:max-w-2xl">
+      <div className="max-w-xl 2xl:max-w-3xl">
         <ElevationDrawing />
       </div>
     </MatPanel>
@@ -31,7 +31,7 @@ export function LoginPage() {
         <div className="space-y-2">
           <h2 className="text-[26px] font-medium text-stone-900">Welcome to {config.appName}</h2>
           <p className="text-sm leading-relaxed text-stone-600">
-            Sign in to your projects, or create an account to start one.
+            Sign in to your houses, or create an account to start one.
           </p>
         </div>
 
@@ -39,11 +39,11 @@ export function LoginPage() {
 
         <div className="flex items-center gap-3 text-xs text-stone-500">
           <span className="h-px flex-1 bg-stone-200" />
-          Or try it straight away
+          or
           <span className="h-px flex-1 bg-stone-200" />
         </div>
 
-        <QuickAccess />
+        <SampleHouseAccess />
       </div>
     </AuthLayout>
   );

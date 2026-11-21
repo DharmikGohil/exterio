@@ -27,7 +27,7 @@ export function AuthLayout({ visual, children }: AuthLayoutProps) {
           <div className="w-full max-w-md">{children}</div>
         </main>
         <footer className="text-xs text-stone-500">
-          Estimates are advisory. Confirm quantities with your contractor before ordering
+          Estimates are advisory. Confirm quantities with your contractor before ordering.
         </footer>
       </div>
     </div>

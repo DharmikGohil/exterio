@@ -76,7 +76,7 @@ export function EmailAuthForm() {
           </FormField>
         )}
         {form.errorMessage && <Alert tone="error">{form.errorMessage}</Alert>}
-        <Button type="submit" variant="outline" fullWidth isLoading={form.isSubmitting}>
+        <Button type="submit" size="lg" fullWidth isLoading={form.isSubmitting}>
           {isRegister ? 'Create account' : 'Sign in'}
         </Button>
       </form>

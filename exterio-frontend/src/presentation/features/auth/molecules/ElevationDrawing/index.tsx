@@ -1,16 +1,50 @@
 /**
  * A house front drawn as an architect's elevation: the product's own material.
- * The two pillars carry a sandstone-cladding hatch in the stone's own colours, with the area and cost
- * the app would compute for them, so the picture shows what the product does.
- * Figures match the built-in sample house (30 × 20 ft facade, 1.2 × 9.5 ft pillars).
+ * Three parts carry their new finish (cream paint on the wall, glass on the railing, sandstone on
+ * the pillars) with a callout giving the finish and its cost, the way the estimate is drawn on
+ * the house, so the picture shows what the product does. Sized like the built-in sample house
+ * (30 × 20 ft facade).
  */
 const INK = 'currentColor';
 
 function Window({ x, y }: { x: number; y: number }) {
   return (
     <g>
-      <rect x={x} y={y} width="50" height="40" fill="none" stroke={INK} strokeWidth="1.25" />
+      <rect x={x} y={y} width="50" height="40" fill="#fbfaf6" stroke={INK} strokeWidth="1.25" />
       <line x1={x + 25} y1={y} x2={x + 25} y2={y + 40} stroke={INK} strokeWidth="0.75" />
+    </g>
+  );
+}
+
+const LABEL_X = 404;
+
+/** A leader line from a dot on the part to its finish and cost, written in the margin. */
+function Callout({
+  dot: [dotX, dotY],
+  y,
+  title,
+  detail,
+}: {
+  dot: [number, number];
+  y: number;
+  title: string;
+  detail: string;
+}) {
+  return (
+    <g>
+      <path
+        d={`M${dotX} ${dotY} L${LABEL_X - 22} ${y} L${LABEL_X - 6} ${y}`}
+        fill="none"
+        stroke={INK}
+        strokeWidth="0.75"
+      />
+      <circle cx={dotX} cy={dotY} r="2.5" fill={INK} />
+      <text x={LABEL_X} y={y - 3} className="fill-ink text-[11px] font-medium">
+        {title}
+      </text>
+      <text x={LABEL_X} y={y + 11} className="fill-ink/65 font-mono text-[9.5px]">
+        {detail}
+      </text>
     </g>
   );
 }
@@ -18,13 +52,13 @@ function Window({ x, y }: { x: number; y: number }) {
 export function ElevationDrawing() {
   return (
     <svg
-      viewBox="0 0 440 340"
+      viewBox="0 0 580 340"
       role="img"
-      aria-label="Elevation drawing of a two-storey house, 30 feet wide and 20 feet high, with stone cladding on its two pillars"
+      aria-label="Elevation drawing of a two-storey house, 30 feet wide and 20 feet high, with the front wall in warm cream paint, a glass railing and stone cladding on its two pillars, each with its cost"
       className="block h-auto w-full rounded-[2px] text-ink shadow-[0_2px_10px_rgb(0_0_0/0.35)]"
     >
       {/* The sheet of drawing paper. */}
-      <rect width="440" height="340" fill="#fbfaf6" />
+      <rect width="580" height="340" fill="#fbfaf6" />
       <defs>
         <pattern id="ashlar" width="12" height="8" patternUnits="userSpaceOnUse">
           <rect width="12" height="8" fill="#ead8b6" />
@@ -38,7 +72,7 @@ export function ElevationDrawing() {
       </defs>
 
       {/* Ground line */}
-      <line x1="20" y1="270" x2="420" y2="270" stroke={INK} strokeWidth="1.5" />
+      <line x1="20" y1="270" x2="400" y2="270" stroke={INK} strokeWidth="1.5" />
       {/* Parapet and roof band */}
       <rect x="70" y="40" width="300" height="30" fill="none" stroke={INK} strokeWidth="1.25" />
       <rect
@@ -51,7 +85,7 @@ export function ElevationDrawing() {
         strokeWidth="1.25"
       />
       {/* Main wall */}
-      <rect x="70" y="80" width="300" height="190" fill="none" stroke={INK} strokeWidth="1.5" />
+      <rect x="70" y="80" width="300" height="190" fill="#f4e7c5" stroke={INK} strokeWidth="1.5" />
 
       <Window x={100} y={110} />
       <Window x={290} y={110} />
@@ -59,9 +93,18 @@ export function ElevationDrawing() {
       <Window x={290} y={190} />
 
       {/* Balcony: glazed door, railing, slab */}
-      <rect x="190" y="100" width="60" height="70" fill="none" stroke={INK} strokeWidth="1.25" />
+      <rect x="190" y="100" width="60" height="70" fill="#fbfaf6" stroke={INK} strokeWidth="1.25" />
       <line x1="220" y1="100" x2="220" y2="170" stroke={INK} strokeWidth="0.75" />
-      <rect x="170" y="140" width="100" height="30" fill="none" stroke={INK} strokeWidth="1" />
+      <rect
+        x="170"
+        y="140"
+        width="100"
+        height="30"
+        fill="#cfe3ea"
+        fillOpacity="0.8"
+        stroke={INK}
+        strokeWidth="1"
+      />
       {Array.from({ length: 11 }, (_, index) => (
         <line
           key={index}
@@ -103,7 +146,7 @@ export function ElevationDrawing() {
         strokeWidth="1.25"
       />
       {/* Door */}
-      <rect x="203" y="200" width="34" height="70" fill="none" stroke={INK} strokeWidth="1.25" />
+      <rect x="203" y="200" width="34" height="70" fill="#fbfaf6" stroke={INK} strokeWidth="1.25" />
       <line x1="220" y1="200" x2="220" y2="270" stroke={INK} strokeWidth="0.75" />
 
       {/* Width dimension */}
@@ -128,17 +171,9 @@ export function ElevationDrawing() {
         20 ft
       </text>
 
-      {/* Callout to the cladded pillar */}
-      <g className="text-[#8a6638]" stroke={INK} strokeWidth="0.75" fill="none">
-        <path d="M270 225 L318 225 L330 237" />
-        <circle cx="270" cy="225" r="2" fill="#8a6638" />
-      </g>
-      <text x="334" y="244" className="fill-ink text-[11px]">
-        Sandstone cladding
-      </text>
-      <text x="334" y="258" className="fill-ink/60 font-mono text-[10px]">
-        70 sq ft · ₹22,927
-      </text>
+      <Callout dot={[355, 170]} y={100} title="Front wall" detail="Warm Cream paint · ₹10,061" />
+      <Callout dot={[268, 156]} y={170} title="Glass railing" detail="12 mm toughened · ₹23,570" />
+      <Callout dot={[264, 250]} y={250} title="Two pillars" detail="Sandstone cladding · ₹22,927" />
     </svg>
   );
 }
