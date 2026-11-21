@@ -1,0 +1,27 @@
+from enum import StrEnum
+
+
+class ProjectErrorCode(StrEnum):
+    PROJECT_NOT_FOUND = "PROJECT_001"
+    IMAGE_REQUIRED = "PROJECT_002"
+    INVALID_REGION = "PROJECT_003"
+    INVALID_SCALE = "PROJECT_004"
+    INVALID_RATE = "PROJECT_005"
+
+
+class ImageErrorCode(StrEnum):
+    UNREADABLE = "IMAGE_001"
+    REJECTED = "IMAGE_002"
+    TOO_LARGE = "IMAGE_003"
+
+
+class DesignErrorCode(StrEnum):
+    DESIGN_NOT_FOUND = "DESIGN_001"
+    INVALID_ASSIGNMENT = "DESIGN_002"
+    RENDER_IN_PROGRESS = "DESIGN_003"
+    RENDER_LIMIT_REACHED = "DESIGN_004"
+
+
+class AiErrorCode(StrEnum):
+    NOT_CONFIGURED = "AI_001"
+    PROVIDER_FAILED = "AI_002"

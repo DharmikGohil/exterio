@@ -1,0 +1,80 @@
+[project]
+name = "renovation-backend"
+version = "1.0.0"
+description = "API for the AI exterior house renovation and cost estimation platform"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.32",
+    "pydantic[email]>=2.9",
+    "pydantic-settings>=2.6",
+    "python-multipart>=0.0.12",
+    "sqlalchemy>=2.0.36",
+    "psycopg[binary]>=3.2",
+    "numpy>=2.1",
+    "pandas>=2.2",
+    "opencv-python-headless>=4.10",
+    "pillow>=11.0",
+    "reportlab>=4.2",
+    "pyjwt>=2.9",
+    "bcrypt>=4.2",
+    "httpx>=0.27",
+    "anthropic>=0.40",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3",
+    "ruff>=0.8",
+    "mypy>=1.13",
+    "import-linter>=2.1",
+    "pandas-stubs>=2.2",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["src", "."]
+testpaths = ["src", "tests"]
+python_files = ["test_*.py"]
+addopts = "--import-mode=importlib -q"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "B", "SIM", "C4", "RUF", "PL", "ANN"]
+ignore = ["PLR0913", "PLR0917", "PLR2004", "ANN401", "RUF012", "S101"]
+
+[tool.ruff.lint.flake8-bugbear]
+extend-immutable-calls = ["fastapi.Depends"]
+
+[tool.ruff.lint.per-file-ignores]
+"**/__tests__/*" = ["ANN", "PLR"]
+"tests/*" = ["ANN", "PLR"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+mypy_path = "src"
+explicit_package_bases = true
+exclude = ["tests/", "__tests__/"]
+
+[[tool.mypy.overrides]]
+module = ["cv2.*", "reportlab.*"]
+ignore_missing_imports = true
+
+[tool.importlinter]
+root_packages = ["domain", "infrastructure", "presentation", "bootstrap"]
+include_external_packages = true
+
+[[tool.importlinter.contracts]]
+name = "Clean architecture layers (bootstrap > presentation > infrastructure > domain)"
+type = "layers"
+layers = ["bootstrap", "presentation", "infrastructure", "domain"]
+
+[[tool.importlinter.contracts]]
+name = "Domain has no framework or infrastructure library imports"
+type = "forbidden"
+source_modules = ["domain"]
+forbidden_modules = ["fastapi", "sqlalchemy", "cv2", "numpy", "pandas", "httpx", "pydantic", "reportlab", "jwt", "bcrypt", "anthropic", "PIL"]

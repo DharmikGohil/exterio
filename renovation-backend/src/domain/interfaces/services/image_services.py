@@ -1,0 +1,132 @@
+"""Contracts for everything that touches pixels. Implemented with OpenCV in infrastructure."""
+
+from abc import ABC, abstractmethod
+from dataclasses import dataclass
+
+from domain.entities.material_entity import Material
+from domain.entities.project_entity import QualityIssue, QualityReport
+from domain.entities.region_entity import Point, Region, RegionLabel
+from domain.entities.scale_reference_entity import ScaleReference
+from domain.interfaces.dtos.measurement_dto import RectifiedSurface
+
+
+@dataclass(frozen=True)
+class PreparedImage:
+    """An upload after orientation fix and resize, with its quality report."""
+
+    data: bytes
+    width: int
+    height: int
+    report: QualityReport
+
+
+@dataclass(frozen=True)
+class DetectedRegion:
+    label: RegionLabel
+    polygon: tuple[Point, ...]
+    score: float
+
+
+@dataclass(frozen=True)
+class VisionVerdict:
+    issues: tuple[QualityIssue, ...]
+    guidance: tuple[str, ...]
+
+
+@dataclass(frozen=True)
+class PreviewRequest:
+    image: bytes
+    regions: tuple[Region, ...]
+    materials_by_region: dict[str, Material]
+    facade_corners: tuple[Point, Point, Point, Point]
+    facade_width_ft: float
+    facade_height_ft: float
+
+
+class IImageInspectionService(ABC):
+    @abstractmethod
+    def prepare(self, raw: bytes) -> PreparedImage:
+        """Normalise an upload and score its quality. Raises UnreadableImageError."""
+
+    @abstractmethod
+    def thumbnail(self, image: bytes, max_side: int) -> bytes: ...
+
+    @abstractmethod
+    def max_upload_mb(self) -> int: ...
+
+
+class IVisionCheckService(ABC):
+    """Optional vision-LLM check that the photo really is a usable house exterior."""
+
+    @abstractmethod
+    def is_available(self) -> bool: ...
+
+    @abstractmethod
+    def check(self, image: bytes) -> VisionVerdict: ...
+
+
+class ISegmentationService(ABC):
+    @abstractmethod
+    def is_available(self) -> bool: ...
+
+    @abstractmethod
+    def detect(self, image: bytes, width: int, height: int) -> list[DetectedRegion]: ...
+
+
+class ISurfaceMeasurementService(ABC):
+    @abstractmethod
+    def measure(
+        self,
+        width: int,
+        height: int,
+        regions: tuple[Region, ...],
+        facade_corners: tuple[Point, Point, Point, Point],
+        reference_line: tuple[Point, Point] | None,
+        known_aspect_ratio: float | None,
+    ) -> RectifiedSurface:
+        """Remove perspective and return each region's size in rectified pixels."""
+
+
+class IPreviewRenderService(ABC):
+    @abstractmethod
+    def render(self, request: PreviewRequest) -> bytes:
+        """Composite the chosen materials onto the photo, keeping its shading."""
+
+    @abstractmethod
+    def merge_with_original(
+        self,
+        original: bytes,
+        edited: bytes,
+        regions: tuple[Region, ...],
+        edited_ids: frozenset[str],
+    ) -> bytes:
+        """Keep edited pixels inside the given regions and original pixels elsewhere."""
+
+    @abstractmethod
+    def swatch(self, material: Material, size: int) -> bytes: ...
+
+
+class IPhotorealRenderService(ABC):
+    @abstractmethod
+    def is_available(self) -> bool: ...
+
+    @abstractmethod
+    def daily_limit(self) -> int: ...
+
+    @abstractmethod
+    def render(self, composite: bytes, prompt: str) -> bytes: ...
+
+
+@dataclass(frozen=True)
+class SampleHouse:
+    image: bytes
+    regions: tuple[Region, ...]
+    scale: ScaleReference
+    material_by_label: dict[RegionLabel, str]
+
+
+class ISampleHouseProvider(ABC):
+    """Supplies the ready-made demo house used by "Try with a sample"."""
+
+    @abstractmethod
+    def build(self) -> SampleHouse: ...

@@ -1,0 +1,610 @@
+[
+  {
+    "id": "paint-warm-cream",
+    "category": "paint",
+    "name": "Exterior emulsion - Warm Cream",
+    "description": "Weatherproof acrylic emulsion, two coats over primer",
+    "unit": "sqft",
+    "colorHex": "#EDE3CF",
+    "materialRate": 14,
+    "labourRate": 12,
+    "wastagePct": 5,
+    "appliesTo": [
+      "wall",
+      "parapet",
+      "pillar",
+      "balcony",
+      "roof_edge",
+      "gate"
+    ],
+    "durability": "5-7 years before repainting",
+    "maintenance": "Wash down once a year. Touch up chips before the monsoon.",
+    "quantity": {
+      "rule": "coverage",
+      "purchaseUnit": "litre",
+      "coverageSqftPerUnit": 55,
+      "note": "About 55 sq ft per litre for two coats on a smooth wall"
+    },
+    "texture": {
+      "pattern": "flat",
+      "tileSizeFt": 4,
+      "opacity": 1
+    }
+  },
+  {
+    "id": "paint-classic-white",
+    "category": "paint",
+    "name": "Exterior emulsion - Classic White",
+    "description": "Weatherproof acrylic emulsion, two coats over primer",
+    "unit": "sqft",
+    "colorHex": "#F4F3EE",
+    "materialRate": 14,
+    "labourRate": 12,
+    "wastagePct": 5,
+    "appliesTo": [
+      "wall",
+      "parapet",
+      "pillar",
+      "balcony",
+      "roof_edge",
+      "gate"
+    ],
+    "durability": "5-7 years before repainting",
+    "maintenance": "Wash down once a year. Touch up chips before the monsoon.",
+    "quantity": {
+      "rule": "coverage",
+      "purchaseUnit": "litre",
+      "coverageSqftPerUnit": 55,
+      "note": "About 55 sq ft per litre for two coats on a smooth wall"
+    },
+    "texture": {
+      "pattern": "flat",
+      "tileSizeFt": 4,
+      "opacity": 1
+    }
+  },
+  {
+    "id": "paint-sage-grey",
+    "category": "paint",
+    "name": "Exterior emulsion - Sage Grey",
+    "description": "Weatherproof acrylic emulsion, two coats over primer",
+    "unit": "sqft",
+    "colorHex": "#B9C1B4",
+    "materialRate": 14,
+    "labourRate": 12,
+    "wastagePct": 5,
+    "appliesTo": [
+      "wall",
+      "parapet",
+      "pillar",
+      "balcony",
+      "roof_edge",
+      "gate"
+    ],
+    "durability": "5-7 years before repainting",
+    "maintenance": "Wash down once a year. Touch up chips before the monsoon.",
+    "quantity": {
+      "rule": "coverage",
+      "purchaseUnit": "litre",
+      "coverageSqftPerUnit": 55,
+      "note": "About 55 sq ft per litre for two coats on a smooth wall"
+    },
+    "texture": {
+      "pattern": "flat",
+      "tileSizeFt": 4,
+      "opacity": 1
+    }
+  },
+  {
+    "id": "paint-terracotta",
+    "category": "paint",
+    "name": "Exterior emulsion - Terracotta",
+    "description": "Weatherproof acrylic emulsion, two coats over primer",
+    "unit": "sqft",
+    "colorHex": "#C8734F",
+    "materialRate": 14,
+    "labourRate": 12,
+    "wastagePct": 5,
+    "appliesTo": [
+      "wall",
+      "parapet",
+      "pillar",
+      "balcony",
+      "roof_edge",
+      "gate"
+    ],
+    "durability": "5-7 years before repainting",
+    "maintenance": "Wash down once a year. Touch up chips before the monsoon.",
+    "quantity": {
+      "rule": "coverage",
+      "purchaseUnit": "litre",
+      "coverageSqftPerUnit": 55,
+      "note": "About 55 sq ft per litre for two coats on a smooth wall"
+    },
+    "texture": {
+      "pattern": "flat",
+      "tileSizeFt": 4,
+      "opacity": 1
+    }
+  },
+  {
+    "id": "paint-sky-blue",
+    "category": "paint",
+    "name": "Exterior emulsion - Soft Blue",
+    "description": "Weatherproof acrylic emulsion, two coats over primer",
+    "unit": "sqft",
+    "colorHex": "#A9C4D4",
+    "materialRate": 14,
+    "labourRate": 12,
+    "wastagePct": 5,
+    "appliesTo": [
+      "wall",
+      "parapet",
+      "pillar",
+      "balcony",
+      "roof_edge",
+      "gate"
+    ],
+    "durability": "5-7 years before repainting",
+    "maintenance": "Wash down once a year. Touch up chips before the monsoon.",
+    "quantity": {
+      "rule": "coverage",
+      "purchaseUnit": "litre",
+      "coverageSqftPerUnit": 55,
+      "note": "About 55 sq ft per litre for two coats on a smooth wall"
+    },
+    "texture": {
+      "pattern": "flat",
+      "tileSizeFt": 4,
+      "opacity": 1
+    }
+  },
+  {
+    "id": "paint-charcoal",
+    "category": "paint",
+    "name": "Accent paint - Charcoal",
+    "description": "Dark accent coat for bands, gates and trims",
+    "unit": "sqft",
+    "colorHex": "#3F4447",
+    "materialRate": 14,
+    "labourRate": 12,
+    "wastagePct": 5,
+    "appliesTo": [
+      "wall",
+      "parapet",
+      "pillar",
+      "balcony",
+      "roof_edge",
+      "gate"
+    ],
+    "durability": "5-7 years before repainting",
+    "maintenance": "Wash down once a year. Touch up chips before the monsoon.",
+    "quantity": {
+      "rule": "coverage",
+      "purchaseUnit": "litre",
+      "coverageSqftPerUnit": 55,
+      "note": "About 55 sq ft per litre for two coats on a smooth wall"
+    },
+    "texture": {
+      "pattern": "flat",
+      "tileSizeFt": 4,
+      "opacity": 1
+    }
+  },
+  {
+    "id": "paint-premium-ivory",
+    "category": "paint",
+    "name": "Premium elastomeric - Ivory",
+    "description": "Crack-bridging elastomeric coating with dust resistance",
+    "unit": "sqft",
+    "colorHex": "#EFE9DA",
+    "materialRate": 22,
+    "labourRate": 13,
+    "wastagePct": 5,
+    "appliesTo": [
+      "wall",
+      "parapet",
+      "pillar",
+      "balcony",
+      "roof_edge",
+      "gate"
+    ],
+    "durability": "8-10 years before repainting",
+    "maintenance": "Wash down once a year. Bridges hairline cracks, so fewer touch-ups.",
+    "quantity": {
+      "rule": "coverage",
+      "purchaseUnit": "litre",
+      "coverageSqftPerUnit": 55,
+      "note": "About 55 sq ft per litre for two coats on a smooth wall"
+    },
+    "texture": {
+      "pattern": "flat",
+      "tileSizeFt": 4,
+      "opacity": 1
+    }
+  },
+  {
+    "id": "texture-sand-finish",
+    "category": "texture",
+    "name": "Texture finish - Sand",
+    "description": "Trowel-applied sand texture coat over primer",
+    "unit": "sqft",
+    "colorHex": "#D9CDB8",
+    "materialRate": 45,
+    "labourRate": 30,
+    "wastagePct": 8,
+    "appliesTo": [
+      "wall",
+      "parapet",
+      "pillar",
+      "balcony"
+    ],
+    "durability": "8-10 years",
+    "maintenance": "Hides minor cracks. Rough surface holds dust; pressure-wash yearly.",
+    "quantity": {
+      "rule": "weight",
+      "purchaseUnit": "kg",
+      "consumptionPerSqft": 0.18,
+      "note": "About 0.18 kg per sq ft"
+    },
+    "texture": {
+      "pattern": "stucco",
+      "tileSizeFt": 3,
+      "opacity": 1
+    }
+  },
+  {
+    "id": "texture-rustic-grey",
+    "category": "texture",
+    "name": "Texture finish - Rustic Grey",
+    "description": "Trowel-applied rustic texture coat over primer",
+    "unit": "sqft",
+    "colorHex": "#A8A6A1",
+    "materialRate": 50,
+    "labourRate": 32,
+    "wastagePct": 8,
+    "appliesTo": [
+      "wall",
+      "parapet",
+      "pillar",
+      "balcony"
+    ],
+    "durability": "8-10 years",
+    "maintenance": "Hides minor cracks. Rough surface holds dust; pressure-wash yearly.",
+    "quantity": {
+      "rule": "weight",
+      "purchaseUnit": "kg",
+      "consumptionPerSqft": 0.2,
+      "note": "About 0.2 kg per sq ft"
+    },
+    "texture": {
+      "pattern": "stucco",
+      "tileSizeFt": 3,
+      "opacity": 1
+    }
+  },
+  {
+    "id": "stone-sandstone-ashlar",
+    "category": "stone",
+    "name": "Sandstone cladding - Ashlar",
+    "description": "Natural sandstone slabs in coursed ashlar pattern",
+    "unit": "sqft",
+    "colorHex": "#C9A97C",
+    "materialRate": 220,
+    "labourRate": 80,
+    "wastagePct": 12,
+    "appliesTo": [
+      "wall",
+      "parapet",
+      "pillar",
+      "balcony"
+    ],
+    "durability": "25+ years",
+    "maintenance": "Seal every 2-3 years. Adds weight: check the wall can carry it.",
+    "quantity": {
+      "rule": "area",
+      "purchaseUnit": "sq ft",
+      "note": "Sold by the square foot"
+    },
+    "texture": {
+      "pattern": "ashlar",
+      "tileSizeFt": 4,
+      "opacity": 1,
+      "secondaryColorHex": "#B08D62"
+    }
+  },
+  {
+    "id": "stone-grey-ledge",
+    "category": "stone",
+    "name": "Stacked stone cladding - Grey",
+    "description": "Thin stacked ledge-stone panels",
+    "unit": "sqft",
+    "colorHex": "#8C8B87",
+    "materialRate": 260,
+    "labourRate": 90,
+    "wastagePct": 12,
+    "appliesTo": [
+      "wall",
+      "parapet",
+      "pillar",
+      "balcony"
+    ],
+    "durability": "25+ years",
+    "maintenance": "Seal every 2-3 years. Deep joints collect dust; brush before sealing.",
+    "quantity": {
+      "rule": "area",
+      "purchaseUnit": "sq ft",
+      "note": "Sold by the square foot"
+    },
+    "texture": {
+      "pattern": "ledge",
+      "tileSizeFt": 3,
+      "opacity": 1,
+      "secondaryColorHex": "#6E6C69"
+    }
+  },
+  {
+    "id": "stone-brick-cladding",
+    "category": "stone",
+    "name": "Brick tile cladding - Terracotta",
+    "description": "Thin terracotta brick tiles with recessed joints",
+    "unit": "sqft",
+    "colorHex": "#A5553A",
+    "materialRate": 120,
+    "labourRate": 60,
+    "wastagePct": 10,
+    "appliesTo": [
+      "wall",
+      "parapet",
+      "pillar",
+      "balcony"
+    ],
+    "durability": "20+ years",
+    "maintenance": "Low maintenance. Re-point joints if they crack.",
+    "quantity": {
+      "rule": "area",
+      "purchaseUnit": "sq ft",
+      "note": "Sold by the square foot"
+    },
+    "texture": {
+      "pattern": "brick",
+      "tileSizeFt": 3,
+      "opacity": 1,
+      "secondaryColorHex": "#8E4630"
+    }
+  },
+  {
+    "id": "tile-beige-vitrified",
+    "category": "tile",
+    "name": "Elevation tile - Beige vitrified",
+    "description": "2 ft x 2 ft matt vitrified elevation tile",
+    "unit": "sqft",
+    "colorHex": "#D8CCB6",
+    "materialRate": 70,
+    "labourRate": 40,
+    "wastagePct": 10,
+    "appliesTo": [
+      "wall",
+      "parapet",
+      "pillar",
+      "balcony"
+    ],
+    "durability": "15-20 years",
+    "maintenance": "Wipe clean. Check for hollow tiles every few years.",
+    "quantity": {
+      "rule": "piece",
+      "purchaseUnit": "tile",
+      "pieceAreaSqft": 4,
+      "note": "2 ft x 2 ft tiles (4 sq ft each)"
+    },
+    "texture": {
+      "pattern": "tile_grid",
+      "tileSizeFt": 4,
+      "opacity": 1,
+      "secondaryColorHex": "#CDBFA6"
+    }
+  },
+  {
+    "id": "tile-slate-grey",
+    "category": "tile",
+    "name": "Elevation tile - Slate grey",
+    "description": "2 ft x 2 ft slate-look elevation tile",
+    "unit": "sqft",
+    "colorHex": "#5E6468",
+    "materialRate": 85,
+    "labourRate": 40,
+    "wastagePct": 10,
+    "appliesTo": [
+      "wall",
+      "parapet",
+      "pillar",
+      "balcony"
+    ],
+    "durability": "15-20 years",
+    "maintenance": "Wipe clean. Dark tiles show water marks; seal the grout.",
+    "quantity": {
+      "rule": "piece",
+      "purchaseUnit": "tile",
+      "pieceAreaSqft": 4,
+      "note": "2 ft x 2 ft tiles (4 sq ft each)"
+    },
+    "texture": {
+      "pattern": "tile_grid",
+      "tileSizeFt": 4,
+      "opacity": 1,
+      "secondaryColorHex": "#4E5357"
+    }
+  },
+  {
+    "id": "tile-wood-look-plank",
+    "category": "tile",
+    "name": "Elevation tile - Wood-look plank",
+    "description": "8 in x 48 in wood-look vitrified planks",
+    "unit": "sqft",
+    "colorHex": "#9C6B43",
+    "materialRate": 95,
+    "labourRate": 45,
+    "wastagePct": 10,
+    "appliesTo": [
+      "wall",
+      "parapet",
+      "pillar",
+      "balcony"
+    ],
+    "durability": "15-20 years",
+    "maintenance": "Wipe clean. No polishing needed, unlike real wood.",
+    "quantity": {
+      "rule": "piece",
+      "purchaseUnit": "plank",
+      "pieceAreaSqft": 2.67,
+      "note": "8 in x 48 in planks (2.67 sq ft each)"
+    },
+    "texture": {
+      "pattern": "plank",
+      "tileSizeFt": 4,
+      "opacity": 1,
+      "secondaryColorHex": "#7F5332"
+    }
+  },
+  {
+    "id": "panel-acp-silver",
+    "category": "panel",
+    "name": "ACP panel - Silver",
+    "description": "4 mm aluminium composite panel on a framed substructure",
+    "unit": "sqft",
+    "colorHex": "#B8BDC2",
+    "materialRate": 240,
+    "labourRate": 60,
+    "wastagePct": 10,
+    "appliesTo": [
+      "wall",
+      "parapet",
+      "balcony"
+    ],
+    "durability": "15-20 years",
+    "maintenance": "Wash with mild soap. Check sealant joints every 3-4 years.",
+    "quantity": {
+      "rule": "piece",
+      "purchaseUnit": "sheet",
+      "pieceAreaSqft": 32,
+      "note": "4 ft x 8 ft sheets (32 sq ft each)"
+    },
+    "texture": {
+      "pattern": "panel",
+      "tileSizeFt": 8,
+      "opacity": 1,
+      "secondaryColorHex": "#AEB3B8"
+    }
+  },
+  {
+    "id": "panel-hpl-walnut",
+    "category": "panel",
+    "name": "HPL panel - Walnut",
+    "description": "6 mm exterior-grade high-pressure laminate boards",
+    "unit": "sqft",
+    "colorHex": "#7A4E2D",
+    "materialRate": 480,
+    "labourRate": 70,
+    "wastagePct": 10,
+    "appliesTo": [
+      "wall",
+      "parapet",
+      "balcony"
+    ],
+    "durability": "10-15 years",
+    "maintenance": "Wipe clean. Colour can fade on walls facing strong afternoon sun.",
+    "quantity": {
+      "rule": "piece",
+      "purchaseUnit": "sheet",
+      "pieceAreaSqft": 32,
+      "note": "4 ft x 8 ft sheets (32 sq ft each)"
+    },
+    "texture": {
+      "pattern": "plank",
+      "tileSizeFt": 4,
+      "opacity": 1,
+      "secondaryColorHex": "#5F3B20"
+    }
+  },
+  {
+    "id": "railing-glass-12mm",
+    "category": "glass_railing",
+    "name": "Glass railing - 12 mm toughened",
+    "description": "12 mm toughened glass with SS 304 posts and top rail",
+    "unit": "rft",
+    "colorHex": "#9FC7CF",
+    "materialRate": 1900,
+    "labourRate": 400,
+    "wastagePct": 3,
+    "appliesTo": [
+      "railing"
+    ],
+    "durability": "20+ years",
+    "maintenance": "Clean glass monthly. Tighten clamps yearly.",
+    "quantity": {
+      "rule": "length",
+      "purchaseUnit": "running ft",
+      "note": "Priced per running foot, 3.5 ft high"
+    },
+    "texture": {
+      "pattern": "glass",
+      "tileSizeFt": 4,
+      "opacity": 1,
+      "secondaryColorHex": "#B8BBBE"
+    }
+  },
+  {
+    "id": "railing-ss-304",
+    "category": "metal_railing",
+    "name": "Metal railing - SS 304",
+    "description": "Stainless steel 304 balusters with round top rail",
+    "unit": "rft",
+    "colorHex": "#C4C7CA",
+    "materialRate": 850,
+    "labourRate": 250,
+    "wastagePct": 3,
+    "appliesTo": [
+      "railing"
+    ],
+    "durability": "20+ years",
+    "maintenance": "Wipe with a damp cloth. Use 316 grade near the coast.",
+    "quantity": {
+      "rule": "length",
+      "purchaseUnit": "running ft",
+      "note": "Priced per running foot, 3.5 ft high"
+    },
+    "texture": {
+      "pattern": "bars",
+      "tileSizeFt": 1.6,
+      "opacity": 1,
+      "secondaryColorHex": "#C4C7CA"
+    }
+  },
+  {
+    "id": "railing-ms-black",
+    "category": "metal_railing",
+    "name": "Metal railing - MS black",
+    "description": "Powder-coated mild steel balusters and top rail",
+    "unit": "rft",
+    "colorHex": "#2B2D30",
+    "materialRate": 450,
+    "labourRate": 200,
+    "wastagePct": 3,
+    "appliesTo": [
+      "railing"
+    ],
+    "durability": "10-12 years",
+    "maintenance": "Repaint every 4-5 years to stop rust.",
+    "quantity": {
+      "rule": "length",
+      "purchaseUnit": "running ft",
+      "note": "Priced per running foot, 3.5 ft high"
+    },
+    "texture": {
+      "pattern": "bars",
+      "tileSizeFt": 1.6,
+      "opacity": 1,
+      "secondaryColorHex": "#2B2D30"
+    }
+  }
+]
