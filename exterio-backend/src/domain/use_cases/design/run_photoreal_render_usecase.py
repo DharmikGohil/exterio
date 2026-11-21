@@ -8,8 +8,11 @@ from domain.interfaces.repos.design_repo import IDesignRepository
 from domain.interfaces.repos.material_repo import IMaterialRepository
 from domain.interfaces.repos.project_repo import IProjectRepository
 from domain.interfaces.services.file_storage_service import IFileStorageService
-from domain.interfaces.services.image_services import IPhotorealRenderService, IPreviewRenderService
-from domain.prompts.photoreal_render_prompt import build_render_prompt
+from domain.interfaces.services.image_services import (
+    IPhotorealRenderService,
+    IPreviewRenderService,
+    RenderFinish,
+)
 from domain.use_cases.design.render_design_preview_usecase import new_file_token
 
 GENERIC_FAILURE = "The photoreal render could not be completed. The instant preview is still valid."
@@ -18,7 +21,7 @@ GENERIC_FAILURE = "The photoreal render could not be completed. The instant prev
 class RunPhotorealRenderUseCase:
     """Background half of the photoreal render.
 
-    1. Send the instant preview to the image model with a realism-only prompt.
+    1. Send the instant preview and the finishes to the image model, which adds realism only.
     2. Paste the original pixels back everywhere outside the edited regions, so
        the building structure is preserved by construction, not by hope.
     """
@@ -61,9 +64,7 @@ class RunPhotorealRenderUseCase:
         assert project.image is not None
         assert design.preview_path is not None
         composite = self._storage.read(design.preview_path)
-        edited = self._photoreal.render(
-            composite, build_render_prompt(self._finishes(project, design))
-        )
+        edited = self._photoreal.render(composite, self._finishes(project, design))
         merged = self._preview.merge_with_original(
             self._storage.read(project.image.path),
             edited,
@@ -74,14 +75,15 @@ class RunPhotorealRenderUseCase:
         self._storage.save(path, merged)
         return path
 
-    def _finishes(self, project: Project, design: Design) -> list[str]:
-        finishes: dict[str, None] = {}
+    def _finishes(self, project: Project, design: Design) -> tuple[RenderFinish, ...]:
+        # A dict keeps the first-seen order while dropping repeats (seven walls, one paint).
+        finishes: dict[RenderFinish, None] = {}
         for region in project.regions:
             material = self._material_repo.find_by_id(design.assignments.get(region.id, ""))
             if material is not None:
                 surface = region.label.replace("_", " ")
-                finishes[f"{surface}: {material.name} ({material.description})"] = None
-        return list(finishes)
+                finishes[RenderFinish(surface, material.name, material.description)] = None
+        return tuple(finishes)
 
     def _finish(self, design: Design, path: str | None, error: str | None) -> None:
         current = self._design_repo.find_by_id(design.id)

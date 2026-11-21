@@ -431,8 +431,9 @@ def test_photoreal_render_runs_in_background_and_is_capped_per_user(ai):
     assert first.json()["renderStatus"] == "pending"
     assert done["renderStatus"] == "done"
     assert client.get(done["renderUrl"]).status_code == 200
-    assert "Do not change the shape" in fakes["photoreal"].prompts[0]
-    assert "pillar: Sandstone cladding - Ashlar" in fakes["photoreal"].prompts[0]
+    finishes = fakes["photoreal"].finishes[0]
+    assert ("pillar", "Sandstone cladding - Ashlar") in {(f.surface, f.material) for f in finishes}
+    assert len(finishes) == len(set(finishes))
     assert second.status_code == 200
     assert (third.status_code, third.json()["code"]) == (429, "DESIGN_004")
 

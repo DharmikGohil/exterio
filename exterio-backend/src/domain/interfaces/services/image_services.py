@@ -106,7 +106,19 @@ class IPreviewRenderService(ABC):
     def swatch(self, material: Material, size: int) -> bytes: ...
 
 
+@dataclass(frozen=True)
+class RenderFinish:
+    """One finish to make look real: which surface, and the material on it."""
+
+    surface: str
+    material: str
+    description: str
+
+
 class IPhotorealRenderService(ABC):
+    """Turns the instant preview into a realistic image. Each implementation writes the prompt
+    its own model understands, from the finishes applied."""
+
     @abstractmethod
     def is_available(self) -> bool: ...
 
@@ -114,7 +126,7 @@ class IPhotorealRenderService(ABC):
     def daily_limit(self) -> int: ...
 
     @abstractmethod
-    def render(self, composite: bytes, prompt: str) -> bytes: ...
+    def render(self, composite: bytes, finishes: tuple[RenderFinish, ...]) -> bytes: ...
 
 
 @dataclass(frozen=True)

@@ -14,6 +14,7 @@ from domain.interfaces.services.image_services import (
     DetectedRegion,
     IPhotorealRenderService,
     ISegmentationService,
+    RenderFinish,
 )
 from infrastructure.registry import build_registry
 
@@ -36,7 +37,7 @@ class FakeSegmentationService(ISegmentationService):
 class FakePhotorealRenderService(IPhotorealRenderService):
     def __init__(self, daily_limit: int = 2) -> None:
         self._daily_limit = daily_limit
-        self.prompts: list[str] = []
+        self.finishes: list[tuple[RenderFinish, ...]] = []
 
     def is_available(self) -> bool:
         return True
@@ -44,8 +45,8 @@ class FakePhotorealRenderService(IPhotorealRenderService):
     def daily_limit(self) -> int:
         return self._daily_limit
 
-    def render(self, composite: bytes, prompt: str) -> bytes:
-        self.prompts.append(prompt)
+    def render(self, composite: bytes, finishes: tuple[RenderFinish, ...]) -> bytes:
+        self.finishes.append(finishes)
         return composite
 
 

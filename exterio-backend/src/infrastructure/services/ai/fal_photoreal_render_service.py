@@ -1,7 +1,8 @@
 """Photoreal pass using an instruction-based image-edit model hosted on fal.ai."""
 
 from domain.errors.project_errors import AiProviderError
-from domain.interfaces.services.image_services import IPhotorealRenderService
+from domain.interfaces.services.image_services import IPhotorealRenderService, RenderFinish
+from domain.prompts.photoreal_render_prompt import build_render_prompt
 from infrastructure.services.ai.fal_client import FalClient, to_data_uri
 
 
@@ -17,11 +18,11 @@ class FalPhotorealRenderService(IPhotorealRenderService):
     def daily_limit(self) -> int:
         return self._daily_limit
 
-    def render(self, composite: bytes, prompt: str) -> bytes:
+    def render(self, composite: bytes, finishes: tuple[RenderFinish, ...]) -> bytes:
         result = self._client.run(
             self._model,
             {
-                "prompt": prompt,
+                "prompt": build_render_prompt(finishes),
                 "image_urls": [to_data_uri(composite)],
                 "num_images": 1,
                 "output_format": "jpeg",
