@@ -38,7 +38,7 @@ export function DesignCanvas({
       imageUrl={imageUrl}
       imageWidth={image.width}
       imageHeight={image.height}
-      toolbarAbove="none"
+      rowAbove
       label="Your house with the chosen finishes. Select a part to change its finish."
       onClick={() => onSelectRegion(null)}
     >

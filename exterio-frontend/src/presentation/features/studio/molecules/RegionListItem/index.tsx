@@ -37,32 +37,27 @@ export function RegionListItem({
 
   return (
     <li className={cn('group rounded-lg', isSelected && 'bg-stone-100')}>
-      <div className="flex h-9 items-center gap-1 pr-1">
+      <div className="flex h-11 items-center gap-1 pr-1">
         <button
           type="button"
           aria-expanded={isSelected}
           onClick={() => onSelect(region.id)}
           className={cn(
-            'flex h-9 min-w-0 flex-1 items-center gap-2.5 rounded-lg px-2 text-left text-sm transition-colors',
+            'flex h-11 min-w-0 flex-1 items-center gap-3 rounded-lg px-3 text-left text-[15px] transition-colors',
             'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500',
             !isSelected && 'hover:bg-stone-100'
           )}
         >
           <span
             aria-hidden
-            className="h-2.5 w-2.5 shrink-0 rounded-sm"
+            className="h-3 w-3 shrink-0 rounded-full"
             style={{ backgroundColor: color }}
           />
           <span
-            className={cn('truncate', isSelected ? 'font-medium text-stone-900' : 'text-stone-800')}
+            className={cn('truncate', isSelected ? 'font-medium text-stone-900' : 'text-stone-900')}
           >
             {region.name}
           </span>
-          {region.source === 'auto' && (
-            <span className="ml-auto font-mono text-[11px] text-stone-400" title="Found by the AI">
-              AI
-            </span>
-          )}
         </button>
         <Button
           variant="ghost"
@@ -79,7 +74,7 @@ export function RegionListItem({
       </div>
 
       {isSelected && (
-        <div className="space-y-3 pb-3 pl-7 pr-3 pt-1">
+        <div className="space-y-3 pb-3 pl-9 pr-3 pt-1">
           <FormField label="Name" htmlFor={nameId}>
             <Input
               id={nameId}

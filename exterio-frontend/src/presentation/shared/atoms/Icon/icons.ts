@@ -9,6 +9,7 @@ import {
   CircleCheck,
   Copy,
   Download,
+  Ellipsis,
   Eye,
   EyeOff,
   FileText,
@@ -82,6 +83,7 @@ export const ICONS = {
   user: User,
   warning: TriangleAlert,
   x: X,
+  more: Ellipsis,
   eye: Eye,
   'eye-off': EyeOff,
 } as const satisfies Record<string, LucideIcon>;

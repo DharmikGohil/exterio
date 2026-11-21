@@ -65,7 +65,7 @@ export function CompareSlider({ image, beforeUrl, afterUrl }: CompareSliderProps
     <div className="relative">
       <ImageCanvas
         ref={svgRef}
-        toolbarAbove="none"
+        rowAbove
         imageUrl={afterUrl}
         imageWidth={image.width}
         imageHeight={image.height}
@@ -120,10 +120,10 @@ export function CompareSlider({ image, beforeUrl, afterUrl }: CompareSliderProps
           />
         </g>
       </ImageCanvas>
-      <span className="pointer-events-none absolute left-3 top-3 rounded-md bg-ink/75 px-2 py-1 text-xs font-medium text-white">
+      <span className="pointer-events-none absolute bottom-3 left-3 rounded-md bg-ink/75 px-2 py-1 text-xs font-medium text-white">
         Before
       </span>
-      <span className="pointer-events-none absolute right-3 top-3 rounded-md bg-ink/75 px-2 py-1 text-xs font-medium text-white">
+      <span className="pointer-events-none absolute bottom-3 right-3 rounded-md bg-ink/75 px-2 py-1 text-xs font-medium text-white">
         After
       </span>
     </div>

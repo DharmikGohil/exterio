@@ -29,12 +29,14 @@ export function RegionListPanel({
   const groups = groupRegionsByLabel(regions);
 
   return (
-    <aside className="flex max-h-[max(25rem,calc(100dvh-21rem))] min-h-64 flex-col self-start overflow-hidden rounded-xl border border-stone-200 bg-white lg:sticky lg:top-20">
-      <div className="flex h-12 items-center justify-between border-b border-stone-200 px-4">
-        <h3 className="text-[15px] font-medium text-stone-900">Regions</h3>
-        {!isLoading && (
-          <span className="font-mono text-xs font-medium text-stone-500">{regions.length}</span>
-        )}
+    <aside className="flex max-h-[max(22rem,calc(100dvh-18.5rem))] min-h-64 flex-col self-start overflow-hidden rounded-2xl border border-stone-200 bg-white lg:sticky lg:top-6">
+      <div className="mx-4 flex h-16 items-center border-b border-stone-200 px-1">
+        <h3 className="text-xl font-medium text-stone-900">
+          Regions
+          {!isLoading && (
+            <span className="ml-1.5 text-sm font-normal text-stone-500">· {regions.length}</span>
+          )}
+        </h3>
       </div>
 
       {isLoading && (
@@ -57,12 +59,11 @@ export function RegionListPanel({
       )}
 
       {!isLoading && groups.length > 0 && (
-        <div className="overflow-y-auto px-2 pb-2">
+        <div className="overflow-y-auto px-2 pb-3">
           {groups.map((group) => (
             <section key={group.label} className="pt-3">
-              <h4 className="flex h-6 items-center justify-between px-2 text-xs text-stone-500">
-                {REGION_LABEL_META[group.label].plural}
-                <span className="font-mono">{group.regions.length}</span>
+              <h4 className="flex h-7 items-center px-3 text-xs font-medium uppercase tracking-[0.08em] text-stone-500">
+                {REGION_LABEL_META[group.label].plural} · {group.regions.length}
               </h4>
               <ul className="space-y-0.5">
                 {group.regions.map((region) => (

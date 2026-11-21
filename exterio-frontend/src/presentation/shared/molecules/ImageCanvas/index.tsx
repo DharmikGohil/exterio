@@ -10,10 +10,10 @@ export interface ImageCanvasProps extends Omit<SVGProps<SVGSVGElement>, 'viewBox
   /** Accessible description of the canvas. */
   label: string;
   /**
-   * What sits between the step title and the photo in its column: a row of tools (`toolbar`,
-   * the default) or nothing (`none`). The photo grows into the room a missing toolbar leaves.
+   * `true` when a row of controls sits between the step title and the photo (the Design step's
+   * design picker). The photo gives up that row's height so the step bar stays in view.
    */
-  toolbarAbove?: 'toolbar' | 'none';
+  rowAbove?: boolean;
 }
 
 /**
@@ -24,16 +24,7 @@ export interface ImageCanvasProps extends Omit<SVGProps<SVGSVGElement>, 'viewBox
  */
 export const ImageCanvas = forwardRef<SVGSVGElement, ImageCanvasProps>(
   (
-    {
-      imageUrl,
-      imageWidth,
-      imageHeight,
-      label,
-      toolbarAbove = 'toolbar',
-      className,
-      children,
-      ...rest
-    },
+    { imageUrl, imageWidth, imageHeight, label, rowAbove = false, className, children, ...rest },
     ref
   ) => (
     <svg
@@ -42,10 +33,10 @@ export const ImageCanvas = forwardRef<SVGSVGElement, ImageCanvasProps>(
       role="group"
       aria-label={label}
       className={cn(
-        'block h-auto w-full select-none rounded-xl bg-stone-100',
-        toolbarAbove === 'toolbar'
-          ? 'max-h-[max(22rem,calc(100dvh-24rem))]'
-          : 'max-h-[max(22rem,calc(100dvh-21rem))]',
+        'block h-auto w-full select-none rounded-2xl bg-stone-100',
+        rowAbove
+          ? 'max-h-[max(22rem,calc(100dvh-22rem))]'
+          : 'max-h-[max(22rem,calc(100dvh-18.5rem))]',
         className
       )}
       {...rest}
