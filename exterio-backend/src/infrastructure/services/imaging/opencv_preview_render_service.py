@@ -5,8 +5,10 @@ For each material the pipeline is:
 1. Tile its texture at real-world size on a flat, front-on canvas.
 2. Warp that canvas back into the photo with the inverse facade homography,
    so courses and joints follow the wall's perspective.
-3. Multiply by the photo's own low-frequency lightness, so existing shadows
-   (under a balcony, beside a pillar) survive the change of finish.
+3. Light it with the photo's own lightness: soft shadows (under a balcony, beside a pillar)
+   always, and the fine detail (gate bars, plants, cracks, the wall's own texture) in a measure
+   that depends on the finish. Paint keeps all of it, as real repainting does; stone and tiles
+   keep part, so their own pattern leads but what stands in front of them stays visible.
 4. Blend inside the region mask only, with a soft edge.
 
 Pixels outside the chosen regions are never touched, which is how the original
@@ -17,7 +19,7 @@ import cv2
 import numpy as np
 from numpy.typing import NDArray
 
-from domain.entities.material_entity import Material, MaterialUnit
+from domain.entities.material_entity import Material, MaterialCategory, MaterialUnit
 from domain.entities.region_entity import Region
 from domain.interfaces.services.image_services import IPreviewRenderService, PreviewRequest
 from infrastructure.services.imaging.image_codec import (
@@ -36,6 +38,19 @@ MAX_TILE_PX = 1024
 MAX_CANVAS_PX = 4096
 SHADE_MIN = 0.45
 SHADE_MAX = 1.35
+# Bounds for the fine-detail ratio, so a pure-black bar or a specular glint cannot blow out.
+DETAIL_MIN = 0.2
+DETAIL_MAX = 1.8
+# How much of the photo's fine detail shows through each kind of finish (0 = none, 1 = all).
+DETAIL_WEIGHT_BY_CATEGORY: dict[MaterialCategory, float] = {
+    MaterialCategory.PAINT: 1.0,
+    MaterialCategory.TEXTURE: 0.85,
+    MaterialCategory.STONE: 0.4,
+    MaterialCategory.TILE: 0.4,
+    MaterialCategory.PANEL: 0.5,
+    MaterialCategory.GLASS_RAILING: 0.6,
+    MaterialCategory.METAL_RAILING: 0.6,
+}
 SHADE_BLUR_RATIO = 0.006
 EDGE_FEATHER_PX = 3
 MERGE_DILATE_PX = 5
@@ -60,7 +75,9 @@ class OpenCvPreviewRenderService(IPreviewRenderService):
             if not mask.any():
                 continue
             texture = self._texture_in_photo(material, request, width, height)
-            relative = self._relative_shade(lightness, mask, sigma)
+            relative = self._relative_shade(
+                lightness, mask, sigma, DETAIL_WEIGHT_BY_CATEGORY.get(material.category, 1.0)
+            )
             lit = np.clip(texture[:, :, :3] * relative[..., None], 0, 1)
             alpha = self._feather(mask) * texture[:, :, 3] * material.texture.opacity
             output = output * (1 - alpha[..., None]) + lit * alpha[..., None]
@@ -112,20 +129,26 @@ class OpenCvPreviewRenderService(IPreviewRenderService):
 
     @staticmethod
     def _relative_shade(
-        lightness: NDArray[np.float32], mask: NDArray[np.bool_], sigma: float
+        lightness: NDArray[np.float32],
+        mask: NDArray[np.bool_],
+        sigma: float,
+        detail_weight: float,
     ) -> NDArray[np.float32]:
         """How much lighter or darker each pixel is than the surface's typical lightness.
 
-        The blur keeps soft shadows and drops the old surface texture. It is
-        normalised by the blurred mask so that only pixels inside the region
-        contribute; otherwise dark windows would bleed a halo onto the wall.
+        Two parts multiply: the soft shading (a blur, normalised by the blurred mask so that only
+        pixels inside the region contribute, otherwise dark windows would bleed a halo onto the
+        wall) and the fine detail (each pixel against that soft shading), raised to
+        `detail_weight`. With a weight of 1 the result is the photo's own relative lightness.
         """
         weights = mask.astype(np.float32)
         blurred = cv2.GaussianBlur(lightness * weights, (0, 0), sigma)
         coverage = cv2.GaussianBlur(weights, (0, 0), sigma)
         local = np.where(coverage > 1e-3, blurred / np.maximum(coverage, 1e-3), 1.0)
         typical = max(float(np.median(lightness[mask])), 1e-3)
-        return np.clip(local / typical, SHADE_MIN, SHADE_MAX).astype(np.float32)
+        shading = np.clip(local / typical, SHADE_MIN, SHADE_MAX)
+        detail = np.clip(lightness / np.maximum(local, 1e-3), DETAIL_MIN, DETAIL_MAX)
+        return (shading * detail**detail_weight).astype(np.float32)
 
     @staticmethod
     def _feather(mask: NDArray[np.bool_]) -> NDArray[np.float32]:
