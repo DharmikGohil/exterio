@@ -21,6 +21,9 @@ class RegionAreaSchema(CamelModel):
     is_override: bool
     material_id: str | None
     material_name: str | None
+    material_cost: float
+    labour_cost: float
+    total_cost: float
 
 
 class SurfaceTotalSchema(CamelModel):

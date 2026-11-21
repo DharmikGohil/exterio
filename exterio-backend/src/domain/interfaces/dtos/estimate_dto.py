@@ -24,6 +24,10 @@ class RegionAreaDTO:
     is_override: bool
     material_id: str | None = None
     material_name: str | None = None
+    # This part's share of its material line (zero when it has no finish).
+    material_cost: float = 0.0
+    labour_cost: float = 0.0
+    total_cost: float = 0.0
 
 
 @dataclass(frozen=True)

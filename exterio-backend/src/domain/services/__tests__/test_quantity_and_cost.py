@@ -4,7 +4,12 @@ from domain.entities.material_entity import MaterialCategory, MaterialUnit, Purc
 from domain.entities.region_entity import RegionLabel
 from domain.interfaces.dtos.estimate_dto import RegionAreaDTO
 from domain.services.__tests__.builders import build_material, build_override
-from domain.services.cost_calculator import grand_totals, price_lines, total_by_category
+from domain.services.cost_calculator import (
+    allocate_to_regions,
+    grand_totals,
+    price_lines,
+    total_by_category,
+)
 from domain.services.quantity_calculator import build_quantity_lines
 
 
@@ -119,3 +124,52 @@ def test_totals_by_category_and_grand_total_with_band():
     assert actual_totals.grand_total == 5600.0
     assert actual_totals.low_estimate == 5040.0
     assert actual_totals.high_estimate == 6160.0
+
+
+def _priced(areas, assignments, materials):
+    lines = price_lines(build_quantity_lines(areas, assignments, materials, {}), {})
+    return lines, allocate_to_regions(areas, assignments, materials, lines)
+
+
+def test_each_part_gets_its_share_of_the_material_line():
+    input_materials = {"paint": build_material("paint")}
+    input_areas = [area("w1", 300.0), area("w2", 100.0)]
+
+    lines, actual = _priced(input_areas, {"w1": "paint", "w2": "paint"}, input_materials)
+
+    by_id = {item.region_id: item for item in actual}
+    assert by_id["w1"].total_cost == pytest.approx(lines[0].total * 0.75, abs=0.01)
+    assert by_id["w2"].total_cost == pytest.approx(lines[0].total * 0.25, abs=0.01)
+    assert by_id["w1"].material_cost + by_id["w1"].labour_cost == pytest.approx(
+        by_id["w1"].total_cost, abs=0.02
+    )
+
+
+def test_running_feet_materials_are_shared_by_length():
+    railing = build_material("rail", unit=MaterialUnit.RFT, rule=PurchaseRule.LENGTH)
+    input_areas = [area("r1", 50.0, length_ft=10.0), area("r2", 5.0, length_ft=30.0)]
+
+    lines, actual = _priced(input_areas, {"r1": "rail", "r2": "rail"}, {"rail": railing})
+
+    by_id = {item.region_id: item for item in actual}
+    assert by_id["r2"].total_cost == pytest.approx(lines[0].total * 0.75, abs=0.01)
+
+
+def test_parts_without_a_finish_cost_nothing():
+    _, actual = _priced(
+        [area("w1", 100.0), area("window", 20.0)], {"w1": "paint"}, {"paint": build_material()}
+    )
+
+    window = next(item for item in actual if item.region_id == "window")
+    assert (window.material_cost, window.labour_cost, window.total_cost) == (0.0, 0.0, 0.0)
+
+
+def test_parts_add_up_to_the_grand_total():
+    input_materials = {"paint": build_material("paint"), "stone": build_material("stone")}
+    input_areas = [area("w1", 237.0), area("w2", 91.5), area("p1", 33.3), area("p2", 36.7)]
+    assignments = {"w1": "paint", "w2": "paint", "p1": "stone", "p2": "stone"}
+
+    lines, actual = _priced(input_areas, assignments, input_materials)
+
+    total = grand_totals(lines, 10.0).grand_total
+    assert sum(item.total_cost for item in actual) == pytest.approx(total, abs=0.05)

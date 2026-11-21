@@ -9,7 +9,12 @@ from domain.entities.scale_reference_entity import ScaleReference
 from domain.interfaces.dtos.estimate_dto import EstimateDTO, RegionAreaDTO, ResolvedScaleDTO
 from domain.interfaces.dtos.measurement_dto import RectifiedSurface
 from domain.services.area_calculator import compute_region_areas, summarise_surfaces
-from domain.services.cost_calculator import grand_totals, price_lines, total_by_category
+from domain.services.cost_calculator import (
+    allocate_to_regions,
+    grand_totals,
+    price_lines,
+    total_by_category,
+)
 from domain.services.quantity_calculator import build_quantity_lines
 from domain.services.scale_resolver import resolve_scale
 
@@ -44,7 +49,14 @@ def build_estimate(
         design_id=design.id,
         currency=CURRENCY,
         scale=scale,
-        regions=tuple(_with_material(area, design, materials) for area in areas),
+        regions=tuple(
+            allocate_to_regions(
+                [_with_material(area, design, materials) for area in areas],
+                design.assignments,
+                materials,
+                lines,
+            )
+        ),
         surfaces=tuple(summarise_surfaces(areas)),
         lines=tuple(lines),
         categories=tuple(total_by_category(lines)),
