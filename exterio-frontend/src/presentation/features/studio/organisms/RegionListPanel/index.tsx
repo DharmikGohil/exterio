@@ -29,7 +29,7 @@ export function RegionListPanel({
   const groups = groupRegionsByLabel(regions);
 
   return (
-    <aside className="flex max-h-[calc(100dvh-14rem)] min-h-64 flex-col self-start overflow-hidden rounded-xl border border-stone-200 bg-white lg:sticky lg:top-20">
+    <aside className="flex max-h-[max(25rem,calc(100dvh-21rem))] min-h-64 flex-col self-start overflow-hidden rounded-xl border border-stone-200 bg-white lg:sticky lg:top-20">
       <div className="flex h-12 items-center justify-between border-b border-stone-200 px-4">
         <h3 className="text-[15px] font-medium text-stone-900">Regions</h3>
         {!isLoading && (

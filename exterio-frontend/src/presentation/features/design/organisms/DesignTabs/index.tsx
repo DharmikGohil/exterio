@@ -20,7 +20,7 @@ export function DesignTabs({ project, activeDesign, onSelect }: DesignTabsProps)
   const { dialog } = manager;
 
   return (
-    <div className="flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-stone-200 pb-3">
+    <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-2">
       <div
         role="tablist"
         aria-label="Design options"

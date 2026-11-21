@@ -65,6 +65,7 @@ export function CompareSlider({ image, beforeUrl, afterUrl }: CompareSliderProps
     <div className="relative">
       <ImageCanvas
         ref={svgRef}
+        toolbarAbove="none"
         imageUrl={afterUrl}
         imageWidth={image.width}
         imageHeight={image.height}

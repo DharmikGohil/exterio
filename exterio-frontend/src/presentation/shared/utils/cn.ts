@@ -10,7 +10,7 @@ const twMerge = extendTailwindMerge({
   extend: {
     classGroups: {
       'bg-image': ['bg-cutting-mat', 'bg-paper-grid'],
-      'bg-size': ['bg-mat-grid'],
+      'bg-size': ['bg-mat-grid', 'bg-grid-60'],
     },
   },
 });

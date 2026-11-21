@@ -58,7 +58,7 @@ export function MaterialPanel({
 
   if (!selectedRegion) {
     return (
-      <aside className="flex max-h-[calc(100dvh-14rem)] min-h-64 flex-col self-start overflow-hidden rounded-xl border border-stone-200 bg-white lg:sticky lg:top-20">
+      <aside className="flex max-h-[max(22rem,calc(100dvh-21rem))] min-h-64 flex-col self-start overflow-hidden rounded-xl border border-stone-200 bg-white lg:sticky lg:top-20">
         <div className="flex h-12 items-center justify-between border-b border-stone-200 px-4">
           <h3 className="text-[15px] font-medium text-stone-900">Parts of the house</h3>
           <span className="font-mono text-xs font-medium text-stone-500">{regions.length}</span>
@@ -133,7 +133,7 @@ export function MaterialPanel({
   const groups = groupMaterialsForLabel(materials, selectedRegion.label);
 
   return (
-    <aside className="flex max-h-[calc(100dvh-14rem)] min-h-64 flex-col self-start overflow-hidden rounded-xl border border-stone-200 bg-white lg:sticky lg:top-20">
+    <aside className="flex max-h-[max(22rem,calc(100dvh-21rem))] min-h-64 flex-col self-start overflow-hidden rounded-xl border border-stone-200 bg-white lg:sticky lg:top-20">
       <div className="space-y-3 border-b border-stone-200 px-4 py-3">
         <Button variant="link" size="inline" icon="arrow-left" onClick={() => onSelectRegion(null)}>
           All parts

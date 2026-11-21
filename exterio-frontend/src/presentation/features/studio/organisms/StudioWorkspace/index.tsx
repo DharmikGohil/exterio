@@ -58,7 +58,7 @@ export function StudioWorkspace({ project }: StudioWorkspaceProps) {
           />
         }
       />
-      <div className="flex w-full flex-1 flex-col pt-6">
+      <div className="flex w-full flex-1 flex-col pt-4">
         <StepContent step={step} project={project} image={project.image} onStepChange={goToStep} />
       </div>
     </>

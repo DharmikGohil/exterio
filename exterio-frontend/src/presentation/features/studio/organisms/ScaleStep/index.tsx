@@ -20,7 +20,7 @@ export function ScaleStep({ project, image, onStepChange }: ScaleStepProps) {
   const doorRegions = project.regions.filter((region) => region.label === 'door');
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       <StepHeader
         title="Set the real-world size"
         description="A photo only knows pixels. One real measurement turns your regions into square feet, and square feet into a cost."

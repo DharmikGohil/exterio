@@ -53,7 +53,7 @@ export function DesignStep({ project, image, onStepChange }: DesignStepProps) {
 
   if (!activeDesign) {
     return (
-      <div className="space-y-5">
+      <div className="space-y-4">
         <StepHeader title={TITLE} description={DESCRIPTION} />
         {defaultDesignError ? (
           <ErrorState
@@ -130,7 +130,7 @@ function DesignWorkspace({
   };
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       <StepHeader
         title={TITLE}
         description={DESCRIPTION}
@@ -144,7 +144,29 @@ function DesignWorkspace({
         }
       />
 
-      <DesignTabs project={project} activeDesign={design} onSelect={onSelectDesign} />
+      {/* One row: the design options on the left, how the picture is shown on the right. */}
+      <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
+        <DesignTabs project={project} activeDesign={design} onSelect={onSelectDesign} />
+        <div className="flex flex-wrap items-center gap-2">
+          <Tabs
+            items={VIEW_TABS}
+            value={view.viewMode}
+            onValueChange={view.setViewMode}
+            variant="pill"
+            label="Canvas view"
+          />
+          {view.viewMode !== 'compare' && (
+            <NameTagToggle isOn={nameTags.isOn} onToggle={nameTags.toggle} />
+          )}
+          <Tabs
+            items={sourceTabs}
+            value={showsRender ? 'render' : 'preview'}
+            onValueChange={view.setImageSource}
+            variant="pill"
+            label="Picture type"
+          />
+        </div>
+      </div>
 
       {project.regions.length === 0 && (
         <Alert
@@ -162,28 +184,6 @@ function DesignWorkspace({
 
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_24rem]">
         <div className="min-w-0 space-y-3">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <Tabs
-              items={VIEW_TABS}
-              value={view.viewMode}
-              onValueChange={view.setViewMode}
-              variant="pill"
-              label="Canvas view"
-            />
-            <div className="flex flex-wrap items-center gap-2">
-              {view.viewMode !== 'compare' && (
-                <NameTagToggle isOn={nameTags.isOn} onToggle={nameTags.toggle} />
-              )}
-              <Tabs
-                items={sourceTabs}
-                value={showsRender ? 'render' : 'preview'}
-                onValueChange={view.setImageSource}
-                variant="pill"
-                label="Picture type"
-              />
-            </div>
-          </div>
-
           <div className="relative">
             {view.viewMode === 'compare' ? (
               <CompareSlider image={image} beforeUrl={originalUrl} afterUrl={displayedUrl} />

@@ -75,16 +75,16 @@ const config: Config = {
           'linear-gradient(to right, rgb(223 233 198 / 0.08) 1px, transparent 1px)',
           'linear-gradient(to bottom, rgb(223 233 198 / 0.08) 1px, transparent 1px)',
         ].join(', '),
-        // The page: a drafting grid so faint it reads as paper texture, never as a pattern.
+        // The page: one faint 60px drafting grid, felt rather than seen. No fine lines: they
+        // made the page busier than the work on it.
         'paper-grid': [
-          'linear-gradient(to right, rgb(20 23 20 / 0.055) 1px, transparent 1px)',
-          'linear-gradient(to bottom, rgb(20 23 20 / 0.055) 1px, transparent 1px)',
-          'linear-gradient(to right, rgb(20 23 20 / 0.025) 1px, transparent 1px)',
-          'linear-gradient(to bottom, rgb(20 23 20 / 0.025) 1px, transparent 1px)',
+          'linear-gradient(to right, rgb(20 23 20 / 0.035) 1px, transparent 1px)',
+          'linear-gradient(to bottom, rgb(20 23 20 / 0.035) 1px, transparent 1px)',
         ].join(', '),
       },
       backgroundSize: {
         'mat-grid': '60px 60px, 60px 60px, 12px 12px, 12px 12px',
+        'grid-60': '60px 60px',
       },
       transitionTimingFunction: {
         DEFAULT: 'cubic-bezier(0.22, 1, 0.36, 1)',

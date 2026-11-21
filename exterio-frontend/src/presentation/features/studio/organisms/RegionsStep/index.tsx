@@ -46,7 +46,7 @@ export function RegionsStep({ project, image, onStepChange }: RegionsStepProps) 
   );
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       <StepHeader
         title="Mark the parts of the house"
         description="Each coloured shape is one part that can get its own finish. Let the AI find them, then correct anything it got wrong or missed."
