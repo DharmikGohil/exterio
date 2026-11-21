@@ -5,6 +5,7 @@ import {
   formatInr,
   formatNumber,
   formatUnit,
+  initials,
   pluralise,
 } from '@/presentation/shared/utils/format';
 
@@ -34,5 +35,12 @@ describe('format', () => {
   it('returns an empty string for an invalid date', () => {
     expect(formatDate('not a date')).toBe('');
     expect(formatDate('2026-11-21T10:00:00Z')).toBe('21 Nov 2026');
+  });
+
+  it('turns a name into avatar initials', () => {
+    expect(initials('Demo reviewer')).toBe('DR');
+    expect(initials('  asha  ')).toBe('A');
+    expect(initials('Asha Kiran Patel')).toBe('AK');
+    expect(initials('')).toBe('?');
   });
 });

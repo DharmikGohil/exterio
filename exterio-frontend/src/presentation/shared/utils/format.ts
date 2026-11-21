@@ -38,3 +38,14 @@ export function formatUnit(unit: string): string {
 export function pluralise(count: number, singular: string, plural = `${singular}s`): string {
   return `${count} ${count === 1 ? singular : plural}`;
 }
+
+/** Up to two capital letters for an avatar: "Demo reviewer" → "DR", "asha" → "A". */
+export function initials(name: string): string {
+  const letters = name
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((word) => word[0]?.toUpperCase() ?? '');
+  return letters.join('') || '?';
+}
