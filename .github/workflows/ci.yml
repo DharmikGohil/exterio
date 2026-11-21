@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: renovation-backend
+        working-directory: exterio-backend
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
@@ -22,7 +22,7 @@ jobs:
       - name: Type check
         run: uv run mypy src
       - name: Architecture boundaries
-        working-directory: renovation-backend/src
+        working-directory: exterio-backend/src
         run: uv run lint-imports --config ../pyproject.toml
       - name: Tests
         run: uv run pytest
@@ -31,14 +31,14 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: renovation-ui
+        working-directory: exterio-frontend
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: renovation-ui/package-lock.json
+          cache-dependency-path: exterio-frontend/package-lock.json
       - run: npm ci
       - run: npm run typecheck
       - run: npm run lint

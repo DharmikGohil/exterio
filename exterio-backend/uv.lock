@@ -830,7 +830,7 @@ wheels = [
 ]
 
 [[package]]
-name = "renovation-backend"
+name = "exterio-backend"
 version = "1.0.0"
 source = { virtual = "." }
 dependencies = [

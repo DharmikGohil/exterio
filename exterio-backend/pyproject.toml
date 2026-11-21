@@ -1,5 +1,5 @@
 [project]
-name = "renovation-backend"
+name = "exterio-backend"
 version = "1.0.0"
 description = "API for the AI exterior house renovation and cost estimation platform"
 requires-python = ">=3.12,<3.13"

@@ -1,7 +1,7 @@
 # Design System
 
 How the interface looks and why. The tokens live in
-[`renovation-ui/tailwind.config.ts`](../renovation-ui/tailwind.config.ts); this file explains how to use them.
+[`exterio-frontend/tailwind.config.ts`](../exterio-frontend/tailwind.config.ts); this file explains how to use them.
 
 ## Direction
 
@@ -83,7 +83,7 @@ Wherever the interface states a measured or estimated quantity, it can draw it a
 | Hero headline (sign-in) | Nohemi | 46px, 500 |
 | Big figure (estimate total) | Nohemi | 40px, 400 |
 
-Nohemi (Befonts, commercial use allowed; licence in `renovation-ui/public/fonts`) ships in two
+Nohemi (Befonts, commercial use allowed; licence in `exterio-frontend/public/fonts`) ships in two
 weights, Regular and Medium. `font-semibold` and `font-bold` map to Medium rather than a faked
 bold. Sentence case everywhere, no uppercase tracked labels, no italic for emphasis.
 

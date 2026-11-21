@@ -1,4 +1,4 @@
-# Exterio UI
+# Exterio Frontend
 
 Web client for the exterior house renovation and cost estimation API. A homeowner uploads a
 photo of their house, corrects the detected parts (walls, windows, pillars...), sets a

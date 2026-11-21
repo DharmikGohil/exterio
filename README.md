@@ -48,8 +48,8 @@ structure is preserved by construction.
 ## Repository layout
 
 ```
-renovation-backend/   Python 3.12, FastAPI — API, measurement, costing, PDF
-renovation-ui/        React, TypeScript, Vite — the five-step studio
+exterio-backend/   Python 3.12, FastAPI — API, measurement, costing, PDF
+exterio-frontend/        React, TypeScript, Vite — the five-step studio
 docs/                 Architecture, workflow, estimation, limitations, API
 ```
 
@@ -62,11 +62,11 @@ in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). The backend's layer rules are e
 Requirements: [uv](https://docs.astral.sh/uv/) and Node 22 or newer.
 
 ```bash
-cd renovation-backend && cp .env.example .env && uv sync && make dev
+cd exterio-backend && cp .env.example .env && uv sync && make dev
 ```
 
 ```bash
-cd renovation-ui && cp .env.example .env && npm install && npm run dev
+cd exterio-frontend && cp .env.example .env && npm install && npm run dev
 ```
 
 Open http://localhost:5173 and press **Sign in with the demo account** (`demo@example.com` /
@@ -76,7 +76,7 @@ API docs are at http://localhost:8000/api/docs.
 
 No API keys are needed to run the full flow. Adding them switches on the AI features:
 
-| Variable (in `renovation-backend/.env`) | Enables |
+| Variable (in `exterio-backend/.env`) | Enables |
 |---|---|
 | `FAL_KEY` | Automatic region detection and the photoreal render |
 | `ANTHROPIC_API_KEY` | Vision check on uploaded photos, the material advisor, and region detection when `FAL_KEY` is not set |
@@ -85,14 +85,14 @@ No API keys are needed to run the full flow. Adding them switches on the AI feat
 ## Quality checks
 
 ```bash
-cd renovation-backend && make check
+cd exterio-backend && make check
 ```
 
 This runs the formatter and linter (ruff), strict type checking (mypy), the architecture boundary
 check (import-linter) and the tests (pytest).
 
 ```bash
-cd renovation-ui && npm run typecheck && npm run lint && npm run test:ci && npm run build
+cd exterio-frontend && npm run typecheck && npm run lint && npm run test:ci && npm run build
 ```
 
 The frontend tests (Vitest and Testing Library) cover the domain rules for a valid scale, the
@@ -108,10 +108,10 @@ The backend tests include:
 
 ## Deployment
 
-- **API:** build `renovation-backend/Dockerfile`. Set `JWT_SECRET`, `CORS_ORIGINS` and the optional
+- **API:** build `exterio-backend/Dockerfile`. Set `JWT_SECRET`, `CORS_ORIGINS` and the optional
   AI keys, and mount a persistent volume at `/app/data`. Set `DATABASE_URL` to use Postgres instead
   of SQLite.
-- **Web:** deploy `renovation-ui` as a static site (a `vercel.json` is included) with
+- **Web:** deploy `exterio-frontend` as a static site (a `vercel.json` is included) with
   `VITE_API_BASE_URL` set to the API's public URL.
 
 ## Scope and assumptions
