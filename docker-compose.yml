@@ -1,0 +1,17 @@
+# Runs the API with a persistent data volume. The frontend runs with `npm run dev` in renovation-ui.
+services:
+  api:
+    build: ./renovation-backend
+    ports:
+      - "8000:8000"
+    env_file:
+      - path: ./renovation-backend/.env
+        required: false
+    environment:
+      APP_ENV: development
+      CORS_ORIGINS: http://localhost:5173
+    volumes:
+      - api-data:/app/data
+
+volumes:
+  api-data:

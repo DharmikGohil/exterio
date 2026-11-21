@@ -1,0 +1,13 @@
+node_modules/
+dist/
+.venv/
+data/
+__pycache__/
+.env
+.env.local
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.import_linter_cache/
+.DS_Store
+.vercel
