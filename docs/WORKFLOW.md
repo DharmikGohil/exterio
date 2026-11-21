@@ -40,6 +40,8 @@ flowchart TD
   Create account never moves the tabs, and the password fields have a show/hide button. Create account asks for the
   password twice and says as soon as the two differ.
 - **A sample house.** The whole flow can be seen in under a minute without owning a suitable photo.
+- **No feature that cannot work is shown.** When the server has no image model, the photoreal
+  render button and tab are hidden rather than shown disabled with an apology.
 - **Nothing is a dead end.** If detection misses a pillar, it can be drawn. If no measurement is
   known, a door or floor count still gives an estimate, clearly marked as rougher.
 - **Instant feedback first, AI second.** Trying a material is immediate and free. The slower,

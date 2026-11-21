@@ -210,9 +210,21 @@ Sources: [Asian Paints](https://www.asianpaints.com/blogs/painting-cost-per-sq-f
 The instant preview reuses the measurement from steps 2 and 3. Each material's texture is tiled at
 its real size (a 2 ft tile is drawn 2 ft wide at the resolved scale), laid out on the rectified
 canvas, and warped back into the photo with the inverse homography, so joints and courses follow
-the wall's perspective. It is then multiplied by the photo's own low-frequency lightness so
-existing shadows survive, and blended inside the region mask only.
+the wall's perspective. It is then lit with the photo's own lightness, in two parts:
 
-The photoreal render starts from that preview. The image model is asked to improve realism only,
-and afterwards the original pixels are pasted back everywhere outside the edited regions. Structure
-is preserved by construction rather than by trusting the model.
+- **Soft shading** (a blur of the surface's lightness) always carries over, so shadows under a
+  balcony or beside a pillar survive the change of finish.
+- **Fine detail** (each pixel against that soft shading: gate bars, plants, cables, cracks, the
+  old surface's grain) carries over by finish. Paint keeps all of it, as real repainting does;
+  texture coatings keep most; stone, tiles and panels keep part, so their own pattern leads but
+  whatever stands in front of the wall stays visible.
+
+The result is blended inside the region mask only. An earlier version used the soft shading alone,
+which turned a painted gate into a flat smudge with no bars; a regression test now paints a
+barred gate and checks the bars are still there.
+
+The photoreal render starts from that preview. An SDXL img2img pass at strength 0.30, locked to
+the preview's edges by a Canny ControlNet, adds realistic light and texture to the finishes, and
+afterwards the original pixels are pasted back everywhere outside the edited regions. Structure is
+preserved by construction rather than by trusting the model. The strength was chosen on a real
+photo: 0.42 drew tile lines into plain paint, and 0.25 or less changed nothing visible.

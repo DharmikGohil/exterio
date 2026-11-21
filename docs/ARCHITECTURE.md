@@ -33,7 +33,7 @@ flowchart LR
   I --> DB[(SQLite / Postgres)]
   I --> FS[(File storage)]
   I -->|region detection| SAM[SAM 3 on fal.ai]
-  I -->|photoreal render| EDIT[Image-edit model on fal.ai]
+  I -->|photoreal render| EDIT[SDXL + ControlNet on Modal, or an image-edit model on fal.ai]
   I -->|photo check, advisor| LLM[Claude]
 ```
 
@@ -44,7 +44,7 @@ flowchart LR
 | Imaging | OpenCV, NumPy | Photo quality gate, perspective removal, pixel measurement, material compositing |
 | Reporting | pandas, ReportLab | Bill of quantities tables and the PDF |
 | Region detection | SAM 3 (text-prompted segmentation) via fal.ai, or a vision LLM when no segmentation model is configured | One polygon per building component |
-| Photoreal render | Instruction-based image-edit model via fal.ai | Makes the composited finishes look real |
+| Photoreal render | SDXL img2img with a Canny ControlNet on a Modal GPU (`exterio-render/`), or an instruction-based image-edit model via fal.ai | Makes the composited finishes look real |
 | Language model | Claude via the Anthropic SDK | "Is this a usable house photo?" check and the material advisor |
 
 Every AI feature is optional. Without keys the API reports the capability as off, the UI hides or
@@ -112,7 +112,7 @@ and one fake used in tests:
 | Interface | Production implementation | Why it is swappable |
 |---|---|---|
 | `ISegmentationService` | `FalSam3SegmentationService`, then `AnthropicVisionSegmentationService`, chosen by `FallbackSegmentationService` | Model names and prices change often; the first configured provider is used |
-| `IPhotorealRenderService` | `FalPhotorealRenderService` | Same; the model id is an environment variable |
+| `IPhotorealRenderService` | `ModalPhotorealRenderService` when `MODAL_RENDER_URL` is set, else `FalPhotorealRenderService` | Each one writes the prompt its model understands from the same list of finishes: a short description for SDXL, a full brief for an edit model |
 | `IVisionCheckService` | `AnthropicVisionCheckService` | Any vision LLM can answer the same structured question |
 | `IAdvisorLanguageModel` | `AnthropicAdvisorLanguageModel` | Generation half of the advisor |
 | `IKnowledgeRepository` | `TfidfKnowledgeRepository` | Retrieval half; the seam for an embedding model with pgvector |

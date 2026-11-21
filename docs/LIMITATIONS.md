@@ -48,7 +48,10 @@ Two providers implement detection; the first one configured is used.
   of what is physically behind a region.
 - **Replacing a railing does not remove the old one.** A transparent material such as glass is
   blended over whatever was there.
-- **The photoreal render depends on an external image model.** Its realism varies between runs, and
+- **The photoreal render's first run after an idle spell is slow.** The Modal renderer shuts down
+  after 5 idle minutes. The first render after that took about 30 seconds in testing while the
+  GPU starts and loads the model; renders while it is warm took 7–8 seconds.
+- **The photoreal render depends on an image model.** Its realism varies between runs, and
   it can subtly restyle a surface it was asked only to relight. Geometry outside the edited regions
   is protected by pasting the original pixels back, but *inside* an edited region the model's
   output is used as returned.
