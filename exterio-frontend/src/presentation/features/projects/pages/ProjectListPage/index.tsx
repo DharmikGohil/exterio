@@ -40,6 +40,7 @@ export function ProjectListPage() {
         isLoading={page.isLoading}
         error={page.error}
         onRetry={page.refetch}
+        onRename={page.requestRename}
         onDelete={page.requestDelete}
         onCreate={page.openCreateDialog}
         onCreateSample={page.createSampleProject}
@@ -57,6 +58,18 @@ export function ProjectListPage() {
         error={page.createErrorMessage}
         onSubmit={page.createProject}
         onClose={page.closeCreateDialog}
+      />
+
+      <NameDialog
+        open={page.projectToRename !== null}
+        title="Rename project"
+        fieldLabel="Project name"
+        initialValue={page.projectToRename?.name ?? ''}
+        submitLabel="Save name"
+        isSubmitting={page.isRenaming}
+        error={page.renameErrorMessage}
+        onSubmit={page.renameProject}
+        onClose={page.cancelRename}
       />
 
       <ConfirmDialog

@@ -18,6 +18,7 @@ export function useProjectListPage() {
   const actions = useProjectListActions();
   const createDialog = useDisclosure();
   const [projectToDelete, setProjectToDelete] = useState<ProjectSummary | null>(null);
+  const [projectToRename, setProjectToRename] = useState<ProjectSummary | null>(null);
 
   const openCreateDialog = () => {
     actions.resetCreateState();
@@ -40,6 +41,23 @@ export function useProjectListPage() {
       navigate(ROUTES.project(project.id));
     } catch (sampleError) {
       toast.error(sampleError);
+    }
+  };
+
+  const requestRename = (project: ProjectSummary) => {
+    actions.resetRenameState();
+    setProjectToRename(project);
+  };
+
+  const renameProject = async (name: string) => {
+    if (!projectToRename) {
+      return;
+    }
+    try {
+      await actions.renameProject({ projectId: projectToRename.id, name });
+      setProjectToRename(null);
+    } catch {
+      // Shown inline in the dialog through `renameErrorMessage`.
     }
   };
 
@@ -71,6 +89,13 @@ export function useProjectListPage() {
 
     createSampleProject,
     isCreatingSample: actions.isCreatingSample,
+
+    projectToRename,
+    requestRename,
+    cancelRename: () => setProjectToRename(null),
+    renameProject,
+    isRenaming: actions.isRenaming,
+    renameErrorMessage: actions.renameError ? getErrorMessage(actions.renameError) : null,
 
     projectToDelete,
     requestDelete: setProjectToDelete,

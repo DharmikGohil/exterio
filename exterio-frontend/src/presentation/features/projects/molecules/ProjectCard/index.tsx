@@ -9,10 +9,12 @@ import type { ProjectSummary } from '@/domain/models/project';
 
 export interface ProjectCardProps {
   project: ProjectSummary;
+  onRename: (project: ProjectSummary) => void;
   onDelete: (project: ProjectSummary) => void;
 }
 
-export function ProjectCard({ project, onDelete }: ProjectCardProps) {
+/** One house on the home screen: open it, rename it or delete it. */
+export function ProjectCard({ project, onRename, onDelete }: ProjectCardProps) {
   const thumbnailUrl = resolveFileUrl(project.thumbnailUrl);
 
   return (
@@ -35,22 +37,35 @@ export function ProjectCard({ project, onDelete }: ProjectCardProps) {
             </div>
           )}
         </div>
-        <div className="space-y-1 px-4 py-3 pr-12">
+        <div className="space-y-1 px-4 py-3 pr-24">
           <h3 className="truncate text-base font-medium text-stone-900">{project.name}</h3>
           <p className="font-mono text-xs text-stone-500">
             {pluralise(project.designCount, 'design')} · {formatDate(project.updatedAt)}
           </p>
         </div>
       </Link>
-      <Button
-        variant="ghost"
-        size="icon"
-        aria-label={`Delete ${project.name}`}
-        className="absolute bottom-3 right-3 text-stone-400 hover:bg-red-50 hover:text-red-700"
-        onClick={() => onDelete(project)}
-      >
-        <Icon name="trash" />
-      </Button>
+      <div className="absolute bottom-3 right-3 flex items-center gap-0.5">
+        <Button
+          variant="ghost"
+          size="icon"
+          aria-label={`Rename ${project.name}`}
+          title="Rename"
+          className="text-stone-400 hover:text-stone-900"
+          onClick={() => onRename(project)}
+        >
+          <Icon name="edit" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          aria-label={`Delete ${project.name}`}
+          title="Delete"
+          className="text-stone-400 hover:bg-red-50 hover:text-red-700"
+          onClick={() => onDelete(project)}
+        >
+          <Icon name="trash" />
+        </Button>
+      </div>
     </article>
   );
 }

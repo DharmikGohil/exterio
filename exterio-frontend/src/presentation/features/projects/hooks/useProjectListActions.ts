@@ -4,7 +4,7 @@ import { useProjectContext } from '@/presentation/features/projects/contexts/Pro
 
 import { useProjectCache } from './useProjectCache';
 
-/** Create, create-from-sample and delete, for the project list page. */
+/** Create, create-from-sample, rename and delete, for the project list page. */
 export function useProjectListActions() {
   const { projectService } = useProjectContext();
   const cache = useProjectCache();
@@ -16,6 +16,12 @@ export function useProjectListActions() {
 
   const createSample = useMutation({
     mutationFn: () => projectService.createSampleProject(),
+    onSuccess: cache.setProject,
+  });
+
+  const rename = useMutation({
+    mutationFn: ({ projectId, name }: { projectId: string; name: string }) =>
+      projectService.renameProject(projectId, name),
     onSuccess: cache.setProject,
   });
 
@@ -32,6 +38,11 @@ export function useProjectListActions() {
 
     createSampleProject: createSample.mutateAsync,
     isCreatingSample: createSample.isPending,
+
+    renameProject: rename.mutateAsync,
+    isRenaming: rename.isPending,
+    renameError: rename.error,
+    resetRenameState: rename.reset,
 
     deleteProject: remove.mutateAsync,
     isDeleting: remove.isPending,

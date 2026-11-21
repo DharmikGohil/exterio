@@ -14,6 +14,7 @@ export interface ProjectGridProps {
   isLoading: boolean;
   error: unknown;
   onRetry: () => void;
+  onRename: (project: ProjectSummary) => void;
   onDelete: (project: ProjectSummary) => void;
   onCreate: () => void;
   onCreateSample: () => void;
@@ -25,6 +26,7 @@ export function ProjectGrid({
   isLoading,
   error,
   onRetry,
+  onRename,
   onDelete,
   onCreate,
   onCreateSample,
@@ -67,7 +69,7 @@ export function ProjectGrid({
   return (
     <div className={GRID_CLASSES}>
       {projects.map((project) => (
-        <ProjectCard key={project.id} project={project} onDelete={onDelete} />
+        <ProjectCard key={project.id} project={project} onRename={onRename} onDelete={onDelete} />
       ))}
     </div>
   );
