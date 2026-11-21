@@ -57,6 +57,8 @@ export function buildDefaultScale(image: ProjectImage, regions: readonly Region[
 export interface ScaleMethodMeta {
   title: string;
   description: string;
+  /** One or two words for the segmented picker. */
+  shortTitle: string;
   accuracy: string;
   accuracyTone: 'success' | 'info' | 'warning';
 }
@@ -64,28 +66,31 @@ export interface ScaleMethodMeta {
 export const SCALE_METHOD_META: Record<ScaleMethod, ScaleMethodMeta> = {
   facade_dimensions: {
     title: 'I know the wall size',
-    description:
-      'Type the real width and height of the front wall you outline on the photo. Best if you have a plan or can measure the wall.',
+    shortTitle: 'Wall size',
+    description: 'Type the real width and height of the wall you outlined.',
     accuracy: 'Most accurate',
     accuracyTone: 'success',
   },
   reference_line: {
     title: 'I know one measurement',
+    shortTitle: 'One length',
     description:
-      'Mark any straight length you know on the photo, like the gate or a window, and tell us how long it really is.',
+      'Drag points A and B on the photo onto the ends of a length you know, like the gate, and type how long it really is.',
     accuracy: 'Accurate',
     accuracyTone: 'success',
   },
   door_height: {
     title: 'Use the door as reference',
+    shortTitle: 'Door',
     description:
-      'Most main doors are about 7 ft tall. We use the door you marked in the Regions step as a ruler.',
+      'Most main doors are about 7 ft tall. The door you marked becomes the ruler; change its height only if yours is unusual.',
     accuracy: 'Good',
     accuracyTone: 'info',
   },
   storey_height: {
     title: 'Estimate from floors',
-    description: `No measurements handy? Tell us how many floors are in the photo and we assume about ${FEET_PER_STOREY} ft per floor.`,
+    shortTitle: 'Floors',
+    description: `No measurements handy? Count the floors in the photo; we assume about ${FEET_PER_STOREY} ft each.`,
     accuracy: 'Rough',
     accuracyTone: 'warning',
   },

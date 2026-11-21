@@ -13,10 +13,8 @@ export function useScaleActions(projectId: string) {
 
   const { mutate: saveScale, isPending: isSavingScale } = useMutation({
     mutationFn: (scale: ScaleReference) => projectService.saveScale(projectId, scale),
-    onSuccess: (project) => {
-      cache.setProject(project);
-      toast.success('Scale saved. Areas and costs now use it.');
-    },
+    // Saved automatically as the user types, so success is shown inline, not as a toast.
+    onSuccess: cache.setProject,
     onError: (error) => toast.error(error),
   });
 

@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import type {
   FacadeCorners,
@@ -25,28 +25,70 @@ export type ScaleFieldPatch = Partial<
   >
 >;
 
-/** Local draft of the scale reference plus validation and saving. */
+/** How long typing must pause before the scale is saved. */
+export const SCALE_AUTOSAVE_DELAY_MS = 700;
+
+/**
+ * Local draft of the scale reference, validated and saved automatically.
+ *
+ * A valid change is saved once typing pauses, and a pending change is sent straight away when
+ * the step is left. The draft is keyed to the photo, not to the saved scale, so a save that
+ * returns while the user is still typing never replaces what they typed. Leaving is only
+ * blocked when the values are invalid and so cannot be saved.
+ */
 export function useScaleStep(project: Project, image: ProjectImage) {
   const { saveScale, isSavingScale } = useScaleActions(project.id);
 
-  const savedSignature = useMemo(
-    () => JSON.stringify([project.scale, image.width, image.height]),
-    [project.scale, image.width, image.height]
-  );
-  const initialScale = useMemo(
+  const savedScale = useMemo(
     () => project.scale ?? buildDefaultScale(image, project.regions),
     [project.scale, image, project.regions]
   );
-  const { draft: scale, updateDraft, resetDraft } = useSyncedDraft(initialScale, savedSignature);
+  const { draft: scale, updateDraft } = useSyncedDraft(
+    savedScale,
+    `${image.width}x${image.height}`
+  );
 
   const isSaved = project.scale !== null;
-  const isDirty = useMemo(
-    () => JSON.stringify(scale) !== JSON.stringify(initialScale),
-    [scale, initialScale]
-  );
+  const draftJson = JSON.stringify(scale);
+  const isDirty = draftJson !== JSON.stringify(savedScale);
   const problem = describeScaleProblem(scale);
   const hasDoorRegion = project.regions.some((region) => region.label === 'door');
-  const leaveGuard = useUnsavedChangesGuard(isDirty, STUDIO_PARAMS.step);
+
+  // What was last sent, so an unchanged draft is never saved twice (even if the server rounds).
+  const lastSentRef = useRef<string | null>(null);
+  const needsSave = !problem && (isDirty || !isSaved) && draftJson !== lastSentRef.current;
+
+  const send = useCallback(
+    (value: ScaleReference, json: string) => {
+      lastSentRef.current = json;
+      saveScale(value);
+    },
+    [saveScale]
+  );
+
+  useEffect(() => {
+    if (!needsSave) {
+      return undefined;
+    }
+    const timer = window.setTimeout(() => send(scale, draftJson), SCALE_AUTOSAVE_DELAY_MS);
+    return () => window.clearTimeout(timer);
+  }, [needsSave, scale, draftJson, send]);
+
+  // Leaving the step before the pause ends still saves the last valid values.
+  const pendingRef = useRef<{ value: ScaleReference; json: string } | null>(null);
+  pendingRef.current = needsSave ? { value: scale, json: draftJson } : null;
+  useEffect(
+    () => () => {
+      const pending = pendingRef.current;
+      // Compared at unmount: the timer may already have sent these exact values.
+      if (pending && pending.json !== lastSentRef.current) {
+        send(pending.value, pending.json);
+      }
+    },
+    [send]
+  );
+
+  const leaveGuard = useUnsavedChangesGuard(isDirty && problem !== null, STUDIO_PARAMS.step);
 
   const setMethod = useCallback(
     (method: ScaleMethod) => {
@@ -93,26 +135,17 @@ export function useScaleStep(project: Project, image: ProjectImage) {
     [updateDraft]
   );
 
-  const save = useCallback(() => {
-    if (!problem) {
-      saveScale(scale);
-    }
-  }, [problem, saveScale, scale]);
-
   return {
     scale,
     isSaved,
-    isDirty,
     problem,
     hasDoorRegion,
-    canSave: !problem && (isDirty || !isSaved),
+    /** A save is running, or one is waiting for typing to pause. */
+    isSaving: isSavingScale || needsSave,
     setMethod,
     moveCorner,
     moveReferencePoint,
     setFields,
-    save,
-    isSaving: isSavingScale,
-    discardChanges: resetDraft,
     leaveGuard,
   };
 }
