@@ -27,6 +27,21 @@ jobs:
       - name: Tests
         run: uv run pytest
 
+  render:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: exterio-render
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - name: Format and lint
+        run: |
+          uvx ruff format --check .
+          uvx ruff check .
+      - name: Tests
+        run: uv run --with pytest --no-project python -m pytest
+
   frontend:
     runs-on: ubuntu-latest
     defaults:
