@@ -46,7 +46,11 @@ def build_project_router(registry: InfrastructureRegistry, shared: SharedWiring)
 
     create_project = CreateProjectController(CreateProjectUseCase(project_repo, reader))
     create_sample = CreateSampleProjectController(shared.create_sample_project)
-    list_projects = ListProjectsController(ListProjectsUseCase(project_repo, design_repo, storage))
+    list_projects = ListProjectsController(
+        ListProjectsUseCase(
+            project_repo, design_repo, registry.material_repo, storage, shared.measure_facade
+        )
+    )
     get_project = GetProjectController(GetProjectUseCase(project_repo, reader))
     rename_project = RenameProjectController(RenameProjectUseCase(project_repo, reader))
     delete_project = DeleteProjectController(

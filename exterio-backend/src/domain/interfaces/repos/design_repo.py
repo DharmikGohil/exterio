@@ -12,9 +12,6 @@ class IDesignRepository(ABC):
     def find_all_by_project(self, project_id: str) -> list[Design]: ...
 
     @abstractmethod
-    def count_by_projects(self, project_ids: list[str]) -> dict[str, int]: ...
-
-    @abstractmethod
     def create(self, design: Design) -> Design: ...
 
     @abstractmethod

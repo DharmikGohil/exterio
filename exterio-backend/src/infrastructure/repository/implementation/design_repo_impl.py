@@ -28,17 +28,6 @@ class DesignRepository(IDesignRepository):
         with self._session_factory() as session:
             return [design_to_entity(model) for model in session.scalars(query)]
 
-    def count_by_projects(self, project_ids: list[str]) -> dict[str, int]:
-        if not project_ids:
-            return {}
-        query = (
-            select(DesignModel.project_id, func.count(DesignModel.id))
-            .where(DesignModel.project_id.in_(project_ids))
-            .group_by(DesignModel.project_id)
-        )
-        with self._session_factory() as session:
-            return {row[0]: int(row[1]) for row in session.execute(query)}
-
     def create(self, design: Design) -> Design:
         with self._session_factory.begin() as session:
             session.add(apply_design(DesignModel(), design))

@@ -59,6 +59,12 @@ class ProjectSummaryDTO:
     name: str
     thumbnail_url: str | None
     design_count: int
+    # The studio step to carry on at (1 Photo … 5 Estimate), and where the house is, in words.
+    progress_step: int
+    progress_label: str
+    # The latest priced design's grand total; None until a design has a finish.
+    estimate_total: float | None
+    # The last change to the project or any of its designs.
     updated_at: datetime
 
 

@@ -1,6 +1,6 @@
 """Entity -> DTO mappers. File paths become URLs here, never in the entities."""
 
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 
 from domain.entities.design_entity import Design
 from domain.entities.material_entity import Material
@@ -14,6 +14,7 @@ from domain.interfaces.dtos.project_dto import (
     ProjectImageDTO,
     ProjectSummaryDTO,
 )
+from domain.services.project_progress import ProjectProgress
 
 UrlFor = Callable[[str], str]
 
@@ -67,7 +68,11 @@ def to_project_dto(project: Project, designs: list[Design], url_for: UrlFor) -> 
 
 
 def to_project_summary_dto(
-    project: Project, design_count: int, url_for: UrlFor
+    project: Project,
+    designs: Sequence[Design],
+    progress: ProjectProgress,
+    estimate_total: float | None,
+    url_for: UrlFor,
 ) -> ProjectSummaryDTO:
     thumbnail = url_for(thumbnail_path(project.id)) if project.image is not None else None
     if thumbnail is not None:
@@ -77,8 +82,11 @@ def to_project_summary_dto(
         id=project.id,
         name=project.name,
         thumbnail_url=thumbnail,
-        design_count=design_count,
-        updated_at=project.updated_at,
+        design_count=len(designs),
+        progress_step=progress.step,
+        progress_label=progress.label,
+        estimate_total=estimate_total,
+        updated_at=max([project.updated_at, *(design.updated_at for design in designs)]),
     )
 
 

@@ -120,6 +120,21 @@ def test_sample_project_is_complete_and_listed(client, headers, sample):
     assert [item["id"] for item in actual_list] == [sample["id"]]
     assert actual_list[0]["designCount"] == 1
     assert client.get(actual_list[0]["thumbnailUrl"]).status_code == 200
+    estimate = client.get(
+        f"/api/designs/{sample['designs'][0]['id']}/estimate", headers=headers
+    ).json()
+    assert actual_list[0]["progressStep"] == 5
+    assert actual_list[0]["progressLabel"] == "Estimate ready"
+    assert actual_list[0]["estimateTotal"] == estimate["totals"]["grandTotal"]
+
+
+def test_a_new_project_is_listed_at_the_first_step_without_a_total(client, headers):
+    client.post("/api/projects", headers=headers, json={"name": "Empty house"})
+
+    actual = client.get("/api/projects", headers=headers).json()[0]
+
+    assert (actual["progressStep"], actual["progressLabel"]) == (1, "No photo yet")
+    assert actual["estimateTotal"] is None
 
 
 def test_another_user_cannot_see_or_change_a_project(client, sample):
