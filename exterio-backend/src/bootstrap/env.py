@@ -38,6 +38,12 @@ class Settings(BaseSettings):
     fal_timeout_seconds: float = 120.0
     daily_render_limit: int = 10
 
+    # Exterio's own photoreal renderer on Modal (exterio-render/). Takes priority over fal.ai.
+    modal_render_url: str = ""
+    modal_render_token: str = ""
+    # Covers a cold start: the first render after an idle spell loads the model (~30 s measured).
+    modal_render_timeout_seconds: float = 300.0
+
     anthropic_api_key: str = ""
     # Optional Anthropic-compatible endpoint. Empty means Anthropic's own API.
     anthropic_gateway_url: str = ""
@@ -68,6 +74,9 @@ class Settings(BaseSettings):
             fal_render_model=self.fal_render_model,
             fal_timeout_seconds=self.fal_timeout_seconds,
             daily_render_limit=self.daily_render_limit,
+            modal_render_url=self.modal_render_url,
+            modal_render_token=self.modal_render_token,
+            modal_render_timeout_seconds=self.modal_render_timeout_seconds,
             anthropic_api_key=self.anthropic_api_key,
             anthropic_gateway_url=self.anthropic_gateway_url,
             anthropic_model=self.anthropic_model,

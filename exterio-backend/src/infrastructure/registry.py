@@ -51,6 +51,7 @@ from infrastructure.services.ai.fal_client import FalClient
 from infrastructure.services.ai.fal_photoreal_render_service import FalPhotorealRenderService
 from infrastructure.services.ai.fal_sam3_segmentation_service import FalSam3SegmentationService
 from infrastructure.services.ai.fallback_segmentation_service import FallbackSegmentationService
+from infrastructure.services.ai.modal_photoreal_render_service import ModalPhotorealRenderService
 from infrastructure.services.imaging.opencv_image_inspection_service import (
     OpenCvImageInspectionService,
 )
@@ -81,6 +82,9 @@ class InfrastructureConfig:
     fal_render_model: str
     fal_timeout_seconds: float
     daily_render_limit: int
+    modal_render_url: str
+    modal_render_token: str
+    modal_render_timeout_seconds: float
     anthropic_api_key: str
     anthropic_gateway_url: str
     anthropic_model: str
@@ -130,6 +134,21 @@ def build_registry(config: InfrastructureConfig) -> InfrastructureRegistry:
         ]
     )
 
+    # Exterio's own renderer on Modal is preferred when configured; fal.ai is the alternative.
+    modal_photoreal = ModalPhotorealRenderService(
+        config.modal_render_url,
+        config.modal_render_token,
+        config.modal_render_timeout_seconds,
+        config.daily_render_limit,
+    )
+    photoreal: IPhotorealRenderService = (
+        modal_photoreal
+        if modal_photoreal.is_available()
+        else FalPhotorealRenderService(
+            fal_client, config.fal_render_model, config.daily_render_limit
+        )
+    )
+
     # Catalogue swatches are generated once at start-up from the same textures the preview uses.
     for material in material_repo.find_all():
         storage.save(swatch_path(material.id), preview.swatch(material, SWATCH_SIZE_PX))
@@ -150,9 +169,7 @@ def build_registry(config: InfrastructureConfig) -> InfrastructureRegistry:
         segmentation=segmentation,
         measurement=OpenCvSurfaceMeasurementService(),
         preview=preview,
-        photoreal=FalPhotorealRenderService(
-            fal_client, config.fal_render_model, config.daily_render_limit
-        ),
+        photoreal=photoreal,
         sample_house=SampleHouseProvider(),
         report=ReportLabReportService(),
         advisor_model=AnthropicAdvisorLanguageModel(claude, config.anthropic_model),
