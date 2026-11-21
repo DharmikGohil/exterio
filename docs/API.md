@@ -28,8 +28,9 @@ URLs change whenever the underlying file changes, so they are safe to cache.
 type Point = [number, number];
 
 type RegionLabel =
-  | "wall" | "window" | "door" | "balcony" | "pillar"
-  | "parapet" | "gate" | "roof_edge" | "railing";
+  | "wall" | "roof" | "window" | "door" | "garage_door" | "balcony" | "pillar"
+  | "parapet" | "chimney" | "gate" | "fence" | "roof_edge" | "railing"
+  | "other"; // any other part; its `name` is what the detector called it
 
 interface User { id: string; email: string | null; name: string; isGuest: boolean }
 interface AuthResponse { accessToken: string; user: User }

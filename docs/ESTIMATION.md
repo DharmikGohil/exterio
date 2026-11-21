@@ -15,20 +15,29 @@ pure arithmetic in `domain/services/`, with unit tests that check it against han
 
 ## 1. Regions: what gets measured
 
-Every surface is a polygon with a label: `wall`, `window`, `door`, `balcony`, `pillar`, `parapet`,
-`gate`, `roof_edge` or `railing`. Regions come from AI detection and from the user's corrections.
+Every surface is a polygon with a label: `wall`, `roof`, `window`, `door`, `garage_door`,
+`balcony`, `pillar`, `parapet`, `chimney`, `gate`, `fence`, `roof_edge`, `railing`, or `other`.
+`other` is any part the detector found that fits none of the rest (solar panels, a water tank,
+entrance steps); it carries the detector's own name and is measured and priced by area like a wall.
+Regions come from AI detection and from the user's corrections.
 
 **Overlaps are resolved by priority.** Regions are painted onto a single label map from lowest to
 highest priority, so a higher one overwrites a lower one:
 
 ```
-wall < roof edge < parapet < balcony < pillar < gate < railing < door < window
+wall < roof = fence < roof edge < parapet < other < chimney < balcony < pillar < gate
+     < garage door < railing < door < window
 ```
 
 The consequence is the rule a contractor would apply by hand: **a window drawn on a wall removes
 its area from the wall.** No polygon clipping is needed, and openings can never be painted or
 costed by mistake. Windows and doors are detected only so they can be subtracted and used as scale
-references; no finish can be assigned to them.
+references; no finish can be assigned to them. A garage door also cuts its area out of the wall,
+but it can be painted.
+
+**Roofs are measured as seen from the front.** A sloped roof plane is foreshortened in a photo taken
+from the street, so its measured area is smaller than its real one. The estimate says so whenever a
+roof is measured, and the real area can be typed in the breakdown.
 
 ## 2. Removing perspective
 

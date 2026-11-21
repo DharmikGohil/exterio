@@ -36,6 +36,10 @@ Two providers implement detection; the first one configured is used.
   another). On the built-in sample house it matched the true outlines closely (overlap above 0.9 for
   walls, windows, door, pillars and gate), but that is a clean drawing; it has **not been
   evaluated on real photographs**, where clutter, shadows and occlusion will lower accuracy.
+- **Open-ended parts.** The vision model is asked to outline any exterior part a homeowner could
+  refinish. Parts outside the fixed types come back as `other` with the model's own name (on a
+  real photo it found "Entrance steps" unprompted), and an unknown label is kept as a named `other`
+  part rather than rejected. SAM 3 can only find the types it has prompt words for.
 - Neither provider was tuned on Indian residential architecture.
 - Every detected region is a suggestion. The review step exists because detection will be wrong
   somewhere on most real photos.
