@@ -5,7 +5,7 @@ revisited once a photo exists, and every change is saved to the project.
 
 ```mermaid
 flowchart TD
-  S([Sign in, or try it with a sample house]) --> L[Project list<br/>New project / Try with a sample house]
+  S([Sign in, or try it with a sample house]) --> L[Your houses<br/>progress and total per house<br/>New project / sample house]
   L --> A[1. Photo<br/>upload a picture of the house]
   A --> Q{Quality gate}
   Q -- rejected --> G[Show the reasons and how to retake it] --> A

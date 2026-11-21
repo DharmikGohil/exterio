@@ -1,16 +1,18 @@
-import { Button } from '@/presentation/shared/atoms/Button';
-import { EmptyState } from '@/presentation/shared/molecules/EmptyState';
 import { ErrorState } from '@/presentation/shared/molecules/ErrorState';
+import { NewHouseCard } from '@/presentation/features/projects/molecules/NewHouseCard';
 import { ProjectCard } from '@/presentation/features/projects/molecules/ProjectCard';
 import { ProjectCardSkeleton } from '@/presentation/features/projects/molecules/ProjectCardSkeleton';
 import type { ProjectSummary } from '@/domain/models/project';
 
 const SKELETON_KEYS = ['a', 'b', 'c'] as const;
 const GRID_CLASSES =
-  'grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 min-[1920px]:grid-cols-6';
+  'grid gap-5 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 min-[1920px]:grid-cols-5';
 
 export interface ProjectGridProps {
+  /** The houses to show, already searched and sorted. */
   projects: ProjectSummary[];
+  /** What the list was searched for; the new-house card steps aside while searching. */
+  query: string;
   isLoading: boolean;
   error: unknown;
   onRetry: () => void;
@@ -23,6 +25,7 @@ export interface ProjectGridProps {
 
 export function ProjectGrid({
   projects,
+  query,
   isLoading,
   error,
   onRetry,
@@ -43,31 +46,27 @@ export function ProjectGrid({
   }
 
   if (error) {
-    return <ErrorState title="We could not load your projects" error={error} onRetry={onRetry} />;
+    return <ErrorState title="We could not load your houses" error={error} onRetry={onRetry} />;
   }
 
-  if (projects.length === 0) {
+  const isSearching = query.trim() !== '';
+  if (isSearching && projects.length === 0) {
     return (
-      <EmptyState
-        icon="home"
-        title="No projects yet"
-        description="A project is one house. Start from your own photo, or open the sample house to see the whole flow in about a minute."
-        action={
-          <>
-            <Button icon="plus" onClick={onCreate}>
-              New project
-            </Button>
-            <Button variant="outline" isLoading={isCreatingSample} onClick={onCreateSample}>
-              Open a sample house
-            </Button>
-          </>
-        }
-      />
+      <p className="rounded-xl border border-dashed border-stone-300 px-6 py-10 text-center text-[15px] text-stone-600">
+        No house is called anything like “{query.trim()}”.
+      </p>
     );
   }
 
   return (
     <div className={GRID_CLASSES}>
+      {!isSearching && (
+        <NewHouseCard
+          onCreate={onCreate}
+          onCreateSample={onCreateSample}
+          isCreatingSample={isCreatingSample}
+        />
+      )}
       {projects.map((project) => (
         <ProjectCard key={project.id} project={project} onRename={onRename} onDelete={onDelete} />
       ))}

@@ -51,6 +51,16 @@ Rules:
 | `AuthLayout` | A split screen: the product story on the cutting mat fills the left half edge to edge, the sign-in form sits on plain white in the right half (phones get the form only). It fits one screen from 1280×760 up |
 | `CenteredLayout` | One card in the middle, for single-message pages like the 404 |
 
+## Your houses: the home screen
+
+`ProjectListPage` lists every house as a card (`ProjectCard`): the photo, the name with a ⋯ menu
+(Rename, Delete), a five-segment bar and "Step 4 of 5 · Designing" (`StepProgress`), then
+"2 designs · edited 22 Nov 2026" and the estimate total, or "No estimate yet". The step and total
+come from the API, so they always match the studio. The first card is a dashed "Start a new
+house" (`NewHouseCard`), which also offers the sample house. Above the grid, a search box and a
+sort (Recently edited, Name, Furthest along) narrow and order the cards (`utils/projectList`);
+while searching, the new-house card steps aside.
+
 ## The studio: tools live on the photo
 
 Every studio step has the same shape: a big title with one line of description, the photo on the
@@ -60,7 +70,7 @@ Everything is in view without scrolling on screens from 1280×720 up.
 - **Header**: the studio puts its breadcrumb and stepper into the app header through a header slot
   (`HeaderSlot`, a portal), so there is no second bar. The stepper (`StudioStepper`) is plain text:
   done steps carry a check, the current step is a green pill with its number, upcoming steps show
-  their number. Projects are renamed only on the home screen (the pencil on each project card).
+  their number. Projects are renamed only on the home screen (the ⋯ menu on each house card).
 - **Material advisor**: "Ask about materials" sits in the step header (Photo, Regions, Estimate)
   or in the panel header (Design). Its chat panel is mounted once for the studio
   (`AdvisorDockProvider`), so the conversation survives moving between steps.
@@ -186,6 +196,7 @@ No sparkle or wand icons; each icon says what its button does.
 | `HeaderSlot` | `shared/contexts/HeaderSlotContext` | Lets a page (the studio) put its navigation into the app header |
 | `DropdownMenu`, `FloatingSaveBar`, `NameTagToggle` | `shared/molecules` | The menus, the unsaved-changes bar and the eye button used on the photo |
 | `DesignSwitcher` | `features/design` | Design dropdown, ⋯ menu and New design |
+| `ProjectCard`, `StepProgress`, `NewHouseCard`, `ProjectToolbar` | `features/projects` | The Your houses page |
 | `AdvisorDockProvider`, `AdvisorButton` | `features/advisor` | One advisor panel for the studio, opened from any step |
 | `PageBackdrop` | `shared/organisms` | The quiet drafting-paper grid behind every page |
 | `DimensionLine` | `shared/molecules` | A figure written as a dimension, light or mat tone |

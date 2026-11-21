@@ -2,41 +2,40 @@ import { Button } from '@/presentation/shared/atoms/Button';
 import { ConfirmDialog } from '@/presentation/shared/molecules/ConfirmDialog';
 import { NameDialog } from '@/presentation/shared/molecules/NameDialog';
 import { useProjectListPage } from '@/presentation/features/projects/hooks/useProjectListPage';
+import { ProjectToolbar } from '@/presentation/features/projects/molecules/ProjectToolbar';
 import { ProjectGrid } from '@/presentation/features/projects/organisms/ProjectGrid';
 
 export function ProjectListPage() {
   const page = useProjectListPage();
-  const hasProjects = page.projects.length > 0;
 
   return (
-    <div className="w-full space-y-9 pb-9 pt-6">
+    <div className="w-full space-y-7 pb-9 pt-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div className="space-y-1">
           <h1 className="text-[34px] font-medium leading-tight tracking-[-0.01em] text-stone-900">
-            Projects
+            Your houses
           </h1>
           <p className="text-[15px] text-stone-600">
-            One project per house, each with as many design options as you want to compare
+            One project per house, with as many designs as you want to compare.
           </p>
         </div>
-        {hasProjects && (
-          <div className="flex flex-wrap gap-2">
-            <Button
-              variant="outline"
-              isLoading={page.isCreatingSample}
-              onClick={page.createSampleProject}
-            >
-              Open a sample house
-            </Button>
-            <Button icon="plus" onClick={page.openCreateDialog}>
-              New project
-            </Button>
-          </div>
-        )}
+        <Button icon="plus" size="lg" onClick={page.openCreateDialog}>
+          New project
+        </Button>
       </div>
+
+      {page.hasProjects && (
+        <ProjectToolbar
+          query={page.query}
+          onQueryChange={page.setQuery}
+          sort={page.sort}
+          onSortChange={page.setSort}
+        />
+      )}
 
       <ProjectGrid
         projects={page.projects}
+        query={page.query}
         isLoading={page.isLoading}
         error={page.error}
         onRetry={page.refetch}
@@ -50,7 +49,7 @@ export function ProjectListPage() {
       <NameDialog
         open={page.isCreateDialogOpen}
         title="New project"
-        description="Give it a name you will recognise, like the address or the owner's name."
+        description="One project per house. Give it a name you will recognise, like the address or the owner's name."
         fieldLabel="Project name"
         placeholder="e.g. Patel residence, Vadodara"
         submitLabel="Create project"
@@ -74,7 +73,7 @@ export function ProjectListPage() {
 
       <ConfirmDialog
         open={page.projectToDelete !== null}
-        title="Delete this project?"
+        title="Delete this house?"
         description={`"${page.projectToDelete?.name ?? ''}" and all of its designs and estimates will be permanently deleted.`}
         confirmLabel="Delete project"
         tone="danger"

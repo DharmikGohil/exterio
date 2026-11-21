@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import type { ProjectSummary } from '@/domain/models/project';
@@ -6,6 +6,11 @@ import { ROUTES } from '@/presentation/routes/paths';
 import { useDisclosure } from '@/presentation/shared/hooks/useDisclosure';
 import { useToast } from '@/presentation/shared/hooks/useToast';
 import { getErrorMessage } from '@/presentation/shared/utils/errors';
+
+import {
+  filterAndSortProjects,
+  type ProjectSort,
+} from '@/presentation/features/projects/utils/projectList';
 
 import { useProjectListActions } from './useProjectListActions';
 import { useProjects } from './useProjects';
@@ -19,6 +24,12 @@ export function useProjectListPage() {
   const createDialog = useDisclosure();
   const [projectToDelete, setProjectToDelete] = useState<ProjectSummary | null>(null);
   const [projectToRename, setProjectToRename] = useState<ProjectSummary | null>(null);
+  const [query, setQuery] = useState('');
+  const [sort, setSort] = useState<ProjectSort>('recent');
+  const visibleProjects = useMemo(
+    () => filterAndSortProjects(projects, query, sort),
+    [projects, query, sort]
+  );
 
   const openCreateDialog = () => {
     actions.resetCreateState();
@@ -75,7 +86,12 @@ export function useProjectListPage() {
   };
 
   return {
-    projects,
+    projects: visibleProjects,
+    hasProjects: projects.length > 0,
+    query,
+    setQuery,
+    sort,
+    setSort,
     isLoading,
     error,
     refetch,

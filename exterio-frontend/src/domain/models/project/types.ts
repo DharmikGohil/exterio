@@ -127,5 +127,12 @@ export interface ProjectSummary {
   name: string;
   thumbnailUrl: string | null;
   designCount: number;
+  /** The studio step to carry on at, 1 (Photo) to 5 (Estimate). */
+  progressStep: number;
+  /** Where the house is, in words: "Designing", "Estimate ready". */
+  progressLabel: string;
+  /** The latest priced design's total; null until a design has a finish. */
+  estimateTotal: number | null;
+  /** The last change to the house or any of its designs. */
   updatedAt: string;
 }
