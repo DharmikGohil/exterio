@@ -3,16 +3,22 @@ import type { Design } from '@/domain/models/design';
 /** `[x, y]` in pixels of the stored project image, origin top-left. */
 export type Point = [number, number];
 
+/** Kinds of part, in the order lists show them. `other` is any part the detector named itself. */
 export const REGION_LABELS = [
   'wall',
+  'roof',
   'window',
   'door',
+  'garage_door',
   'balcony',
   'pillar',
   'parapet',
+  'chimney',
   'gate',
+  'fence',
   'roof_edge',
   'railing',
+  'other',
 ] as const;
 
 export type RegionLabel = (typeof REGION_LABELS)[number];

@@ -4,7 +4,6 @@ import { cn } from '@/presentation/shared/utils/cn';
 import { useLeaderLines } from '@/presentation/features/estimate/hooks/useLeaderLines';
 import { PartCard } from '@/presentation/features/estimate/molecules/PartCard';
 import type { PartGroup } from '@/presentation/features/estimate/utils/partGroups';
-import type { RegionLabel } from '@/domain/models/project';
 
 export interface EstimateDiagramProps {
   groups: readonly PartGroup[];
@@ -20,10 +19,10 @@ export interface EstimateDiagramProps {
  */
 export function EstimateDiagram({ groups, imageUrl, imageAlt, caption }: EstimateDiagramProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [hovered, setHovered] = useState<RegionLabel | null>(null);
+  const [hovered, setHovered] = useState<string | null>(null);
   const [imageRevision, setImageRevision] = useState(0);
   const revision = useMemo(
-    () => `${groups.map((group) => `${group.label}:${group.side}`).join('|')}#${imageRevision}`,
+    () => `${groups.map((group) => `${group.key}:${group.side}`).join('|')}#${imageRevision}`,
     [groups, imageRevision]
   );
   const { lines } = useLeaderLines(containerRef, revision);
@@ -35,9 +34,9 @@ export function EstimateDiagram({ groups, imageUrl, imageAlt, caption }: Estimat
     <div className="flex flex-col gap-4">
       {items.map((group) => (
         <PartCard
-          key={group.label}
+          key={group.key}
           group={group}
-          isActive={hovered === group.label}
+          isActive={hovered === group.key}
           onHover={setHovered}
         />
       ))}
@@ -59,14 +58,14 @@ export function EstimateDiagram({ groups, imageUrl, imageAlt, caption }: Estimat
           />
           {groups.map((group) => (
             <span
-              key={group.label}
-              data-part-dot={group.label}
+              key={group.key}
+              data-part-dot={group.key}
               aria-hidden
-              onPointerEnter={() => setHovered(group.label)}
+              onPointerEnter={() => setHovered(group.key)}
               onPointerLeave={() => setHovered(null)}
               className={cn(
                 'absolute z-20 h-[18px] w-[18px] -translate-x-1/2 -translate-y-1/2 rounded-full border-[3px] border-white shadow-card transition-transform',
-                hovered === group.label && 'scale-125'
+                hovered === group.key && 'scale-125'
               )}
               style={{
                 left: `${group.anchor.x * 100}%`,

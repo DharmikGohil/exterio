@@ -5,6 +5,7 @@ import { PartCard } from '@/presentation/features/estimate/molecules/PartCard';
 import type { PartGroup } from '@/presentation/features/estimate/utils/partGroups';
 
 const PILLARS: PartGroup = {
+  key: 'pillar',
   label: 'pillar',
   title: 'Two pillars',
   color: '#ef4444',

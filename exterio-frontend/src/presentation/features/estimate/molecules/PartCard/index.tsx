@@ -6,7 +6,7 @@ export interface PartCardProps {
   group: PartGroup;
   /** Highlighted while its dot or line is hovered. */
   isActive?: boolean;
-  onHover?: (label: PartGroup['label'] | null) => void;
+  onHover?: (key: string | null) => void;
 }
 
 /**
@@ -16,9 +16,9 @@ export interface PartCardProps {
 export function PartCard({ group, isActive = false, onHover }: PartCardProps) {
   return (
     <article
-      data-part-card={group.label}
+      data-part-card={group.key}
       data-side={group.side}
-      onPointerEnter={() => onHover?.(group.label)}
+      onPointerEnter={() => onHover?.(group.key)}
       onPointerLeave={() => onHover?.(null)}
       className={cn(
         'flex min-h-[10.5rem] flex-col rounded-2xl border p-5 transition-shadow',

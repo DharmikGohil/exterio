@@ -21,6 +21,7 @@ function scale(patch: Partial<ScaleReference>): ScaleReference {
 
 function group(title: string, isUnpriced: boolean): PartGroup {
   return {
+    key: title,
     label: 'window',
     title,
     color: '#000',

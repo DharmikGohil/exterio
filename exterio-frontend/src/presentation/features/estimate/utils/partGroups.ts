@@ -24,6 +24,7 @@ const LINEAR_LABELS: ReadonlySet<RegionLabel> = new Set([
   'roof_edge',
   'railing',
   'gate',
+  'fence',
 ]);
 const OPENING_LABELS: ReadonlySet<RegionLabel> = new Set(['window', 'door']);
 
@@ -38,6 +39,8 @@ interface Anchor {
 const MIN_ANCHOR_SHARE = 0.3;
 
 export interface PartGroup {
+  /** Unique per card: the kind of part, or `other:<name>` for parts the detector named. */
+  key: string;
   label: RegionLabel;
   /** "Front wall" for one part, "Two pillars" for several. */
   title: string;
@@ -68,11 +71,7 @@ export function buildPartGroups(
   const regionsById = new Map(regions.map((region) => [region.id, region]));
   const hasOpenings = rows.some((row) => OPENING_LABELS.has(row.label));
 
-  const groups = REGION_LABELS.flatMap((label) => {
-    const members = rows.filter((row) => row.label === label);
-    if (members.length === 0) {
-      return [];
-    }
+  const groups = bucketsByKind(rows).map(({ key, label, members }) => {
     const meta = REGION_LABEL_META[label];
     const finishes = [
       ...new Set(members.flatMap((row) => (row.materialName ? [row.materialName] : []))),
@@ -89,26 +88,69 @@ export function buildPartGroups(
           ...(unfinished > 0 ? [`${capitalise(countWord(unfinished))} without a finish yet`] : []),
         ];
 
-    return [
-      {
-        label,
-        title:
-          members.length === 1
-            ? members[0].name
-            : `${capitalise(countWord(members.length))} ${meta.plural.toLowerCase()}`,
-        color: meta.color,
-        finishLines,
-        measure: describeMeasure(label, area, length, members.length, hasOpenings),
-        totalCost: members.reduce((sum, row) => sum + row.totalCost, 0),
-        isUnpriced,
-        anchor: { x: 0.5, y: 0.5 },
-        side: 'left' as PartSide,
-        candidates: anchorCandidates(members, regionsById, image),
-      },
-    ];
+    return {
+      key,
+      label,
+      title: groupTitle(label, members, meta.plural),
+      color: meta.color,
+      finishLines,
+      measure: describeMeasure(label, area, length, members.length, hasOpenings),
+      totalCost: members.reduce((sum, row) => sum + row.totalCost, 0),
+      isUnpriced,
+      anchor: { x: 0.5, y: 0.5 },
+      side: 'left' as PartSide,
+      candidates: anchorCandidates(members, regionsById, image),
+    };
   });
 
   return assignSides(groups);
+}
+
+interface KindBucket {
+  key: string;
+  label: RegionLabel;
+  members: EstimateRegion[];
+}
+
+/**
+ * Parts sorted into cards: one per kind, in list order, except `other` parts, which get a card
+ * per name the detector gave them ("Solar panels" and "Water tank" are different things).
+ */
+function bucketsByKind(rows: readonly EstimateRegion[]): KindBucket[] {
+  return REGION_LABELS.flatMap((label): KindBucket[] => {
+    const members = rows.filter((row) => row.label === label);
+    if (members.length === 0) {
+      return [];
+    }
+    if (label !== 'other') {
+      return [{ key: label, label, members }];
+    }
+    const byName = new Map<string, EstimateRegion[]>();
+    for (const row of members) {
+      const name = row.name.trim().toLowerCase() || 'other';
+      byName.set(name, [...(byName.get(name) ?? []), row]);
+    }
+    return [...byName.entries()].map(([name, named]) => ({
+      key: `other:${name}`,
+      label,
+      members: named,
+    }));
+  });
+}
+
+/** "Front wall" for one part, "Two pillars" for several; named parts keep their name. */
+function groupTitle(
+  label: RegionLabel,
+  members: readonly EstimateRegion[],
+  plural: string
+): string {
+  if (members.length === 1) {
+    return members[0].name;
+  }
+  if (label === 'other') {
+    return `${members[0].name.trim()} (${members.length})`;
+  }
+  return `${capitalise(countWord(members.length))} ${plural.toLowerCase()}`;
 }
 
 function describeMeasure(

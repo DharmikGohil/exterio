@@ -180,4 +180,25 @@ describe('buildPartGroups', () => {
 
     expect(actual.anchor.x).toBeCloseTo(0.52);
   });
+
+  it('gives each named kind of other part its own card', () => {
+    const actual = groups([
+      part('s1', 'other', [100, 50, 200, 100], { name: 'Solar panels', areaSqft: 40 }),
+      part('s2', 'other', [300, 50, 400, 100], { name: 'Solar panels', areaSqft: 40 }),
+      part('t1', 'other', [800, 50, 900, 150], { name: 'Water tank' }),
+    ]);
+
+    expect(actual.map((group) => [group.key, group.title]).sort()).toEqual([
+      ['other:solar panels', 'Solar panels (2)'],
+      ['other:water tank', 'Water tank'],
+    ]);
+  });
+
+  it('measures a fence along its length', () => {
+    const [actual] = groups([
+      part('f', 'fence', [0, 600, 1000, 700], { name: 'Fence 1', areaSqft: 180, lengthFt: 60 }),
+    ]);
+
+    expect(actual.measure).toBe('180 sq ft · 60 ft long');
+  });
 });

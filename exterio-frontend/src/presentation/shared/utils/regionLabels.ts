@@ -17,6 +17,11 @@ export const REGION_LABEL_META: Record<RegionLabel, RegionLabelMeta> = {
   gate: { label: 'Gate', plural: 'Gates', color: '#6366f1' },
   roof_edge: { label: 'Roof edge', plural: 'Roof edges', color: '#84cc16' },
   railing: { label: 'Railing', plural: 'Railings', color: '#0f766e' },
+  roof: { label: 'Roof', plural: 'Roofs', color: '#b45309' },
+  chimney: { label: 'Chimney', plural: 'Chimneys', color: '#78716c' },
+  garage_door: { label: 'Garage door', plural: 'Garage doors', color: '#2563eb' },
+  fence: { label: 'Fence', plural: 'Fences', color: '#a16207' },
+  other: { label: 'Other', plural: 'Other parts', color: '#64748b' },
 };
 
 export const REGION_LABEL_OPTIONS = REGION_LABELS.map((value) => ({
@@ -30,5 +35,5 @@ export function isRegionLabel(value: string): value is RegionLabel {
 
 /** Labels whose paintable area depends on how many faces are exposed. */
 export function usesSurfaceMultiplier(label: RegionLabel): boolean {
-  return label === 'pillar';
+  return label === 'pillar' || label === 'chimney';
 }
