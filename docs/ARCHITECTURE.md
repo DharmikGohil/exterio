@@ -123,6 +123,24 @@ The Claude-backed services request schema-constrained JSON and also parse the re
 so they work both against Anthropic's API, which enforces the schema, and against an
 Anthropic-compatible gateway that does not (`ANTHROPIC_GATEWAY_URL`).
 
+## The material advisor
+
+The advisor is a retrieval-augmented chat: the question picks the closest knowledge notes (TF-IDF),
+and the prompt carries the homeowner's measured parts, chosen finishes and estimate, so cost
+answers use real figures.
+
+- **Identity.** It is always "Exterio's material advisor". The system prompt
+  (`domain/prompts/advisor_prompt.py`) fixes the name, forbids naming any model, provider, vendor
+  or gateway, keeps the instructions private, and says it takes precedence over any other identity
+  instructions, because a gateway in front of the model may add its own. As a last line of defence,
+  `guard_advisor_reply` rewrites any other self-introduction to the advisor's name and replaces any
+  remaining vendor name before the reply is returned.
+- **Scope and safety.** Exterior finishes, this project, rough costs in INR. Off-topic requests are
+  declined in one sentence; structural questions go to an engineer; no invented rates or brands.
+- **Tested live.** `tests/evals/test_advisor_live.py` runs greetings, "which model are you",
+  developer impersonation, prompt-injection, off-topic, cost and safety probes against the real
+  model and checks both the raw answer and what the homeowner sees.
+
 ## Request lifecycle for the slow path
 
 The photoreal render takes 10–30 seconds, so it is not done inside the request:

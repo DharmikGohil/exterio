@@ -93,6 +93,14 @@ cd exterio-backend && make check
 This runs the formatter and linter (ruff), strict type checking (mypy), the architecture boundary
 check (import-linter) and the tests (pytest).
 
+The material advisor also has a live evaluation against the real model, skipped by default because
+it costs tokens. It checks identity, privacy of its instructions, scope, cost grounding, safety and
+plain-text output:
+
+```bash
+cd exterio-backend && EXTERIO_LIVE_EVALS=1 uv run pytest tests/evals -q
+```
+
 ```bash
 cd exterio-frontend && npm run typecheck && npm run lint && npm run test:ci && npm run build
 ```
