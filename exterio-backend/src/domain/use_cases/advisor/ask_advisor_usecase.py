@@ -11,6 +11,7 @@ from domain.interfaces.repos.knowledge_repo import IKnowledgeRepository
 from domain.interfaces.repos.project_repo import IProjectRepository
 from domain.interfaces.services.advisor_service import IAdvisorLanguageModel
 from domain.prompts.advisor_prompt import build_advisor_system_prompt
+from domain.services.advisor_reply_guard import guard_advisor_reply
 from domain.services.project_access import get_owned_project
 from domain.use_cases.estimate.get_design_estimate_usecase import GetDesignEstimateUseCase
 
@@ -59,7 +60,7 @@ class AskAdvisorUseCase:
         system_prompt = build_advisor_system_prompt(
             self._format_knowledge(snippets), self._format_project(project, estimate)
         )
-        reply = self._language_model.reply(system_prompt, history)
+        reply = guard_advisor_reply(self._language_model.reply(system_prompt, history))
         return AdvisorReplyDTO(
             reply=reply, sources=tuple(AdvisorSourceDTO(snippet.title) for snippet in snippets)
         )
