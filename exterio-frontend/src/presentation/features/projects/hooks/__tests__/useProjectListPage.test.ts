@@ -28,12 +28,12 @@ describe('useProjectListPage', () => {
     createSampleProject.mockReset();
   });
 
-  it('opens a new sample house at the photo step, so every step can be walked through', async () => {
+  it('opens a new sample house where its stage leaves off', async () => {
     createSampleProject.mockResolvedValue({ id: 'sample-1' });
     const { result } = renderHook(() => useProjectListPage());
 
     await act(() => result.current.createSampleProject());
 
-    expect(navigate).toHaveBeenCalledWith('/projects/sample-1?step=photo');
+    expect(navigate).toHaveBeenCalledWith('/projects/sample-1');
   });
 });

@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 
 import type { Project } from '@/domain/models/project';
 import { STUDIO_PARAMS, type StudioStep } from '@/presentation/routes/paths';
+import { hasSeenPhotoCheck } from '@/presentation/features/studio/utils/photoCheckSeen';
 import { getDefaultStep, isStudioStep } from '@/presentation/features/studio/utils/steps';
 
 /**
@@ -16,7 +17,9 @@ export function useStudioStep(project: Project) {
 
   let step: StudioStep = 'photo';
   if (hasPhoto) {
-    step = isStudioStep(requested) ? requested : getDefaultStep(project);
+    step = isStudioStep(requested)
+      ? requested
+      : getDefaultStep(project, hasSeenPhotoCheck(project.id));
   }
 
   // Write the resolved step back so it stays put while the project changes underneath it.

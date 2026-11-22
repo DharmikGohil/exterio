@@ -1,5 +1,6 @@
 {
   "name": "Craftsman with stone",
+  "stage": "finished",
   "design_name": "Sage, cream and sandstone",
   "source": {"title": "White and brown concrete house under blue sky", "photographer": "Get Lost Mike", "url": "https://www.pexels.com/photo/white-and-brown-concrete-house-under-blue-sky-7710011/", "licence": "Pexels License"},
   "scale": {"facade_corners": [[200, 415], [1385, 415], [1385, 705], [200, 705]], "facade_width_ft": 44, "facade_height_ft": 9.5, "storeys": 1},

@@ -35,14 +35,25 @@ export function isStudioStep(value: string | null): value is StudioStep {
 }
 
 /** Where to land when the URL does not name a step: the first thing still left to do. */
-export function getDefaultStep(project: Project): StudioStep {
+/**
+ * Where a project opens: the next thing left to do. A house with only its photo opens at the
+ * Photo step the first time this browser sees it, so its check is shown before marking parts.
+ */
+export function getDefaultStep(project: Project, photoCheckSeen = true): StudioStep {
   if (!project.image) {
     return 'photo';
   }
   if (project.regions.length === 0) {
-    return 'regions';
+    return photoCheckSeen ? 'regions' : 'photo';
   }
-  return 'design';
+  const regionIds = new Set(project.regions.map((region) => region.id));
+  const hasFinishes = project.designs.some((design) =>
+    Object.keys(design.assignments).some((regionId) => regionIds.has(regionId))
+  );
+  if (hasFinishes) {
+    return 'estimate';
+  }
+  return project.scale ? 'design' : 'scale';
 }
 
 export function getNextStep(step: StudioStep): StudioStep | null {

@@ -7,7 +7,11 @@ from domain.interfaces.dtos.project_dto import ProjectDTO
 from domain.interfaces.repos.design_repo import IDesignRepository
 from domain.interfaces.repos.project_repo import IProjectRepository
 from domain.interfaces.services.file_storage_service import IFileStorageService
-from domain.interfaces.services.image_services import IImageInspectionService, ISampleHouseProvider
+from domain.interfaces.services.image_services import (
+    IImageInspectionService,
+    ISampleHouseProvider,
+    SampleStage,
+)
 from domain.mappers.project_mapper import thumbnail_path
 from domain.use_cases.design.render_design_preview_usecase import (
     RenderDesignPreviewUseCase,
@@ -53,6 +57,11 @@ class CreateSampleProjectUseCase:
 
     def _create(self, user_id: str, key: str) -> ProjectDTO:
         sample = self._sample_house.build(key)
+        # Each sample is created as far along as its stage, so between them they show every
+        # step: a bare photo, marked parts, a set size, a finished design.
+        has_parts = sample.stage != SampleStage.PHOTO
+        has_size = sample.stage in (SampleStage.SIZE, SampleStage.FINISHED)
+        is_finished = sample.stage == SampleStage.FINISHED
         prepared = self._inspection.prepare(sample.image)
         now = datetime.now(UTC)
         project_id = str(uuid4())
@@ -70,8 +79,8 @@ class CreateSampleProjectUseCase:
                 created_at=now,
                 updated_at=now,
                 image=ProjectImage(path, prepared.width, prepared.height, prepared.report),
-                regions=sample.regions,
-                scale=sample.scale,
+                regions=sample.regions if has_parts else (),
+                scale=sample.scale if has_size else None,
             )
         )
         design = self._design_repo.create(
@@ -81,7 +90,7 @@ class CreateSampleProjectUseCase:
                 name=sample.design_name,
                 created_at=now,
                 updated_at=now,
-                assignments=dict(sample.assignments),
+                assignments=dict(sample.assignments) if is_finished else {},
             )
         )
         self._render_preview.execute(project, design)

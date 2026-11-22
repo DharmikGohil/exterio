@@ -1,5 +1,6 @@
 {
   "name": "Two-storey with garage",
+  "stage": "parts",
   "design_name": "Sage and charcoal",
   "source": {"title": "Brown and white wooden house", "photographer": "Pixabay", "url": "https://www.pexels.com/photo/brown-and-white-wooden-house-164558/", "licence": "Pexels License"},
   "scale": {"facade_corners": [[100, 348], [1540, 348], [1540, 832], [100, 832]], "facade_width_ft": 45, "facade_height_ft": 15, "storeys": 2},

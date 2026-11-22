@@ -2,6 +2,7 @@
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
+from enum import StrEnum
 
 from domain.entities.material_entity import Material
 from domain.entities.project_entity import QualityIssue, QualityReport
@@ -131,6 +132,15 @@ class IPhotorealRenderService(ABC):
     def render(self, composite: bytes, finishes: tuple[RenderFinish, ...]) -> bytes: ...
 
 
+class SampleStage(StrEnum):
+    """How far along a sample house is created, so the samples show every step between them."""
+
+    PHOTO = "photo"  # the photo alone: its parts are found with Auto-detect
+    PARTS = "parts"  # parts marked, size not yet set
+    SIZE = "size"  # parts and size, no finishes chosen yet
+    FINISHED = "finished"  # a finished design and its estimate
+
+
 @dataclass(frozen=True)
 class SampleHouse:
     name: str
@@ -140,6 +150,7 @@ class SampleHouse:
     scale: ScaleReference
     # The finished design: region id -> material id.
     assignments: dict[str, str]
+    stage: SampleStage = SampleStage.FINISHED
 
 
 @dataclass(frozen=True)

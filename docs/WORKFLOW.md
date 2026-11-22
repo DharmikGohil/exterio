@@ -40,12 +40,23 @@ flowchart TD
 - **Steady sign-in form.** The form is anchored to the top, so switching between Sign in and
   Create account never moves the tabs, and the password fields have a show/hide button. Create account asks for the
   password twice and says as soon as the two differ.
-- **Sample houses.** The whole flow can be seen in under a minute without owning a suitable photo.
-  Four real photographs (a ranch, a two-storey, a brick house, a craftsman) come with their parts
-  already traced and a finished design, so finishes land on real siding, brick and shadows, and
-  they work the same with or without AI detection. The demo account starts with all four; each
-  "try a sample house" adds the next one and opens it at the Photo step, so every step can be
-  walked through in order rather than landing on the finished design.
+- **Sample houses, one at each stage.** The whole flow can be seen without owning a suitable
+  photo. Four real photographs are created at different stages, so between them they show every
+  step and Your houses shows every kind of progress:
+
+  | Sample | Created with | Opens at |
+  |---|---|---|
+  | Single-storey ranch | the photo alone | Photo, then Regions for Auto-detect |
+  | Two-storey with garage | photo and traced parts | Scale |
+  | Brick house with dormers | parts and size | Design, with no finishes yet |
+  | Craftsman with stone | a finished design | Estimate |
+
+  The demo account starts with all four; each "try a sample house" adds the next one and opens it
+  at its own step. A house opens at the next thing left to do (parts, size, design, estimate).
+- **The photo check, the first time.** The first time a browser opens a house that has only its
+  photo, the saved photo check is walked through stage by stage over the photo, as right after an
+  upload, and then shown. It is remembered per house in the browser, so it plays once; an upload
+  in this browser counts as seen, and reduced motion skips it.
 - **Before and after on the sign-in page.** Those houses sweep from their photo to their new
   finishes, so the product explains itself before anyone signs in.
 - **No feature that cannot work is shown.** When the server has no image model, the photoreal

@@ -4,6 +4,7 @@ import { Button } from '@/presentation/shared/atoms/Button';
 import { Icon } from '@/presentation/shared/atoms/Icon';
 import { ConfirmDialog } from '@/presentation/shared/molecules/ConfirmDialog';
 import { resolveFileUrl } from '@/presentation/shared/utils/fileUrl';
+import { usePhotoCheckReveal } from '@/presentation/features/studio/hooks/usePhotoCheckReveal';
 import { usePhotoStep } from '@/presentation/features/studio/hooks/usePhotoStep';
 import { PhotoCheckingPreview } from '@/presentation/features/studio/molecules/PhotoCheckingPreview';
 import { PhotoDropzone } from '@/presentation/features/studio/molecules/PhotoDropzone';
@@ -32,7 +33,10 @@ export interface PhotoStepProps {
 export function PhotoStep({ project, onStepChange }: PhotoStepProps) {
   const photo = usePhotoStep(project);
   const image = project.image;
-  const isChecking = photo.isUploading && photo.localPreviewUrl !== null;
+  const reveal = usePhotoCheckReveal(project.id, image !== null);
+  const isUploadChecking = photo.isUploading && photo.localPreviewUrl !== null;
+  const isRevealing = reveal.isRevealing && image !== null && !photo.isUploading;
+  const isChecking = isUploadChecking || isRevealing;
   const rejectedPreviewUrl = photo.rejection && !photo.isUploading ? photo.localPreviewUrl : null;
 
   return (
@@ -68,12 +72,21 @@ export function PhotoStep({ project, onStepChange }: PhotoStepProps) {
         </Alert>
       )}
 
-      {isChecking && photo.localPreviewUrl ? (
+      {isUploadChecking && photo.localPreviewUrl ? (
         <div className={PHOTO_GRID}>
           <PhotoCheckingPreview
             imageUrl={photo.localPreviewUrl}
             stages={photo.checkingStages}
             activeIndex={photo.activeCheckingStage}
+          />
+          <QualityReportSkeleton />
+        </div>
+      ) : isRevealing && image ? (
+        <div className={PHOTO_GRID}>
+          <PhotoCheckingPreview
+            imageUrl={resolveFileUrl(image.url)}
+            stages={reveal.stages}
+            activeIndex={reveal.activeIndex}
           />
           <QualityReportSkeleton />
         </div>

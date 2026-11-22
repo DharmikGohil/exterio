@@ -1,5 +1,6 @@
 {
   "name": "Single-storey ranch",
+  "stage": "photo",
   "design_name": "White farmhouse",
   "source": {"title": "Single-storey house under blue sky", "photographer": "Clay Elliot", "url": "https://www.pexels.com/photo/single-storey-house-under-blue-sky-5785100/", "licence": "Pexels License"},
   "scale": {"facade_corners": [[148, 470], [1472, 464], [1472, 718], [148, 720]], "facade_width_ft": 54, "facade_height_ft": 9, "storeys": 1},

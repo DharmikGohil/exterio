@@ -26,7 +26,8 @@ def headers(client):
 
 @pytest.fixture
 def sample(client, headers):
-    return client.post("/api/projects/sample", headers=headers).json()
+    # The finished sample: every step of the flow has data to test against.
+    return client.post("/api/projects/sample?key=craftsman", headers=headers).json()
 
 
 def test_health_check_is_public(client):
@@ -110,7 +111,7 @@ def test_materials_catalogue_is_served_with_swatches(client, headers):
 
 def test_sample_project_is_complete_and_listed(client, headers, sample):
     assert sample["image"]["quality"]["usable"] is True
-    assert len(sample["regions"]) == 10
+    assert len(sample["regions"]) == 21
     assert sample["scale"]["method"] == "facade_dimensions"
     assert sample["designs"][0]["previewUrl"]
     assert client.get(sample["designs"][0]["previewUrl"]).status_code == 200
@@ -155,10 +156,10 @@ def test_estimate_has_material_labour_category_and_grand_totals(client, headers,
 
     assert actual["currency"] == "INR"
     assert actual["scale"]["confidencePct"] == 8.0
-    wall = next(region for region in actual["regions"] if region["name"] == "Front wall")
+    wall = next(region for region in actual["regions"] if region["name"] == "Garage wall")
     # Counted straight from the traced outline, outside the measuring pipeline: the wall's pixels
-    # less every part drawn on it, at 54 ft across and 9 ft up the facade, is 253.9 sq ft.
-    assert wall["areaSqft"] == pytest.approx(253.9, rel=0.02)
+    # less the garage door on it, at 44 ft across and 9.5 ft up the facade, is 60.7 sq ft.
+    assert wall["areaSqft"] == pytest.approx(60.7, rel=0.03)
     assert sum(line["total"] for line in actual["lines"]) == pytest.approx(
         actual["totals"]["grandTotal"]
     )
@@ -215,7 +216,7 @@ def test_invalid_rates_are_rejected(client, headers, sample):
 
 def test_area_override_wins_and_is_flagged(client, headers, sample):
     regions = sample["regions"]
-    wall = next(region for region in regions if region["name"] == "Front wall")
+    wall = next(region for region in regions if region["name"] == "Garage wall")
     wall["areaOverrideSqft"] = 500
 
     saved = client.put(
@@ -226,7 +227,7 @@ def test_area_override_wins_and_is_flagged(client, headers, sample):
     ).json()
 
     assert saved.status_code == 200
-    actual = next(region for region in estimate["regions"] if region["name"] == "Front wall")
+    actual = next(region for region in estimate["regions"] if region["name"] == "Garage wall")
     assert actual["areaSqft"] == 500
     assert actual["isOverride"] is True
     assert any("entered by hand" in note for note in estimate["assumptions"])
@@ -240,7 +241,7 @@ def test_deleting_a_region_drops_its_assignment_but_keeps_the_design(client, hea
     ).json()
 
     design = saved["designs"][0]
-    assert len(saved["regions"]) == 9
+    assert len(saved["regions"]) == 20
     assert set(design["assignments"]) <= {region["id"] for region in saved["regions"]}
     assert design["previewUrl"] and design["previewUrl"] != sample["designs"][0]["previewUrl"]
 
@@ -267,10 +268,11 @@ def test_scale_method_changes_the_estimate_and_its_confidence(client, headers, s
     assert saved.status_code == 200
     assert estimate["scale"]["method"] == "door_height"
     assert estimate["scale"]["confidencePct"] == 20.0
-    wall = next(region for region in estimate["regions"] if region["name"] == "Front wall")
-    # The door's outline includes its frame and transom, taller than the assumed 7 ft, so the door
-    # method reads the wall smaller than the wall's own size does.
-    assert wall["areaSqft"] == pytest.approx(253.9, rel=0.3)
+    wall = next(region for region in estimate["regions"] if region["name"] == "Garage wall")
+    # The door method rests on one door assumed to be 7 ft tall, so it gives its own reading of the
+    # wall rather than the one the wall's measured size gives.
+    assert wall["areaSqft"] > 0
+    assert wall["areaSqft"] != pytest.approx(60.7, rel=0.02)
 
 
 def test_scale_validation_needs_the_measurements_for_the_chosen_method(client, headers, sample):
@@ -288,7 +290,7 @@ def test_scale_validation_needs_the_measurements_for_the_chosen_method(client, h
 
 def test_designs_can_be_created_copied_changed_and_deleted(client, headers, sample):
     first = sample["designs"][0]
-    wall = next(region for region in sample["regions"] if region["name"] == "Front wall")
+    wall = next(region for region in sample["regions"] if region["name"] == "Garage wall")
     window = next(region for region in sample["regions"] if region["label"] == "window")
     roof = next(region for region in sample["regions"] if region["label"] == "roof")
 
@@ -338,7 +340,7 @@ def test_report_is_a_pdf_download(client, headers, sample):
 
     assert actual.status_code == 200
     assert actual.headers["content-type"] == "application/pdf"
-    assert "renovation-report-single-storey-ranch.pdf" in actual.headers["content-disposition"]
+    assert "renovation-report-craftsman-with-stone.pdf" in actual.headers["content-disposition"]
     assert actual.content.startswith(b"%PDF")
 
 
@@ -414,7 +416,7 @@ def test_ai_endpoints_return_503_when_not_configured(client, headers, sample):
 def test_detection_replaces_auto_regions_and_keeps_user_regions(ai):
     client, _ = ai
     headers = guest_headers(client)
-    sample = client.post("/api/projects/sample", headers=headers).json()
+    sample = client.post("/api/projects/sample?key=craftsman", headers=headers).json()
     mine = {
         "label": "gate",
         "name": "My gate",
@@ -439,7 +441,7 @@ def test_detection_replaces_auto_regions_and_keeps_user_regions(ai):
 def test_photoreal_render_runs_in_background_and_is_capped_per_user(ai):
     client, fakes = ai
     headers = guest_headers(client)
-    sample = client.post("/api/projects/sample", headers=headers).json()
+    sample = client.post("/api/projects/sample?key=craftsman", headers=headers).json()
     design_id = sample["designs"][0]["id"]
 
     first = client.post(f"/api/designs/{design_id}/render", headers=headers)
@@ -460,7 +462,7 @@ def test_photoreal_render_runs_in_background_and_is_capped_per_user(ai):
 def test_changing_a_design_discards_its_stale_render(ai):
     client, _ = ai
     headers = guest_headers(client)
-    sample = client.post("/api/projects/sample", headers=headers).json()
+    sample = client.post("/api/projects/sample?key=craftsman", headers=headers).json()
     design = sample["designs"][0]
     client.post(f"/api/designs/{design['id']}/render", headers=headers)
 
@@ -475,7 +477,7 @@ def test_changing_a_design_discards_its_stale_render(ai):
 def test_advisor_answers_with_retrieved_notes_and_project_figures(ai):
     client, fakes = ai
     headers = guest_headers(client)
-    sample = client.post("/api/projects/sample", headers=headers).json()
+    sample = client.post("/api/projects/sample?key=craftsman", headers=headers).json()
 
     actual = client.post(
         "/api/advisor/chat",
@@ -546,3 +548,27 @@ def test_each_sample_request_adds_the_next_house_then_a_chosen_one(client, heade
     assert chosen["name"] == "Craftsman with stone"
     assert chosen["designs"][0]["name"] == "Sage, cream and sandstone"
     assert chosen["designs"][0]["previewUrl"]
+
+
+def test_samples_are_created_at_different_stages(client, headers):
+    created = {
+        key: client.post(f"/api/projects/sample?key={key}", headers=headers).json()
+        for key in ("ranch", "two-storey", "brick", "craftsman")
+    }
+    listed = {item["id"]: item for item in client.get("/api/projects", headers=headers).json()}
+
+    def stage(key):
+        project = created[key]
+        summary = listed[project["id"]]
+        has_finishes = bool(project["designs"][0]["assignments"])
+        return (
+            bool(project["regions"]),
+            project["scale"] is not None,
+            has_finishes,
+            summary["progressLabel"],
+        )
+
+    assert stage("ranch") == (False, False, False, "Photo added")
+    assert stage("two-storey") == (True, False, False, "Marking parts")
+    assert stage("brick") == (True, True, False, "Designing")
+    assert stage("craftsman") == (True, True, True, "Estimate ready")

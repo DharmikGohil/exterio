@@ -143,7 +143,8 @@ The four sample houses are real photographs from Pexels, used under the Pexels L
 | Brick house with dormers | [Curtis Adams](https://www.pexels.com/photo/white-and-brown-concrete-house-near-green-grass-3990589/) |
 | Craftsman with stone | [Get Lost Mike](https://www.pexels.com/photo/white-and-brown-concrete-house-under-blue-sky-7710011/) |
 
-Each one's parts and finished design are traced by hand in
+Each one's parts, finished design and starting stage (photo only, parts, size or finished) are
+traced by hand in
 `exterio-backend/src/infrastructure/services/imaging/sample_houses/<name>/house.json`, so the
 samples work without AI detection. The before / after pairs on the sign-in page are rendered from
 them by the instant preview; after changing a sample or the renderer, run

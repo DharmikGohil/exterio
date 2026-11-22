@@ -19,6 +19,7 @@ from domain.interfaces.services.image_services import (
     ISampleHouseProvider,
     SampleHouse,
     SampleHouseSummary,
+    SampleStage,
 )
 
 SAMPLES_DIR = Path(__file__).parent / "sample_houses"
@@ -84,6 +85,7 @@ def _load(folder: Path) -> SampleHouse:
             storeys=int(scale["storeys"]),
         ),
         assignments=assignments,
+        stage=SampleStage(description.get("stage", SampleStage.FINISHED)),
     )
 
 
