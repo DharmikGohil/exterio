@@ -49,7 +49,8 @@ export function useProjectListPage() {
   const createSampleProject = async () => {
     try {
       const project = await actions.createSampleProject();
-      navigate(ROUTES.project(project.id));
+      // A sample is a tour: start at the photo and walk every step, rather than where it ends.
+      navigate(ROUTES.project(project.id, 'photo'));
     } catch (sampleError) {
       toast.error(sampleError);
     }

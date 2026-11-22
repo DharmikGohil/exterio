@@ -44,7 +44,8 @@ flowchart TD
   Four real photographs (a ranch, a two-storey, a brick house, a craftsman) come with their parts
   already traced and a finished design, so finishes land on real siding, brick and shadows, and
   they work the same with or without AI detection. The demo account starts with all four; each
-  "try a sample house" adds the next one.
+  "try a sample house" adds the next one and opens it at the Photo step, so every step can be
+  walked through in order rather than landing on the finished design.
 - **Before and after on the sign-in page.** Those houses sweep from their photo to their new
   finishes, so the product explains itself before anyone signs in.
 - **No feature that cannot work is shown.** When the server has no image model, the photoreal
