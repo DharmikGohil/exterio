@@ -259,6 +259,7 @@ No sparkle or wand icons; each icon says what its button does.
 |---|---|---|
 | `MatAngleGuides` | `shared/atoms` | The 30°, 45° and 60° guides in a mat's corner |
 | `BeforeAfterShowcase` | `features/auth` | The sign-in page's before / after sweep; houses in `utils/showcase` |
+| `CategoryTotals` | `features/estimate` | The full breakdown's cost by category (paint, stone, tiles, railings…): total, materials and labour, and share of the whole |
 | `BlurReveal` | `shared/atoms` | Text that comes into focus word by word from a soft blur (the sign-in headline, summary and welcome heading); read as one sentence by screen readers |
 | `MatPanel` | `shared/molecules` | A piece of cutting mat, for the sign-in story |
 | `EstimateDiagram`, `PartCard`, `EstimateSummary` | `features/estimate` | The estimate drawn on the house; grouping in `utils/partGroups` |

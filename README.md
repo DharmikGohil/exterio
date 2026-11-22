@@ -14,7 +14,7 @@ and INR throughout.
 | Upload a photo, reject unusable ones with guidance | Step 1 — sharpness, brightness and resolution checks, plus an optional vision-model check |
 | Identify walls, windows, balconies, pillars, parapets, gates, roof edges | Step 2 — AI detection (segmentation model or vision LLM), returned as editable polygons |
 | Review and correct detected regions | Step 2 — reshape, relabel, add, delete, or draw from scratch |
-| Material catalogue, different materials on different parts | Step 3 — 20 materials across paint, texture, stone, tile, panels and railings |
+| Material catalogue, different materials on different parts | Step 3 — 23 materials across paint, texture finish, stone cladding, tiles, panels, and glass and metal railings |
 | Multiple combinations, switching between designs | Step 3 — any number of named designs per project, with a cost comparison |
 | Redesigned image that keeps the building's structure | Step 3 — instant composite, and an AI photoreal render with before/after slider |
 | Surface area per building part | Step 4 (optional) sets the real size; Step 5 — perspective-corrected areas with a stated confidence band, rough until a size is given |

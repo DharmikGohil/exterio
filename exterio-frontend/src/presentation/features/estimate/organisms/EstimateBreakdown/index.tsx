@@ -15,6 +15,7 @@ import type { PartGroup } from '@/presentation/features/estimate/utils/partGroup
 import type { Design } from '@/domain/models/design';
 import type { Estimate } from '@/domain/models/estimate';
 import type { Project } from '@/domain/models/project';
+import { CategoryTotals } from '@/presentation/features/estimate/molecules/CategoryTotals';
 
 type BreakdownTab = 'buy' | 'sizes' | 'compare';
 
@@ -91,6 +92,8 @@ export function EstimateBreakdown({
           ))}
         </dl>
       </div>
+
+      <CategoryTotals categories={estimate.categories} grandTotal={estimate.totals.grandTotal} />
 
       <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_24rem]">
         <section className="min-w-0 overflow-hidden rounded-2xl border border-stone-200 bg-white">

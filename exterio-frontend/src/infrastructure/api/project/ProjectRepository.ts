@@ -12,6 +12,8 @@ import type {
 } from '@/domain/models/project';
 import type { ApiError } from '@/infrastructure/utils/http/ApiError';
 
+import { shrinkForUpload } from '@/infrastructure/utils/image/shrinkForUpload';
+
 import { BaseRepository } from '../BaseRepository';
 
 enum ProjectErrorCode {
@@ -60,11 +62,12 @@ export class ProjectRepository extends BaseRepository implements IProjectReposit
   }
 
   uploadImage(projectId: string, file: File): Promise<Project> {
-    const formData = new FormData();
-    formData.append(IMAGE_FIELD, file);
-    return this.execute(() =>
-      this.httpClient.post<Project>(`${this.projectUrl(projectId)}/image`, formData)
-    );
+    return this.execute(async () => {
+      // A phone photo is shrunk to what the server uses first, so it uploads quickly.
+      const formData = new FormData();
+      formData.append(IMAGE_FIELD, await shrinkForUpload(file));
+      return this.httpClient.post<Project>(`${this.projectUrl(projectId)}/image`, formData);
+    });
   }
 
   detectRegions(

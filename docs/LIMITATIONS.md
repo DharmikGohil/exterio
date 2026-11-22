@@ -132,7 +132,9 @@ Two providers implement detection; the first one configured is used.
 
 ## Product and engineering
 
-- Images only. Video and multi-photo 3D reconstruction are not supported.
+- Images only. Video and multi-photo 3D reconstruction are not supported. A large phone photo is
+  shrunk in the browser to 2400 px on its long side before upload (the server works at 1600 px),
+  so it uploads in about a second on an ordinary connection; old browsers send the original.
 - One photo per project. Several elevations need several projects.
 - Files are stored on the API server's disk. A host without a persistent volume loses uploads on
   redeploy.
