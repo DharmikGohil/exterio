@@ -28,16 +28,17 @@ const SHORTCUT_PREFIX =
 const AUTO_DETECT_UNAVAILABLE =
   'AI detection is not configured on this server. You can still mark every region by hand with Draw region.';
 
+/** One short line under the tools saying what the photo does now. It never covers the photo. */
 function getCanvasHint(isDrawing: boolean, pointCount: number, hasSelection: boolean): string {
   if (isDrawing) {
     return pointCount < 3
-      ? 'Click around the edge of one part of the house. You need at least 3 points.'
-      : 'Click the green first point or press Enter to close the shape. Esc cancels; Backspace or Ctrl+Z removes the last point.';
+      ? 'Click around the edge of one part (at least 3 points).'
+      : `Click the first point or press Enter to close · Esc cancels · ${SHORTCUT_PREFIX}Z undoes a point`;
   }
   if (hasSelection) {
-    return 'Drag a point to move it. Double-click an edge to add a point. Right-click a point, or select it and press Delete, to remove it.';
+    return 'Drag a point to move it · double-click an edge to add one · Delete removes a point';
   }
-  return 'Click a region to select and adjust it.';
+  return 'Click a part to adjust it, or draw one that is missing.';
 }
 
 export interface RegionsStepProps {
@@ -52,10 +53,11 @@ export function RegionsStep({ project, image, onStepChange }: RegionsStepProps) 
   // The row of tools above the photo; the photo gives up whatever height it really takes.
   const toolbar = useElementSize<HTMLDivElement>();
   const toolbarHeight = toolbar.height || ONE_LINE_TOOLBAR_PX;
-  const hint =
-    editor.isDrawing || editor.selectedRegionId !== null
-      ? getCanvasHint(editor.isDrawing, editor.drawPoints.length, editor.selectedRegionId !== null)
-      : null;
+  const hint = getCanvasHint(
+    editor.isDrawing,
+    editor.drawPoints.length,
+    editor.selectedRegionId !== null
+  );
 
   return (
     <div className="space-y-5">
@@ -74,103 +76,116 @@ export function RegionsStep({ project, image, onStepChange }: RegionsStepProps) 
       {/*
         The tools sit in a row above the photo, as wide as it, so they never cover a part of the
         house: drawing and detection on the left, undo and redo on the right. On the photo itself
-        only the names toggle (top right), a hint while editing, and the save bar.
+        only the names toggle (top right) and the save bar. The hint line under the tools is
+        always there, so the photo never moves when it changes.
       */}
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_24rem]">
         <div
           ref={toolbar.ref}
-          role="toolbar"
-          aria-label="Region tools"
-          className="mx-auto flex min-w-fit max-w-full flex-wrap items-center justify-between gap-2"
+          className="mx-auto min-w-fit max-w-full space-y-2"
           style={photoFrameStyle(image.width, image.height, toolbarHeight)}
         >
-          <div className="flex flex-wrap items-center gap-2">
-            {editor.isDrawing ? (
-              <>
+          <div
+            role="toolbar"
+            aria-label="Region tools"
+            className="flex flex-wrap items-center justify-between gap-2"
+          >
+            <div className="flex flex-wrap items-center gap-2">
+              {editor.isDrawing ? (
+                <>
+                  <Button
+                    size="lg"
+                    icon="check"
+                    disabled={!editor.canFinishDrawing}
+                    onClick={editor.finishDrawing}
+                  >
+                    Finish shape
+                  </Button>
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    icon="undo"
+                    disabled={editor.drawPoints.length === 0}
+                    onClick={editor.undoDrawPoint}
+                  >
+                    Undo point
+                  </Button>
+                  <Button size="lg" variant="ghost" icon="x" onClick={editor.cancelDrawing}>
+                    Cancel
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button size="lg" variant="secondary" icon="draw" onClick={editor.startDrawing}>
+                    Draw region
+                  </Button>
+                  <Tooltip
+                    side="bottom"
+                    content={
+                      editor.canAutoDetect
+                        ? 'Let the AI find walls, windows, doors and more'
+                        : 'AI detection is not configured. Draw regions by hand.'
+                    }
+                  >
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      icon="shapes"
+                      disabled={!editor.canAutoDetect}
+                      isLoading={editor.isDetecting}
+                      onClick={editor.requestDetection}
+                    >
+                      Auto-detect
+                    </Button>
+                  </Tooltip>
+                  {editor.selectedVertexIndex !== null && (
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      icon="trash"
+                      onClick={editor.removeSelectedVertex}
+                    >
+                      Remove point
+                    </Button>
+                  )}
+                </>
+              )}
+            </div>
+            {!editor.isDrawing && (
+              <div className="flex items-center gap-1">
                 <Button
-                  size="lg"
-                  icon="check"
-                  disabled={!editor.canFinishDrawing}
-                  onClick={editor.finishDrawing}
-                >
-                  Finish shape
-                </Button>
-                <Button
-                  size="lg"
+                  size="icon"
                   variant="outline"
-                  icon="undo"
-                  disabled={editor.drawPoints.length === 0}
-                  onClick={editor.undoDrawPoint}
+                  className="h-11 w-11"
+                  aria-label="Undo"
+                  title={`Undo (${SHORTCUT_PREFIX}Z)`}
+                  disabled={!editor.canUndo}
+                  onClick={editor.undo}
                 >
-                  Undo point
+                  <Icon name="undo" />
                 </Button>
-                <Button size="lg" variant="ghost" icon="x" onClick={editor.cancelDrawing}>
-                  Cancel
-                </Button>
-              </>
-            ) : (
-              <>
-                <Button size="lg" variant="secondary" icon="draw" onClick={editor.startDrawing}>
-                  Draw region
-                </Button>
-                <Tooltip
-                  side="bottom"
-                  content={
-                    editor.canAutoDetect
-                      ? 'Let the AI find walls, windows, doors and more'
-                      : 'AI detection is not configured. Draw regions by hand.'
-                  }
+                <Button
+                  size="icon"
+                  variant="outline"
+                  className="h-11 w-11"
+                  aria-label="Redo"
+                  title={`Redo (${SHORTCUT_PREFIX}Shift+Z)`}
+                  disabled={!editor.canRedo}
+                  onClick={editor.redo}
                 >
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    icon="shapes"
-                    disabled={!editor.canAutoDetect}
-                    isLoading={editor.isDetecting}
-                    onClick={editor.requestDetection}
-                  >
-                    Auto-detect
-                  </Button>
-                </Tooltip>
-                {editor.selectedVertexIndex !== null && (
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    icon="trash"
-                    onClick={editor.removeSelectedVertex}
-                  >
-                    Remove point
-                  </Button>
-                )}
-              </>
+                  <Icon name="redo" />
+                </Button>
+              </div>
             )}
           </div>
-          {!editor.isDrawing && (
-            <div className="flex items-center gap-1">
-              <Button
-                size="icon"
-                variant="outline"
-                className="h-11 w-11"
-                aria-label="Undo"
-                title={`Undo (${SHORTCUT_PREFIX}Z)`}
-                disabled={!editor.canUndo}
-                onClick={editor.undo}
-              >
-                <Icon name="undo" />
-              </Button>
-              <Button
-                size="icon"
-                variant="outline"
-                className="h-11 w-11"
-                aria-label="Redo"
-                title={`Redo (${SHORTCUT_PREFIX}Shift+Z)`}
-                disabled={!editor.canRedo}
-                onClick={editor.redo}
-              >
-                <Icon name="redo" />
-              </Button>
-            </div>
-          )}
+          {/* Zero intrinsic width: a long hint wraps to the row's width instead of widening it. */}
+          <p
+            aria-live="polite"
+            className="w-0 min-w-full truncate text-sm text-stone-600"
+            title={hint}
+          >
+            {hint}
+          </p>
         </div>
       </div>
 
@@ -205,15 +220,6 @@ export function RegionsStep({ project, image, onStepChange }: RegionsStepProps) 
             onToggle={nameTags.toggle}
             className="absolute right-4 top-4 z-10"
           />
-
-          {hint && (
-            <p
-              aria-live="polite"
-              className="pointer-events-none absolute left-1/2 top-4 z-10 hidden max-w-md -translate-x-1/2 rounded-xl bg-ink/85 px-3 py-2 text-center text-sm leading-snug text-white md:block"
-            >
-              {hint}
-            </p>
-          )}
 
           {editor.isDirty && (
             <div className="absolute inset-x-0 bottom-4 z-10 flex justify-center px-4">

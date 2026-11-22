@@ -102,7 +102,9 @@ names stay as tooltips and accessible names.
   keeps the field's own undo.
 - **On the photo itself**, only light overlays:
   - top right, the names toggle, an eye button (`NameTagToggle`);
-  - top centre, a short hint or progress note (drawing help, "Updating preview…");
+  - top centre, a progress note on Design ("Updating preview…"). On Regions the editing help
+    ("Click around the edge of one part…") is a single line under the tools instead, always
+    present so the photo never moves, and never over the house;
   - bottom centre, the one action the photo is waiting for: the unsaved-changes bar with Discard
     and Save regions (`FloatingSaveBar`, Regions, shown only when something changed) or Generate
     render (Design); on Scale, the instruction to drag the corners sits bottom left.
