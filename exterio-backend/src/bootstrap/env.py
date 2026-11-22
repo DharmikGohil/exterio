@@ -50,7 +50,7 @@ class Settings(BaseSettings):
     anthropic_model: str = "claude-opus-5-5"
     anthropic_timeout_seconds: float = 150.0
     # Outlining parts: the longest wait for the next piece of Claude's reply, with no retries.
-    # A healthy endpoint starts answering in about 25 s; past this, Gemini 3.1 Pro takes over.
+    # Anthropic's API sends the first part in about 6 s; past this, Gemini 3.1 Pro takes over.
     anthropic_detection_timeout_seconds: float = 60.0
 
     # Gemini on Google Cloud Vertex AI. A service-account key: the path to its JSON file, or the

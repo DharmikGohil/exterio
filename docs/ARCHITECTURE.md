@@ -143,7 +143,7 @@ Gemini runs on the user's own Google Cloud project through a service-account key
 answers the photo check and the advisor (first words of an answer in about 3 to 6 s). When Gemini
 does outline parts (no Claude key, or Claude failed), it uses Gemini 3.1 Pro, the better of the two
 at geometry. For detection Claude gets a short wait (`ANTHROPIC_DETECTION_TIMEOUT_SECONDS`,
-60 s, against about 25 s for a healthy first answer) and no automatic retries, so a dead endpoint
+60 s, against about 6 s to the first part on Anthropic's API) and no automatic retries, so a dead endpoint
 hands over to Gemini in about a minute instead of hanging for several. A model that fails after
 parts are already on screen is not replaced; the error is shown and the user can run it again.
 
@@ -169,9 +169,8 @@ answers use real figures.
   line once the answer is complete. Access and the design's figures are checked before the
   stream starts, so a refusal is still an ordinary 403/404. The identity guard runs on the
   stream too (`GuardedTextStream`): it holds back the last few words so a name split across
-  pieces ("Ki" + "ro") is rewritten before any of it is shown. The current gateway delivers the
-  whole reply at once at the end, so on it the text is typed out from that one piece; a provider
-  that streams tokens fills it in as they are written.
+  pieces ("Ki" + "ro") is rewritten before any of it is shown. Gemini streams the reply token by
+  token, so the answer fills in as it is written.
 - **Tested live.** `tests/evals/test_advisor_live.py` runs greetings, "which model are you",
   developer impersonation, prompt-injection, off-topic, cost and safety probes against the real
   model and checks both the raw answer and what the homeowner sees.
