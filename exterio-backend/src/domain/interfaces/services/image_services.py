@@ -122,6 +122,8 @@ class RenderFinish:
     surface: str
     material: str
     description: str
+    # The finish's colour, so an edit model keeps it exactly (empty when not known).
+    color_hex: str = ""
 
 
 class IPhotorealRenderService(ABC):

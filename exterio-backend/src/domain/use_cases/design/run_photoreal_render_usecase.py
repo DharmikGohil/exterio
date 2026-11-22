@@ -82,7 +82,9 @@ class RunPhotorealRenderUseCase:
             material = self._material_repo.find_by_id(design.assignments.get(region.id, ""))
             if material is not None:
                 surface = region.label.replace("_", " ")
-                finishes[RenderFinish(surface, material.name, material.description)] = None
+                finishes[
+                    RenderFinish(surface, material.name, material.description, material.color_hex)
+                ] = None
         return tuple(finishes)
 
     def _finish(self, design: Design, path: str | None, error: str | None) -> None:

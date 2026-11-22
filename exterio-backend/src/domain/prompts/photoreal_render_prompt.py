@@ -23,6 +23,11 @@ correct shadows, ambient occlusion, weathering-free clean surfaces, and lighting
 matches the rest of the photo.
 
 Strict rules:
+- Keep each finish exactly the colour given above. Do not darken, lighten, warm, cool or \
+saturate it, and do not recolour any part to another finish's colour. White stays white.
+- Keep every object in front of or attached to the house exactly as it is, even where it \
+overlaps a finished surface: lamp posts, poles, lights, wires, house numbers, gutters, \
+downpipes, basketball hoops, mailboxes, plants, trees and furniture. Never remove or move one.
 - Do not change the shape or position of the building, walls, windows, doors, balconies, \
 pillars, railings or roof line.
 - Do not add or remove any architectural element.
@@ -49,7 +54,9 @@ class DiffusionPrompt:
 
 def build_render_prompt(finishes: Sequence[RenderFinish]) -> str:
     listed = "\n".join(
-        f"- {finish.surface}: {finish.material} ({finish.description})" for finish in finishes
+        f"- {finish.surface}: {finish.material} ({finish.description})"
+        + (f", colour {finish.color_hex}" if finish.color_hex else "")
+        for finish in finishes
     )
     return RENDER_PROMPT_TEMPLATE.format(finishes=listed)
 

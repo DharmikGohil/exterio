@@ -39,3 +39,11 @@ def test_diffusion_prompt_stays_short_with_many_finishes():
 
 def test_diffusion_prompt_still_reads_well_with_no_finishes():
     assert "freshly finished walls" in build_diffusion_prompt([]).prompt
+
+
+def test_the_brief_pins_each_colour_and_keeps_objects_in_front_of_the_house():
+    actual = build_render_prompt([RenderFinish("wall", "Sage grey", "Matt paint", "#9caf88")])
+
+    assert "Sage grey (Matt paint), colour #9caf88" in actual
+    assert "White stays white" in actual
+    assert "lamp posts" in actual

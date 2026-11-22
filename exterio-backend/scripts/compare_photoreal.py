@@ -76,6 +76,7 @@ def tile(image: np.ndarray, title: str) -> np.ndarray:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     parser.add_argument("--out", type=Path, required=True)
+    parser.add_argument("--only", nargs="+", help="Sample keys to render, e.g. brick")
     args = parser.parse_args()
     args.out.mkdir(parents=True, exist_ok=True)
 
@@ -87,6 +88,8 @@ def main() -> None:
     available = renderers()
     print("renderers:", ", ".join(available) or "none configured")
     for summary in provider.samples():
+        if args.only and summary.key not in args.only:
+            continue
         house = provider.build(summary.key)
         by_region = {
             region_id: material
@@ -107,7 +110,9 @@ def main() -> None:
         for region in house.regions:
             if (material := by_region.get(region.id)) is not None:
                 surface = region.label.replace("_", " ")
-                finishes[RenderFinish(surface, material.name, material.description)] = None
+                finishes[
+                    RenderFinish(surface, material.name, material.description, material.color_hex)
+                ] = None
 
         tiles = [
             tile(decode_image(house.image), "Photo"),
