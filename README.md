@@ -32,6 +32,7 @@ and INR throughout.
 | [docs/ESTIMATION.md](docs/ESTIMATION.md) | Every formula from pixels to rupees, with measured accuracy |
 | [docs/LIMITATIONS.md](docs/LIMITATIONS.md) | What the numbers can and cannot be trusted for |
 | [docs/API.md](docs/API.md) | REST contract |
+| [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) | Railway and Vercel setup, every variable, live checks |
 | [docs/DESIGN.md](docs/DESIGN.md) | Design system: direction, tokens, the cutting mat and the dimension-line signature |
 
 ## The core idea
@@ -120,11 +121,15 @@ The backend tests include:
 
 ## Deployment
 
-- **API:** build `exterio-backend/Dockerfile`. Set `JWT_SECRET`, `CORS_ORIGINS` and the optional
-  AI keys, and mount a persistent volume at `/app/data`. Set `DATABASE_URL` to use Postgres instead
-  of SQLite.
-- **Web:** deploy `exterio-frontend` as a static site (a `vercel.json` is included) with
-  `VITE_API_BASE_URL` set to the API's public URL.
+The API runs on Railway (Docker, with a persistent volume) and the web app on Vercel; the
+photoreal renderer is on Modal. Step-by-step setup, every variable and the post-deploy checks are
+in [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
+
+- **API:** `exterio-backend/Dockerfile` (`railway.json` included). Set `JWT_SECRET`,
+  `CORS_ORIGINS` and the AI keys, and mount a persistent volume at `/app/data`. Set
+  `DATABASE_URL` to use Postgres instead of SQLite.
+- **Web:** `exterio-frontend` as a static site (`vercel.json` included) with `VITE_API_BASE_URL`
+  set to the API's public URL.
 
 ## Scope and assumptions
 
