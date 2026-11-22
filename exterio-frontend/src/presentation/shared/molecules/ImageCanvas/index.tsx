@@ -1,6 +1,10 @@
 import { forwardRef, type SVGProps } from 'react';
 
 import { cn } from '@/presentation/shared/utils/cn';
+import { maxPhotoHeight } from '@/presentation/shared/utils/photoFrame';
+
+/** A one-line row of controls, the least a `rowAbove` row takes. */
+const ONE_LINE_ROW_PX = 44;
 
 export interface ImageCanvasProps extends Omit<SVGProps<SVGSVGElement>, 'viewBox' | 'ref'> {
   imageUrl: string;
@@ -20,11 +24,22 @@ export interface ImageCanvasProps extends Omit<SVGProps<SVGSVGElement>, 'viewBox
  * A photo inside an SVG whose viewBox equals the image size, so anything drawn on top
  * uses image pixel coordinates directly. It scales to the container width and keeps the
  * photo's aspect ratio, and its height is capped so the whole photo, the studio header and the
- * pinned step bar fit on one screen (never shorter than 22rem on small windows).
+ * pinned step bar fit on one screen (never shorter than 18rem on small windows); see
+ * `utils/photoFrame`.
  */
 export const ImageCanvas = forwardRef<SVGSVGElement, ImageCanvasProps>(
   (
-    { imageUrl, imageWidth, imageHeight, label, rowAbove = false, className, children, ...rest },
+    {
+      imageUrl,
+      imageWidth,
+      imageHeight,
+      label,
+      rowAbove = false,
+      className,
+      style,
+      children,
+      ...rest
+    },
     ref
   ) => (
     <svg
@@ -32,13 +47,8 @@ export const ImageCanvas = forwardRef<SVGSVGElement, ImageCanvasProps>(
       viewBox={`0 0 ${imageWidth} ${imageHeight}`}
       role="group"
       aria-label={label}
-      className={cn(
-        'block h-auto w-full select-none rounded-2xl bg-stone-100',
-        rowAbove
-          ? 'max-h-[max(22rem,calc(100dvh-22rem))]'
-          : 'max-h-[max(22rem,calc(100dvh-18.5rem))]',
-        className
-      )}
+      className={cn('block h-auto w-full select-none rounded-2xl bg-stone-100', className)}
+      style={{ maxHeight: maxPhotoHeight(rowAbove ? ONE_LINE_ROW_PX : 0), ...style }}
       {...rest}
     >
       <image

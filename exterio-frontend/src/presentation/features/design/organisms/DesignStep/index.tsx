@@ -25,11 +25,12 @@ import { MaterialPanel } from '@/presentation/features/design/organisms/Material
 import { useEstimate } from '@/presentation/features/estimate/hooks/useEstimate';
 import { useMaterials } from '@/presentation/features/materials/hooks/useMaterials';
 import { NameTagToggle } from '@/presentation/shared/molecules/NameTagToggle';
+import { useElementSize } from '@/presentation/shared/hooks/useElementSize';
 import { useStoredToggle } from '@/presentation/shared/hooks/useStoredToggle';
 import { StepFooter } from '@/presentation/features/studio/molecules/StepFooter';
 import { StepHeader } from '@/presentation/features/studio/molecules/StepHeader';
 import { useCapabilities } from '@/presentation/features/system/hooks/useCapabilities';
-import { photoFrameStyle } from '@/presentation/shared/utils/photoFrame';
+import { maxPhotoHeight, photoFrameStyle } from '@/presentation/shared/utils/photoFrame';
 import type { StudioStep } from '@/presentation/routes/paths';
 import type { Design } from '@/domain/models/design';
 import type { Project, ProjectImage } from '@/domain/models/project';
@@ -52,6 +53,8 @@ export interface DesignStepProps {
 }
 
 /** Step 4. Makes sure a design exists, then hands over to the workspace. */
+const ONE_LINE_TOOLBAR_PX = 44;
+
 export function DesignStep({ project, image, onStepChange }: DesignStepProps) {
   const { activeDesign, selectDesign } = useActiveDesign(project);
   const { defaultDesignError, retryCreateDefault } = useEnsureDefaultDesign(project);
@@ -100,6 +103,10 @@ function DesignWorkspace({
 }: DesignWorkspaceProps) {
   const view = useDesignView();
   const nameTags = useStoredToggle('exterio.showRegionNames', true);
+  // The row above the photo can wrap onto two lines on a narrower screen; the photo gives up
+  // whatever height it really takes. Until it is measured, it is taken as one 44 px line.
+  const toolbar = useElementSize<HTMLDivElement>();
+  const toolbarHeight = toolbar.height || ONE_LINE_TOOLBAR_PX;
   const { capabilities } = useCapabilities();
   const {
     materials,
@@ -163,8 +170,9 @@ function DesignWorkspace({
       */}
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_26rem]">
         <div
+          ref={toolbar.ref}
           className="mx-auto flex min-w-fit max-w-full flex-wrap items-center justify-between gap-3"
-          style={photoFrameStyle(image.width, image.height, true)}
+          style={photoFrameStyle(image.width, image.height, toolbarHeight)}
         >
           <DesignSwitcher project={project} activeDesign={design} onSelect={onSelectDesign} />
           <div className="flex flex-wrap items-center gap-2">
@@ -222,7 +230,7 @@ function DesignWorkspace({
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_26rem]">
         <div
           className="relative mx-auto min-w-0"
-          style={photoFrameStyle(image.width, image.height, true)}
+          style={photoFrameStyle(image.width, image.height, toolbarHeight)}
         >
           {view.viewMode === 'compare' ? (
             <CompareSlider image={image} beforeUrl={originalUrl} afterUrl={displayedUrl} />
@@ -266,6 +274,7 @@ function DesignWorkspace({
 
         <MaterialPanel
           headerAction={<AdvisorButton />}
+          maxHeight={maxPhotoHeight(toolbarHeight)}
           regions={project.regions}
           selectedRegion={selectedRegion}
           assignments={design.assignments}

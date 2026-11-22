@@ -68,7 +68,9 @@ left with its tools floating on it, a panel on the right, and the step bar pinne
 Everything is in view without scrolling on screens from 1280×720 up.
 The photo's frame hugs the photo (`utils/photoFrame`): its width is the photo's width at the
 tallest the photo may be, or the full column if that is narrower, so a wide screen shows no grey
-bands beside the photo and the tools in its corners sit on the photo itself.
+bands beside the photo and the tools in its corners sit on the photo itself. On Design, the row of
+controls above the photo is measured: when it wraps onto two lines on a narrower screen, the
+photo and the parts panel give up that height, so the step bar still fits on screen.
 
 - **Header**: the studio puts its breadcrumb and stepper into the app header through a header slot
   (`HeaderSlot`, a portal), so there is no second bar. The stepper (`StudioStepper`) is plain text:

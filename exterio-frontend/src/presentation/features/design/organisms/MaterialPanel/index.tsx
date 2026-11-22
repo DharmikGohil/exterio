@@ -37,6 +37,8 @@ export interface MaterialPanelProps {
   onClear: (regionIds: string[]) => void;
   /** Shown at the right of the panel title, e.g. the material advisor button. */
   headerAction?: ReactNode;
+  /** As tall as the photo may be, so the panel never pushes the step bar off screen. */
+  maxHeight?: string;
 }
 
 /**
@@ -58,12 +60,16 @@ export function MaterialPanel({
   onAssign,
   onClear,
   headerAction,
+  maxHeight,
 }: MaterialPanelProps) {
   const materialsById = indexMaterialsById(materials);
 
   if (!selectedRegion) {
     return (
-      <aside className="flex max-h-[max(22rem,calc(100dvh-22rem))] min-h-64 flex-col self-start overflow-hidden rounded-2xl border border-stone-200 bg-white lg:sticky lg:top-6">
+      <aside
+        style={{ maxHeight }}
+        className="flex max-h-[max(22rem,calc(100dvh-22rem))] min-h-64 flex-col self-start overflow-hidden rounded-2xl border border-stone-200 bg-white lg:sticky lg:top-6"
+      >
         <div className="mx-4 flex min-h-16 items-center justify-between gap-3 border-b border-stone-200 px-1 py-3">
           <h3 className="whitespace-nowrap text-lg font-medium text-stone-900">
             Parts of the house
@@ -137,7 +143,10 @@ export function MaterialPanel({
   const groups = groupMaterialsForLabel(materials, selectedRegion.label);
 
   return (
-    <aside className="flex max-h-[max(22rem,calc(100dvh-22rem))] min-h-64 flex-col self-start overflow-hidden rounded-2xl border border-stone-200 bg-white lg:sticky lg:top-6">
+    <aside
+      style={{ maxHeight }}
+      className="flex max-h-[max(22rem,calc(100dvh-22rem))] min-h-64 flex-col self-start overflow-hidden rounded-2xl border border-stone-200 bg-white lg:sticky lg:top-6"
+    >
       <div className="space-y-3 border-b border-stone-200 px-5 py-4">
         <Button variant="link" size="inline" icon="arrow-left" onClick={() => onSelectRegion(null)}>
           All parts
