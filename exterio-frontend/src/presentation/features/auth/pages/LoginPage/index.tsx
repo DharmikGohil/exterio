@@ -7,7 +7,7 @@ import { SampleHouseAccess } from '@/presentation/features/auth/organisms/Sample
 
 function ProductStory() {
   return (
-    <MatPanel className="flex h-full min-h-dvh flex-col justify-center gap-10 rounded-none px-12 py-12 2xl:gap-12 2xl:px-20 2xl:py-16">
+    <MatPanel className="flex h-full min-h-dvh flex-col justify-center gap-7 rounded-none px-12 py-8 2xl:gap-12 2xl:px-20 2xl:py-16">
       <div className="max-w-2xl space-y-5">
         <h1 className="text-[42px] font-medium leading-[1.05] 2xl:text-[52px] tracking-[-0.02em] text-mat-ink">
           See your house in new finishes, and what they cost

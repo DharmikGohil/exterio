@@ -129,12 +129,15 @@ The Estimate step answers "where does the money go?" on the house itself (`Estim
 
 `MatPanel` is the product's material, used in one place: **the sign-in story** (`LoginPage`), the
 left half of the sign-in screen, with the headline and a real house before and after lying on the
-mat (`BeforeAfterShowcase`). The new finishes sweep across the photo behind a thin white line, hold,
-sweep back, and the next house follows; dots under the caption pick a house, and the caption names
-the house, the design and its finishes. The images are rendered by the product's own instant
-preview from the sample houses (`exterio-backend/scripts/render_showcase.py`), so the sign-in page
-shows exactly what the studio does. With reduced motion the photo is shown split down the middle
-and only the dots change it. The right
+mat (`BeforeAfterShowcase`). Each house takes 6 seconds: the photo as it is, the new finishes
+sweeping across behind a thin white line, then an arrow drawn from each of the three costliest
+finishes to the part it is on, with a label over the sky ("Roof · Charcoal metal roof · ₹17,348"),
+like the estimate drawn on the house. Then the next house. The caption names the house, the design
+and its total; dots pick a house. Photos, renders, costs and arrow points all come from the sample
+houses through the product's own preview and estimate (`exterio-backend/scripts/render_showcase.py`
+writes the images and `utils/showcaseData.ts`); each arrow lands on the point deepest inside its
+finish, so never on a window or an edge. With reduced motion the finished photo and its arrows are
+shown still and only the dots change the house. The right
 half has the Sign in / Create account form with Sign in as the one green button, then "or" and
 Try it with a sample house as an outline button (`SampleHouseAccess`).
 
@@ -184,7 +187,8 @@ No sparkle or wand icons; each icon says what its button does.
 - Transition colour, background, border, opacity and transform only. Buttons press to 0.98.
 - Loading uses a left-to-right sheen (`Skeleton`, `ShimmerOverlay`), never a pulse.
 - Nothing loops unless it is live (a check or detection that is actually running). The one
-  exception is the sign-in showcase, a 7-second before / after sweep that is the page's subject.
+  exception is the sign-in showcase, a 6-second before / after with arrows that is the page's
+  subject.
 - `prefers-reduced-motion` turns animation off.
 
 ## Component map
