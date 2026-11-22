@@ -1,14 +1,8 @@
 <div align="center">
 
-<img src="docs/assets/sign-in-showcase.gif" width="632" alt="The sign-in page showcase: each sample house sweeps from its photo to an AI render, with the chosen finishes and the estimated cost" />
-
 # Exterio
 
 **See your house redesigned by AI, and what it will cost.**
-
-Upload one photo of a house. AI finds the walls, roof, windows, pillars and railings; you choose
-paint, stone, tiles or cladding for each part; Exterio renders the redesign on your own house and
-works out the quantities and a rupee estimate you can take to a contractor.
 
 [![CI](https://github.com/DharmikGohil/exterio/actions/workflows/ci.yml/badge.svg)](https://github.com/DharmikGohil/exterio/actions/workflows/ci.yml)
 ![Python 3.12](https://img.shields.io/badge/python-3.12-3776AB?logo=python&logoColor=white)
@@ -23,6 +17,12 @@ works out the quantities and a rupee estimate you can take to a contractor.
 [Quick start](#quick-start) ·
 [Architecture](#architecture) ·
 [Documentation](#documentation)
+
+<img src="docs/assets/sign-in-showcase.gif" width="632" alt="The sign-in page showcase: each sample house sweeps from its photo to an AI render, with the chosen finishes and the estimated cost" />
+
+Upload one photo of a house. AI finds the walls, roof, windows, pillars and railings; you choose
+paint, stone, tiles or cladding for each part; Exterio renders the redesign on your own house and
+works out the quantities and a rupee estimate you can take to a contractor.
 
 </div>
 
