@@ -7,6 +7,7 @@ import { Input } from '@/presentation/shared/atoms/Input';
 import { useAdvisorChat } from '@/presentation/features/advisor/hooks/useAdvisorChat';
 import { useScrollToLatest } from '@/presentation/features/advisor/hooks/useScrollToLatest';
 import { AdvisorMessageBubble } from '@/presentation/features/advisor/molecules/AdvisorMessageBubble';
+import { questionAboutSource } from '@/presentation/features/advisor/utils/sourceQuestion';
 
 const STARTER_QUESTIONS = [
   'Which finish lasts longest through heavy monsoon?',
@@ -106,7 +107,12 @@ export function AdvisorPanel({
         ) : (
           <ul className="space-y-3" aria-live="polite">
             {chat.entries.map((entry) => (
-              <AdvisorMessageBubble key={entry.id} entry={entry} />
+              <AdvisorMessageBubble
+                key={entry.id}
+                entry={entry}
+                isBusy={chat.isThinking}
+                onAskAboutSource={(title) => chat.sendMessage(questionAboutSource(title))}
+              />
             ))}
           </ul>
         )}

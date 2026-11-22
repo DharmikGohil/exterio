@@ -87,7 +87,9 @@ names stay as tooltips and accessible names.
   the house, writing), each with a spinner and a shimmering label while it runs and what it found
   once done, a skeleton until the text starts, then the text typed out with a caret. Once
   answered, the steps fold into one line ("✓ Searched material notes · Checked your house ›")
-  that opens them again.
+  that opens them again. The notes an answer drew on are listed under it as buttons, one per
+  line so a long title wraps inside its box; clicking one asks "Tell me more about “…” for my
+  house." straight away (disabled while another answer is arriving).
 - **Photo and panel stay together** (`photoGridStyle`): the photo column is only as wide as the
   photo can be at its tallest, and the two columns are centred as a pair, so a tall photo has its
   panel right beside it (20px apart) instead of across an empty gap.
