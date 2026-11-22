@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="docs/assets/before-after.gif" width="720" alt="Four sample houses sweeping from their original photo to an AI-rendered redesign" />
+<img src="docs/assets/sign-in-showcase.gif" width="632" alt="The sign-in page showcase: each sample house sweeps from its photo to an AI render, with the chosen finishes and the estimated cost" />
 
 # Exterio
 
