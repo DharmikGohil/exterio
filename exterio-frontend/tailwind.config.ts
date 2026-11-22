@@ -112,6 +112,11 @@ const config: Config = {
           from: { transform: 'translateX(-100%)' },
           to: { transform: 'translateX(100%)' },
         },
+        // A word coming into focus: from a soft blur and slightly low, to sharp and in place.
+        'blur-in': {
+          from: { opacity: '0', filter: 'blur(10px)', transform: 'translateY(0.25em)' },
+          to: { opacity: '1', filter: 'blur(0)', transform: 'translateY(0)' },
+        },
         // Auto-detect: a sheen sweeping across the photo while the AI works, then each found
         // part's outline tracing in, its name tag popping up and its row sliding into the list.
         sweep: {
@@ -163,6 +168,7 @@ const config: Config = {
         shimmer: 'shimmer 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite',
         'text-shimmer': 'text-shimmer 1.8s linear infinite',
         sweep: 'sweep 1.8s ease-in-out infinite',
+        'blur-in': 'blur-in 700ms cubic-bezier(0.22, 1, 0.36, 1) both',
         'draw-in': 'draw-in 700ms ease-out both',
         'tag-in': 'tag-in 600ms cubic-bezier(0.2, 1.4, 0.4, 1) both',
         'row-in': 'row-in 450ms ease-out both',
