@@ -51,13 +51,13 @@ class Settings(BaseSettings):
     anthropic_timeout_seconds: float = 150.0
 
     # Gemini on Google Cloud Vertex AI. A service-account key: the path to its JSON file, or the
-    # JSON itself (handy on a host). When set, Gemini powers the photo check, region detection
-    # (when FAL_KEY is not set) and the material advisor, instead of Claude.
+    # JSON itself (handy on a host). When set, Gemini powers the photo check and the material
+    # advisor; it outlines parts only when no Claude key is set (Claude measured more accurate).
     google_vertex_credentials: str = ""
     google_vertex_location: str = "global"
     # Fast model: the photo check and the advisor.
     gemini_model: str = "gemini-3-flash-preview"
-    # Stronger model for outlining parts, where placing corners well matters more than speed.
+    # Used for outlining parts only when no Claude key is set; the better Gemini at geometry.
     gemini_detection_model: str = "gemini-3.1-pro-preview"
     gemini_timeout_seconds: float = 150.0
 

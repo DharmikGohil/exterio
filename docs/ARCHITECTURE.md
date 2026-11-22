@@ -121,17 +121,18 @@ Replacing a provider is a one-file change plus one line in the registry.
 
 The photo check and the detection fallback keep their prompts, JSON schemas and answer
 validation in one place and ask through a small `VisionJsonClient` (in `infrastructure`), with
-two implementations: `GeminiVisionJsonClient` and `AnthropicVisionJsonClient`. The registry picks
-Gemini when `GOOGLE_VERTEX_CREDENTIALS` is set and Claude otherwise, for the photo check,
-detection and the advisor together. Both request schema-constrained JSON and also parse the reply
+two implementations: `GeminiVisionJsonClient` and `AnthropicVisionJsonClient`. The registry gives
+each job to the model that measured best at it, among those configured: outlining parts goes to
+Claude (Gemini when no Claude key is set), and the photo check and the advisor go to Gemini
+(Claude when no Vertex key is set). See "Choosing the detection model" in
+[LIMITATIONS.md](LIMITATIONS.md#choosing-the-detection-model). Both request schema-constrained JSON and also parse the reply
 leniently, so an endpoint that ignores the schema (such as an Anthropic-compatible gateway) still
 works. Both raise the same provider-neutral errors (busy, unreachable, unreadable), so the
 services explain a failure the same way whichever model is behind them.
 
 Gemini runs on the user's own Google Cloud project through a service-account key. Gemini 3 Flash
-answers the photo check and the advisor (first words of an answer in about 3 to 6 s); Gemini
-3.1 Pro outlines parts, which needs better geometry and in testing was also faster (about 20 s
-for a house front, against about 50 s for Flash).
+answers the photo check and the advisor (first words of an answer in about 3 to 6 s). When Gemini
+does outline parts (no Claude key), it uses Gemini 3.1 Pro, the better of the two at geometry.
 
 ## The material advisor
 

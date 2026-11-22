@@ -38,6 +38,22 @@ Two providers implement detection; the first one configured is used.
   checked by eye, Gemini 3.1 Pro traced windows, doors, garage doors and shutters tightly, but its
   roof planes were coarse and overlapped each other. It has **not been measured against hand-traced
   outlines on real photographs**, where clutter, shadows and occlusion will lower accuracy.
+- **Choosing the detection model.** <a id="choosing-the-detection-model"></a>
+  `scripts/benchmark_detection.py` runs detection on the four sample photos and scores it
+  against their hand-traced parts. Two runs per photo per model, on 22 Nov 2026 (raw detections
+  in [benchmarks/detection-2026-11-22.json](benchmarks/detection-2026-11-22.json)):
+
+  | Model | Wall IoU | Mean surface IoU | Parts found | Parts right | Off-house area | Time |
+  |---|---|---|---|---|---|---|
+  | Claude Opus 5.5 | **0.88** | **0.74** | **74%** | **60%** | **2.8%** | **36 s** |
+  | Gemini 3.1 Pro | 0.78 | 0.68 | 57% | 38% | 4.3% | 44 s |
+
+  IoU is the overlap of the model's outlines with the traced ones (1 is exact). A traced part is
+  found when a detected part of the same kind overlaps it by IoU 0.5 or more. Off-house area is
+  the share of detected wall and roof area outside the traced house, which catches outlines on a
+  neighbouring building. Claude was ahead on every photo, so it outlines parts whenever its key
+  is set. Four photos is a small set; the traces are one person's, and "parts right" undercounts
+  real parts the traces leave out (fences, gutters).
 - **Open-ended parts.** The vision model is asked to outline any exterior part a homeowner could
   refinish. Parts outside the fixed types come back as `other` with the model's own name (on a
   real photo it found "Entrance steps" unprompted), and an unknown label is kept as a named `other`

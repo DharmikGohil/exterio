@@ -195,23 +195,36 @@ class _LanguageModels:
 
 
 def _build_language_models(config: InfrastructureConfig) -> _LanguageModels:
-    """Gemini on Vertex AI when its key is set, otherwise Claude (when its key is set)."""
+    """Each job on the model that measured best at it, among those configured.
+
+    - Outlining parts: Claude first. On the four hand-traced sample houses
+      (`scripts/benchmark_detection.py`) it matched the traced walls with IoU 0.88 against
+      Gemini 3.1 Pro's 0.78, found 74% of the traced parts against 57%, and drew less on
+      neighbouring buildings. Gemini is the fallback when no Claude key is set.
+    - Photo check and advisor: Gemini first. It answers in a few seconds and streams the advice
+      word by word; these jobs need judgement, not geometry. Claude is the fallback.
+    """
     gemini = build_gemini_client(
         config.google_vertex_credentials,
         config.google_vertex_location,
         config.gemini_timeout_seconds,
     )
-    if gemini is not None:
-        return _LanguageModels(
-            vision=GeminiVisionJsonClient(gemini, config.gemini_model),
-            detection=GeminiVisionJsonClient(gemini, config.gemini_detection_model),
-            advisor=GeminiAdvisorLanguageModel(gemini, config.gemini_model),
-        )
     claude = build_anthropic_client(
         config.anthropic_api_key, config.anthropic_gateway_url, config.anthropic_timeout_seconds
     )
+    claude_json = AnthropicVisionJsonClient(claude, config.anthropic_model)
+    if gemini is None:
+        return _LanguageModels(
+            vision=claude_json,
+            detection=claude_json,
+            advisor=AnthropicAdvisorLanguageModel(claude, config.anthropic_model),
+        )
     return _LanguageModels(
-        vision=AnthropicVisionJsonClient(claude, config.anthropic_model),
-        detection=AnthropicVisionJsonClient(claude, config.anthropic_model),
-        advisor=AnthropicAdvisorLanguageModel(claude, config.anthropic_model),
+        vision=GeminiVisionJsonClient(gemini, config.gemini_model),
+        detection=(
+            claude_json
+            if claude is not None
+            else GeminiVisionJsonClient(gemini, config.gemini_detection_model)
+        ),
+        advisor=GeminiAdvisorLanguageModel(gemini, config.gemini_model),
     )
