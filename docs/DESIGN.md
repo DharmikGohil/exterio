@@ -9,7 +9,7 @@ How the interface looks and why. The tokens live in
 |---|---|
 | **Product** | Plan, picture and price an exterior renovation, for a homeowner in India |
 | **Character** | Exact, grounded, a little warm |
-| **World** | The drafting desk: a green cutting mat, an elevation drawing, a scale ruler |
+| **World** | The drafting desk: a green cutting mat, a photo of the house, a scale ruler |
 | **Moments** | The house photo with its finishes; the estimate drawn on the house, part by part |
 | **Signature** | Measurements written the way an architect writes them: a dimension line with end ticks |
 
@@ -128,9 +128,13 @@ The Estimate step answers "where does the money go?" on the house itself (`Estim
 ## The cutting mat
 
 `MatPanel` is the product's material, used in one place: **the sign-in story** (`LoginPage`), the
-left half of the sign-in screen, with the headline and the elevation drawing lying on the mat as a
-sheet of paper. The drawing (`ElevationDrawing`) shows three parts in their new finish, each with
-a callout giving the finish and its cost, the way the estimate is drawn on the house. The right
+left half of the sign-in screen, with the headline and a real house before and after lying on the
+mat (`BeforeAfterShowcase`). The new finishes sweep across the photo behind a thin white line, hold,
+sweep back, and the next house follows; dots under the caption pick a house, and the caption names
+the house, the design and its finishes. The images are rendered by the product's own instant
+preview from the sample houses (`exterio-backend/scripts/render_showcase.py`), so the sign-in page
+shows exactly what the studio does. With reduced motion the photo is shown split down the middle
+and only the dots change it. The right
 half has the Sign in / Create account form with Sign in as the one green button, then "or" and
 Try it with a sample house as an outline button (`SampleHouseAccess`).
 
@@ -179,7 +183,8 @@ No sparkle or wand icons; each icon says what its button does.
 - One easing curve, `cubic-bezier(0.22, 1, 0.36, 1)`; 160ms for hover and press, 300ms for entrances.
 - Transition colour, background, border, opacity and transform only. Buttons press to 0.98.
 - Loading uses a left-to-right sheen (`Skeleton`, `ShimmerOverlay`), never a pulse.
-- Nothing loops unless it is live (a check or detection that is actually running).
+- Nothing loops unless it is live (a check or detection that is actually running). The one
+  exception is the sign-in showcase, a 7-second before / after sweep that is the page's subject.
 - `prefers-reduced-motion` turns animation off.
 
 ## Component map
@@ -187,6 +192,7 @@ No sparkle or wand icons; each icon says what its button does.
 | Component | Where | Role |
 |---|---|---|
 | `MatAngleGuides` | `shared/atoms` | The 30°, 45° and 60° guides in a mat's corner |
+| `BeforeAfterShowcase` | `features/auth` | The sign-in page's before / after sweep; houses in `utils/showcase` |
 | `MatPanel` | `shared/molecules` | A piece of cutting mat, for the sign-in story |
 | `EstimateDiagram`, `PartCard`, `EstimateSummary` | `features/estimate` | The estimate drawn on the house; grouping in `utils/partGroups` |
 | `EstimateBreakdown`, `WhatToBuyTable`, `GoodToKnow` | `features/estimate` | The full breakdown page; its wording in `utils/estimateCopy` |

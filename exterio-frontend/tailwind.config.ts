@@ -109,12 +109,26 @@ const config: Config = {
           from: { transform: 'translateX(-100%)' },
           to: { transform: 'translateX(100%)' },
         },
+        // Before / after on the sign-in page: the new finishes sweep in from the left, hold, and
+        // sweep back out. `reveal` clips the after photo; `divider` moves the line with it.
+        reveal: {
+          '0%, 12%': { clipPath: 'inset(0 100% 0 0)' },
+          '46%, 74%': { clipPath: 'inset(0 0% 0 0)' },
+          '100%': { clipPath: 'inset(0 100% 0 0)' },
+        },
+        divider: {
+          '0%, 12%': { left: '0%' },
+          '46%, 74%': { left: '100%' },
+          '100%': { left: '0%' },
+        },
       },
       animation: {
         'fade-in': 'fade-in 320ms cubic-bezier(0.22, 1, 0.36, 1)',
         'slide-up': 'slide-up 200ms cubic-bezier(0.22, 1, 0.36, 1)',
         'slide-in-right': 'slide-in-right 300ms cubic-bezier(0.22, 1, 0.36, 1)',
         shimmer: 'shimmer 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite',
+        reveal: 'reveal 7s cubic-bezier(0.65, 0, 0.35, 1) both',
+        divider: 'divider 7s cubic-bezier(0.65, 0, 0.35, 1) both',
       },
     },
   },

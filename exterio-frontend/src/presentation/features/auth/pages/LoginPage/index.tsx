@@ -1,7 +1,7 @@
 import { config } from '@/config';
 import { AuthLayout } from '@/presentation/shared/layouts/AuthLayout';
 import { MatPanel } from '@/presentation/shared/molecules/MatPanel';
-import { ElevationDrawing } from '@/presentation/features/auth/molecules/ElevationDrawing';
+import { BeforeAfterShowcase } from '@/presentation/features/auth/molecules/BeforeAfterShowcase';
 import { EmailAuthForm } from '@/presentation/features/auth/organisms/EmailAuthForm';
 import { SampleHouseAccess } from '@/presentation/features/auth/organisms/SampleHouseAccess';
 
@@ -13,12 +13,12 @@ function ProductStory() {
           See your house in new finishes, and what they cost
         </h1>
         <p className="max-w-xl text-lg leading-7 text-mat-line/85">
-          Upload one photo, mark the walls, pillars and railings, choose paint, stone or tiles, and
-          get quantities and a rupee estimate to take to your contractor.
+          Upload one photo, mark the walls, roof and doors, choose paint, stone or cladding, and get
+          quantities and a rupee estimate to take to your contractor.
         </p>
       </div>
-      <div className="max-w-xl 2xl:max-w-3xl">
-        <ElevationDrawing />
+      <div className="max-w-2xl 2xl:max-w-3xl">
+        <BeforeAfterShowcase />
       </div>
     </MatPanel>
   );
