@@ -5,7 +5,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { StudioStepper } from '@/presentation/features/studio/molecules/StudioStepper';
 
 describe('StudioStepper', () => {
-  it('ticks done steps, fills the current one and numbers the rest', () => {
+  it('ticks done steps, raises the current one with its icon and numbers the rest', () => {
     render(<StudioStepper currentStep="scale" hasPhoto onStepChange={vi.fn()} />);
 
     const done = screen.getByRole('button', { name: /design/i });
@@ -15,8 +15,9 @@ describe('StudioStepper', () => {
     expect(done.querySelector('svg')).not.toBeNull();
     expect(done).not.toHaveTextContent('3');
     expect(current).toHaveAttribute('aria-current', 'step');
-    expect(current).toHaveClass('bg-brand-700');
-    expect(current).toHaveTextContent('4');
+    expect(current).toHaveClass('bg-white');
+    expect(current).not.toHaveTextContent('4');
+    expect(current.querySelector('svg')).not.toBeNull();
     expect(upcoming).toHaveTextContent('5');
     expect(upcoming).not.toHaveAttribute('aria-current');
   });

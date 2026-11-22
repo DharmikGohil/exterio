@@ -76,9 +76,10 @@ Photoreal) show only their icons below 1400 px and New design is a "+" below 160
 names stay as tooltips and accessible names.
 
 - **Header**: the studio puts its breadcrumb and stepper into the app header through a header slot
-  (`HeaderSlot`, a portal), so there is no second bar. The stepper (`StudioStepper`) is plain text:
-  done steps carry a check, the current step is a green pill with its number, upcoming steps show
-  their number. Projects are renamed only on the home screen (the ⋯ menu on each house card).
+  (`HeaderSlot`, a portal), so there is no second bar. The stepper (`StudioStepper`) is a row of pills on
+  a pale green track: done steps are green with a check in a dark circle, the current step is a
+  raised white pill with its step's icon (camera, shapes, palette, ruler, rupee), upcoming steps
+  show their number. Below `lg` only the circles show; each step keeps its name as its label. Projects are renamed only on the home screen (the ⋯ menu on each house card).
 - **Material advisor**: "Ask about materials" sits in the step header (Photo, Regions, Estimate)
   or in the panel header (Design). Its chat panel is mounted once for the studio
   (`AdvisorDockProvider`), so the conversation survives moving between steps. While it answers,
@@ -122,9 +123,12 @@ names stay as tooltips and accessible names.
 
 The Estimate step answers "where does the money go?" on the house itself (`EstimateDiagram`):
 
-- **Summary** (`EstimateSummary`): the total in one big figure, "Most likely between … and …",
-  Materials and Labour as two chips, and what the sizes rest on ("Based on a wall of 30 × 20 ft")
-  with Adjust size.
+- **Summary** (`EstimateSummary`): three columns. *Estimated total* (or *Rough total*): the
+  figure, "for materials and labour together", and See the full breakdown. *What it is made of*:
+  one bar split into materials and labour, with each share and amount. *How sure we are*: the
+  likely range as a track with the total's dot on it, the low and high ends and "within ±8%",
+  then what the sizes rest on ("Based on a wall of 30 × 20 ft") with Adjust size, or Set the size
+  while the size is a rough guess.
 - **The drawing**: the design's preview in the middle, one card per kind of part on either side
   (`PartCard`: colour, "Two pillars", the finish, the size, the cost), and a thin leader line from
   each card to a dot on that part. Parts with no finish are amber cards saying "Not in estimate".
@@ -133,7 +137,7 @@ The Estimate step answers "where does the money go?" on the house itself (`Estim
   part of the group nearest the card, so lines rarely cross. Lines are measured from the live
   layout (`useLeaderLines`) and redrawn on resize; on narrow screens the photo comes first and the
   cards stack under it without lines.
-- **See the full breakdown** is a link right under the total in the summary card, visible without
+- **See the full breakdown** is a button under the total in the summary card, visible without
   scrolling. The design picker in the header reads "Design: …". Below the drawing, one sentence on
   what is not counted. Download PDF report is the step bar's main button.
 - **Full breakdown** (`EstimateBreakdown`, `?view=breakdown`): its own page in the step, with

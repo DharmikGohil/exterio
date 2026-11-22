@@ -17,6 +17,7 @@ describe('EstimateSummary', () => {
     render(
       <EstimateSummary
         totals={TOTALS}
+        confidencePct={8}
         scaleBasis="a wall of 30 × 20 ft"
         isRefreshing={false}
         onAdjustScale={vi.fn()}
@@ -29,6 +30,9 @@ describe('EstimateSummary', () => {
     expect(screen.getByText('₹44,865')).toBeInTheDocument();
     expect(screen.getByText('₹16,140')).toBeInTheDocument();
     expect(screen.getByText('a wall of 30 × 20 ft')).toBeInTheDocument();
+    expect(screen.getByText('within ±8%')).toBeInTheDocument();
+    expect(screen.getByText('· 74%')).toBeInTheDocument();
+    expect(screen.getByText('· 26%')).toBeInTheDocument();
   });
 
   it('goes back to the scale step to adjust the size', async () => {
@@ -36,6 +40,7 @@ describe('EstimateSummary', () => {
     render(
       <EstimateSummary
         totals={TOTALS}
+        confidencePct={8}
         scaleBasis="a wall of 30 × 20 ft"
         isRefreshing={false}
         onAdjustScale={onAdjustScale}
@@ -53,6 +58,7 @@ describe('EstimateSummary', () => {
     render(
       <EstimateSummary
         totals={TOTALS}
+        confidencePct={8}
         scaleBasis="a wall of 30 × 20 ft"
         isRefreshing={false}
         onAdjustScale={vi.fn()}
@@ -70,6 +76,7 @@ describe('EstimateSummary', () => {
     render(
       <EstimateSummary
         totals={TOTALS}
+        confidencePct={8}
         scaleBasis="a rough guess"
         isRefreshing={false}
         isRoughSize

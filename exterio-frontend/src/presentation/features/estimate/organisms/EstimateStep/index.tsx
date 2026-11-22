@@ -167,6 +167,7 @@ function EstimateWorkspace({
         <>
           <EstimateSummary
             totals={estimate.totals}
+            confidencePct={estimate.scale.confidencePct}
             scaleBasis={describeScaleBasis(project.scale)}
             isRefreshing={isFetching}
             isRoughSize={project.scale === null}
