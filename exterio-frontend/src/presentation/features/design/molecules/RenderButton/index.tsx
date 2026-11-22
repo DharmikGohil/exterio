@@ -3,7 +3,7 @@ import { Tooltip } from '@/presentation/shared/atoms/Tooltip';
 import type { RenderStatus } from '@/domain/models/design';
 
 export const RENDER_HINT =
-  'Adds realistic light and texture to the finishes in about 10 seconds (up to 30 the first time). The rest of the photo stays as it is.';
+  'Adds realistic light and texture to the finishes in about 10 to 15 seconds. The rest of the photo stays as it is.';
 
 export interface RenderButtonProps {
   status: RenderStatus;
@@ -12,8 +12,8 @@ export interface RenderButtonProps {
 }
 
 /**
- * Makes the photoreal render. It floats at the bottom centre of the photo it renders; its
- * progress shows on the button and a failure above the photo.
+ * Makes the photoreal render. It floats at the bottom centre of the photo it renders; while it
+ * runs, the button spins and `RenderProgress` covers the photo; a failure shows above the photo.
  */
 export function RenderButton({ status, isRequesting, onGenerate }: RenderButtonProps) {
   const isPending = status === 'pending';

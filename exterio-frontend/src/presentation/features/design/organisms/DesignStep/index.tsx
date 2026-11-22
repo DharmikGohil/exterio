@@ -17,6 +17,7 @@ import {
 import { useEnsureDefaultDesign } from '@/presentation/features/design/hooks/useEnsureDefaultDesign';
 import { DesignCostSummary } from '@/presentation/features/design/molecules/DesignCostSummary';
 import { RenderButton } from '@/presentation/features/design/molecules/RenderButton';
+import { RenderProgress } from '@/presentation/features/design/molecules/RenderProgress';
 import { photorealOptions } from '@/presentation/features/design/utils/photoreal';
 import { CompareSlider } from '@/presentation/features/design/organisms/CompareSlider';
 import { DesignCanvas } from '@/presentation/features/design/organisms/DesignCanvas';
@@ -124,7 +125,7 @@ function DesignWorkspace({
     refetch,
   } = useMaterials();
   const { assignMaterial, clearMaterial, isUpdating } = useDesignAssignments(design);
-  const { requestRender, isRequestingRender } = useDesignRender(design);
+  const { requestRender, isRequestingRender, isRendering } = useDesignRender(design);
   const estimate = useEstimate(design.id);
 
   const originalUrl = resolveFileUrl(image.url);
@@ -261,6 +262,8 @@ function DesignWorkspace({
               showNames={nameTags.isOn}
             />
           )}
+
+          <RenderProgress isActive={isRendering || isRequestingRender} />
 
           <NameTagToggle
             isOn={nameTags.isOn}

@@ -115,6 +115,11 @@ names stay as tooltips and accessible names.
   - Each part's outline traces in and its fill fades up as it arrives, its name tag pops up, and
     its row slides into the list with a mint flash. In testing the parts arrived one by one over
     about 6 to 12 seconds after the AI started writing.
+- **Photoreal render progress** (`RenderProgress`): while a render runs (about 10 to 15 s), the
+  photo softens, a sheen sweeps across it and a green glow lines its edge, and a pill at the top
+  says what is happening and for how long ("Adding real texture to each finish · 4 s"). The
+  stages are paced by time (`utils/renderStages`); after 30 s it says the backup renderer may be
+  warming up. The button below reads "Rendering…".
 - **Undo and redo on Regions** (`useRegionDraft`): every change to the parts can be undone with
   Ctrl+Z (⌘Z) or the Undo button and redone with Ctrl+Shift+Z or Ctrl+Y. A corner dragged across
   the photo, or a name typed letter by letter, is one step; deleting a part, Discard and
