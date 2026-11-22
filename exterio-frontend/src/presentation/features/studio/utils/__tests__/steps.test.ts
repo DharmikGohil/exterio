@@ -16,6 +16,8 @@ describe('studio steps', () => {
     expect(getNextStep('estimate')).toBeNull();
     expect(getPreviousStep('regions')).toBe('photo');
     expect(getPreviousStep('photo')).toBeNull();
+    expect(getNextStep('design')).toBe('scale');
+    expect(getNextStep('scale')).toBe('estimate');
   });
 
   it('recognises only real step names from the URL', () => {
@@ -28,6 +30,10 @@ describe('studio steps', () => {
     const withPhoto = { ...emptyProject, image: { url: '/x.jpg' } } as unknown as Project;
     const withRegions = { ...withPhoto, regions: [{ id: 'r1' }] } as unknown as Project;
     const withSize = { ...withRegions, scale: { method: 'facade_dimensions' } } as Project;
+    const designedRough = {
+      ...withRegions,
+      designs: [{ id: 'd1', assignments: { r1: 'paint-warm-cream' } }],
+    } as unknown as Project;
     const designed = {
       ...withSize,
       designs: [{ id: 'd1', assignments: { r1: 'paint-warm-cream' } }],
@@ -39,8 +45,9 @@ describe('studio steps', () => {
 
     expect(getDefaultStep(emptyProject)).toBe('photo');
     expect(getDefaultStep(withPhoto)).toBe('regions');
-    expect(getDefaultStep(withRegions)).toBe('scale');
+    expect(getDefaultStep(withRegions)).toBe('design');
     expect(getDefaultStep(withSize)).toBe('design');
+    expect(getDefaultStep(designedRough)).toBe('scale');
     expect(getDefaultStep(designed)).toBe('estimate');
     expect(getDefaultStep(finishOnDeletedPart)).toBe('design');
   });
@@ -51,6 +58,6 @@ describe('studio steps', () => {
 
     expect(getDefaultStep(withPhoto, false)).toBe('photo');
     expect(getDefaultStep(withPhoto, true)).toBe('regions');
-    expect(getDefaultStep(withRegions, false)).toBe('scale');
+    expect(getDefaultStep(withRegions, false)).toBe('design');
   });
 });

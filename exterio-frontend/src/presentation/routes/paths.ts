@@ -1,4 +1,4 @@
-export const STUDIO_STEPS = ['photo', 'regions', 'scale', 'design', 'estimate'] as const;
+export const STUDIO_STEPS = ['photo', 'regions', 'design', 'scale', 'estimate'] as const;
 export type StudioStep = (typeof STUDIO_STEPS)[number];
 
 /** Query parameters used by the Studio page. */

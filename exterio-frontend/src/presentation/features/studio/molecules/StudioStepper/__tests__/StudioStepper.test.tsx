@@ -8,16 +8,16 @@ describe('StudioStepper', () => {
   it('ticks done steps, fills the current one and numbers the rest', () => {
     render(<StudioStepper currentStep="scale" hasPhoto onStepChange={vi.fn()} />);
 
-    const done = screen.getByRole('button', { name: /regions/i });
+    const done = screen.getByRole('button', { name: /design/i });
     const current = screen.getByRole('button', { name: /scale/i });
-    const upcoming = screen.getByRole('button', { name: /design/i });
+    const upcoming = screen.getByRole('button', { name: /estimate/i });
 
     expect(done.querySelector('svg')).not.toBeNull();
-    expect(done).not.toHaveTextContent('2');
+    expect(done).not.toHaveTextContent('3');
     expect(current).toHaveAttribute('aria-current', 'step');
     expect(current).toHaveClass('bg-brand-700');
-    expect(current).toHaveTextContent('3');
-    expect(upcoming).toHaveTextContent('4');
+    expect(current).toHaveTextContent('4');
+    expect(upcoming).toHaveTextContent('5');
     expect(upcoming).not.toHaveAttribute('aria-current');
   });
 

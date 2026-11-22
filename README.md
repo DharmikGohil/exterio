@@ -14,10 +14,10 @@ and INR throughout.
 | Upload a photo, reject unusable ones with guidance | Step 1 — sharpness, brightness and resolution checks, plus an optional vision-model check |
 | Identify walls, windows, balconies, pillars, parapets, gates, roof edges | Step 2 — AI detection (segmentation model or vision LLM), returned as editable polygons |
 | Review and correct detected regions | Step 2 — reshape, relabel, add, delete, or draw from scratch |
-| Material catalogue, different materials on different parts | Step 4 — 20 materials across paint, texture, stone, tile, panels and railings |
-| Multiple combinations, switching between designs | Step 4 — any number of named designs per project, with a cost comparison |
-| Redesigned image that keeps the building's structure | Step 4 — instant composite, and an AI photoreal render with before/after slider |
-| Surface area per building part | Step 5 — perspective-corrected areas with a stated confidence band |
+| Material catalogue, different materials on different parts | Step 3 — 20 materials across paint, texture, stone, tile, panels and railings |
+| Multiple combinations, switching between designs | Step 3 — any number of named designs per project, with a cost comparison |
+| Redesigned image that keeps the building's structure | Step 3 — instant composite, and an AI photoreal render with before/after slider |
+| Surface area per building part | Step 4 (optional) sets the real size; Step 5 — perspective-corrected areas with a stated confidence band, rough until a size is given |
 | Quantities with wastage and coverage | Step 5 — litres of paint, tiles, sheets, sq ft of stone, running ft of railing |
 | Material, labour, per-category and grand total; editable rates | Step 5 — change a rate or wastage and the totals recalculate |
 | Downloadable report | Step 5 — PDF with both images, materials, quantities, costs and assumptions |
@@ -143,7 +143,7 @@ The four sample houses are real photographs from Pexels, used under the Pexels L
 | Brick house with dormers | [Curtis Adams](https://www.pexels.com/photo/white-and-brown-concrete-house-near-green-grass-3990589/) |
 | Craftsman with stone | [Get Lost Mike](https://www.pexels.com/photo/white-and-brown-concrete-house-under-blue-sky-7710011/) |
 
-Each one's parts, finished design and starting stage (photo only, parts, size or finished) are
+Each one's parts, finished design and starting stage (photo only, parts, designed without a size, or finished) are
 traced by hand in
 `exterio-backend/src/infrastructure/services/imaging/sample_houses/<name>/house.json`, so the
 samples work without AI detection. The before / after pairs on the sign-in page are rendered from

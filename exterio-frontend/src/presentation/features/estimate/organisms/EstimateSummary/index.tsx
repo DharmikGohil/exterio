@@ -10,6 +10,8 @@ export interface EstimateSummaryProps {
   scaleBasis: string;
   /** Dims the figures while a new estimate is on its way. */
   isRefreshing: boolean;
+  /** No real size yet, so the areas rest on an assumed storey height. */
+  isRoughSize?: boolean;
   onAdjustScale: () => void;
   /** Opens every line, quantity and rate behind the total. */
   onOpenBreakdown: () => void;
@@ -20,6 +22,7 @@ export function EstimateSummary({
   totals,
   scaleBasis,
   isRefreshing,
+  isRoughSize = false,
   onAdjustScale,
   onOpenBreakdown,
 }: EstimateSummaryProps) {
@@ -30,7 +33,9 @@ export function EstimateSummary({
       className="flex flex-wrap items-center gap-x-10 gap-y-5 rounded-2xl border border-stone-200 bg-white px-7 py-6"
     >
       <div className={cn('min-w-0 transition-opacity', isRefreshing && 'opacity-50')}>
-        <p className="text-[15px] text-stone-600">Estimated total</p>
+        <p className="text-[15px] text-stone-600">
+          {isRoughSize ? 'Rough total' : 'Estimated total'}
+        </p>
         <p className="text-[52px] font-medium leading-none tracking-[-0.02em] text-stone-900">
           {formatInr(totals.grandTotal)}
         </p>
@@ -68,8 +73,8 @@ export function EstimateSummary({
           <br />
           <span className="font-medium text-stone-900">{scaleBasis}</span>
         </p>
-        <Button variant="outline" size="lg" onClick={onAdjustScale}>
-          Adjust size
+        <Button variant={isRoughSize ? 'primary' : 'outline'} size="lg" onClick={onAdjustScale}>
+          {isRoughSize ? 'Set the size' : 'Adjust size'}
         </Button>
       </div>
     </section>

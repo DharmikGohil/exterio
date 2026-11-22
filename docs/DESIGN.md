@@ -54,7 +54,7 @@ Rules:
 ## Your houses: the home screen
 
 `ProjectListPage` lists every house as a card (`ProjectCard`): the photo, the name with a ⋯ menu
-(Rename, Delete), a five-segment bar and "Step 4 of 5 · Designing" (`StepProgress`), then
+(Rename, Delete), a five-segment bar and "Step 3 of 5 · Designing" (`StepProgress`), then
 "2 designs · edited 22 Nov 2026" and the estimate total, or "No estimate yet". The step and total
 come from the API, so they always match the studio. The first card is a dashed "Start a new
 house" (`NewHouseCard`), which also offers the sample house. Above the grid, a search box and a
@@ -91,6 +91,10 @@ Everything is in view without scrolling on screens from 1280×720 up.
 - **Design picker** (`DesignSwitcher`): the current design in a dark dropdown, labelled
   "Design: Warm stone and cream" so it reads as a design and not a house name, listing all designs,
   a "⋯" menu (`DropdownMenu`) to rename, duplicate or delete it, and New design.
+- **Scale is step 4, after Design, and optional**: its footer says "Optional: continue and the
+  estimate stays rough" until a valid size is entered. Without a size, the Design header says
+  "Rough total · Add a real size in the next step", and the estimate card says "Rough total",
+  "Based on a rough guess" and offers a green "Set the size" instead of "Adjust size".
 - **Scale saves itself**: a segmented control picks how the size is known (Wall size, One length,
   Door, Floors); a valid change is saved 0.7 s after typing pauses, and a line under the inputs says
   "Saving…" or "Scale saves automatically. Estimates use it." Leaving the step sends a pending

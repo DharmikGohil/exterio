@@ -17,7 +17,10 @@ export interface ScaleStepProps {
   onStepChange: (step: StudioStep) => void;
 }
 
-/** Step 3: outline the front wall on the photo and give one real size. Saves as you type. */
+/**
+ * Step 4, optional: outline the front wall on the photo and give one real size. Saves as you
+ * type. Skipped, the estimate uses a rough size and says so.
+ */
 export function ScaleStep({ project, image, onStepChange }: ScaleStepProps) {
   const editor = useScaleStep(project, image);
   const doorRegions = project.regions.filter((region) => region.label === 'door');
@@ -27,7 +30,7 @@ export function ScaleStep({ project, image, onStepChange }: ScaleStepProps) {
     <div className="space-y-5">
       <StepHeader
         title="Set the real-world size"
-        description="A photo only knows pixels. One real measurement turns your regions into square feet, and square feet into a cost."
+        description="A photo only knows pixels. One real measurement turns your design into square feet, and square feet into a close cost. Optional: skip it and the estimate is a rough one."
       />
 
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_26rem]">
@@ -83,7 +86,7 @@ export function ScaleStep({ project, image, onStepChange }: ScaleStepProps) {
       <StepFooter
         step="scale"
         onStepChange={onStepChange}
-        hint={editor.problem ? 'Set a size so the estimate is accurate.' : undefined}
+        hint={editor.problem ? 'Optional: continue and the estimate stays rough.' : undefined}
       />
 
       <UnsavedChangesDialog

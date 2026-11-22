@@ -9,6 +9,8 @@ export interface DesignCostSummaryProps {
   /** `true` while the number is being recalculated. */
   isRefreshing: boolean;
   hasError: boolean;
+  /** No real size yet: the figure rests on an assumed storey height. */
+  isRough: boolean;
 }
 
 /** The running cost of the active design, shown in the Design step header. */
@@ -17,11 +19,12 @@ export function DesignCostSummary({
   isLoading,
   isRefreshing,
   hasError,
+  isRough,
 }: DesignCostSummaryProps) {
   return (
     <div aria-live="polite" className="min-w-[10rem] text-right">
       <div>
-        <p className="text-sm text-stone-500">Estimated total</p>
+        <p className="text-sm text-stone-500">{isRough ? 'Rough total' : 'Estimated total'}</p>
         {isLoading && <Skeleton className="ml-auto mt-1 h-10 w-36" />}
         {!isLoading && totals && (
           <>
@@ -36,6 +39,7 @@ export function DesignCostSummary({
             <p className="text-sm text-stone-500">
               {formatInr(totals.lowEstimate)} – {formatInr(totals.highEstimate)}
             </p>
+            {isRough && <p className="text-xs text-stone-500">Add a real size in the next step</p>}
           </>
         )}
         {!isLoading && !totals && (

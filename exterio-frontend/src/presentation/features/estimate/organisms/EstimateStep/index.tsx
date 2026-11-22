@@ -169,6 +169,7 @@ function EstimateWorkspace({
             totals={estimate.totals}
             scaleBasis={describeScaleBasis(project.scale)}
             isRefreshing={isFetching}
+            isRoughSize={project.scale === null}
             onAdjustScale={() => onStepChange('scale')}
             onOpenBreakdown={openBreakdown}
           />

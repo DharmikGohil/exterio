@@ -64,4 +64,23 @@ describe('EstimateSummary', () => {
 
     expect(onOpenBreakdown).toHaveBeenCalledOnce();
   });
+
+  it('asks for the size when the estimate rests on a rough one', async () => {
+    const onAdjustScale = vi.fn();
+    render(
+      <EstimateSummary
+        totals={TOTALS}
+        scaleBasis="a rough guess"
+        isRefreshing={false}
+        isRoughSize
+        onAdjustScale={onAdjustScale}
+        onOpenBreakdown={vi.fn()}
+      />
+    );
+
+    expect(screen.getByText('Rough total')).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Set the size' }));
+
+    expect(onAdjustScale).toHaveBeenCalledOnce();
+  });
 });

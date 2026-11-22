@@ -60,8 +60,8 @@ class CreateSampleProjectUseCase:
         # Each sample is created as far along as its stage, so between them they show every
         # step: a bare photo, marked parts, a set size, a finished design.
         has_parts = sample.stage != SampleStage.PHOTO
-        has_size = sample.stage in (SampleStage.SIZE, SampleStage.FINISHED)
-        is_finished = sample.stage == SampleStage.FINISHED
+        is_finished = sample.stage in (SampleStage.DESIGNED, SampleStage.FINISHED)
+        has_size = sample.stage == SampleStage.FINISHED
         prepared = self._inspection.prepare(sample.image)
         now = datetime.now(UTC)
         project_id = str(uuid4())

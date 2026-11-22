@@ -148,6 +148,7 @@ function DesignWorkspace({
             isLoading={estimate.isLoading}
             isRefreshing={estimate.isFetching || isUpdating}
             hasError={Boolean(estimate.error)}
+            isRough={project.scale === null}
           />
         }
       />

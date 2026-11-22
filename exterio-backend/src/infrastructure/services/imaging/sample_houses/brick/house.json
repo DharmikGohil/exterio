@@ -1,6 +1,6 @@
 {
   "name": "Brick house with dormers",
-  "stage": "size",
+  "stage": "designed",
   "design_name": "Limewashed brick",
   "source": {"title": "White and brown concrete house near green grass", "photographer": "Curtis Adams", "url": "https://www.pexels.com/photo/white-and-brown-concrete-house-near-green-grass-3990589/", "licence": "Pexels License"},
   "scale": {"facade_corners": [[300, 440], [1275, 440], [1275, 700], [300, 700]], "facade_width_ft": 50, "facade_height_ft": 12, "storeys": 2},

@@ -136,9 +136,9 @@ class SampleStage(StrEnum):
     """How far along a sample house is created, so the samples show every step between them."""
 
     PHOTO = "photo"  # the photo alone: its parts are found with Auto-detect
-    PARTS = "parts"  # parts marked, size not yet set
-    SIZE = "size"  # parts and size, no finishes chosen yet
-    FINISHED = "finished"  # a finished design and its estimate
+    PARTS = "parts"  # parts marked, no finishes chosen yet
+    DESIGNED = "designed"  # a finished design, real size not yet given (a rough estimate)
+    FINISHED = "finished"  # a finished design, its real size and its estimate
 
 
 @dataclass(frozen=True)

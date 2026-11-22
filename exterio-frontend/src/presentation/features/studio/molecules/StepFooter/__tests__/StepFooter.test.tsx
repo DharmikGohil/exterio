@@ -7,13 +7,13 @@ import { StepFooter } from '@/presentation/features/studio/molecules/StepFooter'
 describe('StepFooter', () => {
   it('moves to the next and previous step', async () => {
     const onStepChange = vi.fn();
-    render(<StepFooter step="regions" onStepChange={onStepChange} />);
+    render(<StepFooter step="design" onStepChange={onStepChange} />);
 
     await userEvent.click(screen.getByRole('button', { name: /continue to scale/i }));
     await userEvent.click(screen.getByRole('button', { name: /back/i }));
 
     expect(onStepChange).toHaveBeenNthCalledWith(1, 'scale');
-    expect(onStepChange).toHaveBeenNthCalledWith(2, 'photo');
+    expect(onStepChange).toHaveBeenNthCalledWith(2, 'regions');
   });
 
   it('offers only Back on the last step', () => {
@@ -41,6 +41,6 @@ describe('StepFooter', () => {
     render(<StepFooter step="scale" onStepChange={vi.fn()} hint="Save the scale first" />);
 
     expect(screen.getByText('Save the scale first')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /continue to design/i })).toHaveClass('border');
+    expect(screen.getByRole('button', { name: /continue to estimate/i })).toHaveClass('border');
   });
 });

@@ -630,6 +630,6 @@ def test_samples_are_created_at_different_stages(client, headers):
         )
 
     assert stage("ranch") == (False, False, False, "Photo added")
-    assert stage("two-storey") == (True, False, False, "Marking parts")
-    assert stage("brick") == (True, True, False, "Designing")
+    assert stage("two-storey") == (True, False, False, "Designing")
+    assert stage("brick") == (True, False, True, "Rough estimate")
     assert stage("craftsman") == (True, True, True, "Estimate ready")

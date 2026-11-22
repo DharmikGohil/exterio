@@ -29,24 +29,27 @@ def test_a_photo_without_parts_is_at_marking():
     assert (actual.step, actual.label) == (2, "Photo added")
 
 
-def test_marked_parts_without_a_size_or_finish_are_still_being_marked():
-    actual = project_progress(build_project((WALL,), image=IMAGE), [build_design({})])
+def test_marked_parts_without_finishes_are_being_designed_even_with_a_size():
+    for scale in (None, build_scale()):
+        project = build_project((WALL,), image=IMAGE, scale=scale)
 
-    assert (actual.step, actual.label) == (3, "Marking parts")
+        actual = project_progress(project, [build_design({})])
 
-
-def test_a_sized_house_without_finishes_is_being_designed():
-    project = build_project((WALL,), image=IMAGE, scale=build_scale())
-
-    actual = project_progress(project, [build_design({})])
-
-    assert (actual.step, actual.label) == (4, "Designing")
+        assert (actual.step, actual.label) == (3, "Designing")
 
 
-def test_any_finish_makes_the_estimate_ready_even_without_a_size():
+def test_a_design_without_a_real_size_has_a_rough_estimate_at_the_scale_step():
     project = build_project((WALL,), image=IMAGE)
 
     actual = project_progress(project, [build_design({}), build_design({"wall-1": "paint"})])
+
+    assert (actual.step, actual.label, actual.has_estimate) == (4, "Rough estimate", True)
+
+
+def test_a_design_with_a_real_size_has_its_estimate_ready():
+    project = build_project((WALL,), image=IMAGE, scale=build_scale())
+
+    actual = project_progress(project, [build_design({"wall-1": "paint"})])
 
     assert (actual.step, actual.label, actual.has_estimate) == (5, "Estimate ready", True)
 
@@ -56,7 +59,7 @@ def test_a_finish_on_a_part_that_no_longer_exists_does_not_count():
 
     actual = project_progress(project, [build_design({"deleted-part": "paint"})])
 
-    assert actual.step == 4
+    assert actual.step == 3
 
 
 def test_the_latest_priced_design_is_the_most_recently_edited_one_with_a_finish():
