@@ -75,8 +75,9 @@ Everything is in view without scrolling on screens from 1280×720 up.
   or in the panel header (Design). Its chat panel is mounted once for the studio
   (`AdvisorDockProvider`), so the conversation survives moving between steps.
 - **Tools float on the photo** (white cards with one soft shadow):
-  - top left, the step's own tools: Draw region and Auto-detect (Regions); Design or Before / after
-    and Preview or Photoreal (Design);
+  - top left, the step's own tools: Draw region and Auto-detect (Regions). On Design, the view
+    switches (Design or Before / after, Preview or Photoreal, each with an icon) sit instead in
+    the row above the photo, right-aligned with its edge, so the photo stays clear;
   - top right, the names toggle, an eye button (`NameTagToggle`);
   - top centre, a short hint or progress note (drawing help, "Updating preview…");
   - bottom centre, the one action the photo is waiting for: the unsaved-changes bar with Discard

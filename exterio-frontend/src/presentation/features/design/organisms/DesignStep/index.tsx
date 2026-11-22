@@ -33,12 +33,12 @@ import type { StudioStep } from '@/presentation/routes/paths';
 import type { Design } from '@/domain/models/design';
 import type { Project, ProjectImage } from '@/domain/models/project';
 
-/** Pill tabs floating over the photo: a soft lift so they read as resting on it. */
-const FLOATING_TABS = 'shadow-raised ring-1 ring-black/5';
+/** The view switches sit in the row above the photo, the same height as the design picker. */
+const ROW_TABS = 'h-11 items-center rounded-xl border border-stone-300 bg-white px-1.5';
 
 const VIEW_TABS: TabItem<DesignViewMode>[] = [
-  { value: 'design', label: 'Design' },
-  { value: 'compare', label: 'Before / after' },
+  { value: 'design', label: 'Design', icon: 'palette' },
+  { value: 'compare', label: 'Before / after', icon: 'compare' },
 ];
 
 const TITLE = 'Design your exterior';
@@ -122,10 +122,11 @@ function DesignWorkspace({
 
   const sourceTabs: TabItem<DesignImageSource>[] = [
     // Short labels: the switch sits beside the render button, which supplies the context.
-    { value: 'preview', label: 'Preview' },
+    { value: 'preview', label: 'Preview', icon: 'image' },
     {
       value: 'render',
       label: 'Photoreal',
+      icon: 'camera',
       disabled: renderUrl === null,
       disabledReason: 'Generate a photoreal render first',
     },
@@ -151,7 +152,37 @@ function DesignWorkspace({
         }
       />
 
-      <DesignSwitcher project={project} activeDesign={design} onSelect={onSelectDesign} />
+      {/*
+        The row above the photo, as wide as it: the design picker on the left, and on the right
+        how you look at the photo (design or before / after) and which picture it is (the
+        instant preview or the photoreal render). On the photo itself: names top right, the
+        render button bottom centre.
+      */}
+      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_26rem]">
+        <div className="flex min-w-0 flex-wrap items-center justify-between gap-3">
+          <DesignSwitcher project={project} activeDesign={design} onSelect={onSelectDesign} />
+          <div className="flex flex-wrap items-center gap-2">
+            <Tabs
+              items={VIEW_TABS}
+              value={view.viewMode}
+              onValueChange={view.setViewMode}
+              variant="pill"
+              label="Canvas view"
+              className={ROW_TABS}
+            />
+            {photoreal.showsSourceSwitch && (
+              <Tabs
+                items={sourceTabs}
+                value={showsRender ? 'render' : 'preview'}
+                onValueChange={view.setImageSource}
+                variant="pill"
+                label="Picture type"
+                className={ROW_TABS}
+              />
+            )}
+          </div>
+        </div>
+      </div>
 
       {project.regions.length === 0 && (
         <Alert
@@ -198,32 +229,6 @@ function DesignWorkspace({
               showNames={nameTags.isOn}
             />
           )}
-
-          {/*
-            The picture's own controls float on it. Top left: how you look at it (design or
-            before / after) and which picture it is (preview or the photoreal render). Top
-            right: names. Bottom centre: the button that makes the render.
-          */}
-          <div className="absolute left-4 top-4 z-10 flex flex-wrap items-center gap-2">
-            <Tabs
-              items={VIEW_TABS}
-              value={view.viewMode}
-              onValueChange={view.setViewMode}
-              variant="pill"
-              label="Canvas view"
-              className={`bg-white/95 p-1 ${FLOATING_TABS}`}
-            />
-            {photoreal.showsSourceSwitch && (
-              <Tabs
-                items={sourceTabs}
-                value={showsRender ? 'render' : 'preview'}
-                onValueChange={view.setImageSource}
-                variant="pill"
-                label="Picture type"
-                className={`bg-white/95 p-1 ${FLOATING_TABS}`}
-              />
-            )}
-          </div>
 
           <NameTagToggle
             isOn={nameTags.isOn}
