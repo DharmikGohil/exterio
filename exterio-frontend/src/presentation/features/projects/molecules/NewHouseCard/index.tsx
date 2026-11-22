@@ -23,7 +23,13 @@ export function NewHouseCard({ onCreate, onCreateSample, isCreatingSample }: New
       </button>
       <p className="max-w-[16rem] text-sm leading-relaxed text-stone-600">
         Upload a photo, or{' '}
-        <Button variant="link" size="inline" isLoading={isCreatingSample} onClick={onCreateSample}>
+        <Button
+          variant="link"
+          size="inline"
+          data-tour="sample-house"
+          isLoading={isCreatingSample}
+          onClick={onCreateSample}
+        >
           try a ready-made sample house
         </Button>
         .

@@ -66,6 +66,9 @@ flowchart TD
   in this browser counts as seen, and reduced motion skips it.
 - **Before and after on the sign-in page.** Those houses sweep from their photo to their new
   finishes, so the product explains itself before anyone signs in.
+- **A guided tour, once.** The first time each page is opened, a short tour dims the page and
+  points at its main parts one at a time; the ⓘ button in the header shows it again. See
+  [DESIGN.md](DESIGN.md#the-guided-tour).
 - **No feature that cannot work is shown.** When the server has no image model, the photoreal
   render button and tab are hidden rather than shown disabled with an apology.
 - **Nothing is a dead end.** If detection misses a pillar, it can be drawn. If no measurement is

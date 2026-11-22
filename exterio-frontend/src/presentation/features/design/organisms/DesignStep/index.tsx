@@ -281,11 +281,13 @@ function DesignWorkspace({
 
           {photoreal.showsGenerate && (
             <div className="absolute inset-x-0 bottom-4 z-10 flex justify-center px-4">
-              <RenderButton
-                status={design.renderStatus}
-                isRequesting={isRequestingRender}
-                onGenerate={handleGenerateRender}
-              />
+              <span data-tour="render-button" className="inline-flex">
+                <RenderButton
+                  status={design.renderStatus}
+                  isRequesting={isRequestingRender}
+                  onGenerate={handleGenerateRender}
+                />
+              </span>
             </div>
           )}
         </div>

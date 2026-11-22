@@ -94,7 +94,7 @@ export function RegionsStep({ project, image, onStepChange }: RegionsStepProps) 
             aria-label="Region tools"
             className="flex flex-wrap items-center justify-between gap-2"
           >
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2" data-tour="region-tools">
               {editor.isDrawing ? (
                 <>
                   <Button
@@ -199,6 +199,7 @@ export function RegionsStep({ project, image, onStepChange }: RegionsStepProps) 
       >
         <div
           className="relative mx-auto min-w-0"
+          data-tour="region-photo"
           style={photoFrameStyle(image.width, image.height, toolbarHeight)}
         >
           <RegionCanvas

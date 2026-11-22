@@ -31,6 +31,7 @@ export function StepFooter({ step, onStepChange, hint, meta, primaryAction }: St
 
   return (
     <div
+      data-tour="step-footer"
       className={`sticky bottom-0 z-30 border-t border-stone-200 bg-white py-3.5 ${PAGE_FRAME_BLEED}`}
     >
       <div className="flex items-center justify-between gap-3">

@@ -1,12 +1,16 @@
 import { Button } from '@/presentation/shared/atoms/Button';
 import { ConfirmDialog } from '@/presentation/shared/molecules/ConfirmDialog';
 import { NameDialog } from '@/presentation/shared/molecules/NameDialog';
+import { usePageTour } from '@/presentation/shared/contexts/GuidedTourContext';
 import { useProjectListPage } from '@/presentation/features/projects/hooks/useProjectListPage';
 import { ProjectToolbar } from '@/presentation/features/projects/molecules/ProjectToolbar';
 import { ProjectGrid } from '@/presentation/features/projects/organisms/ProjectGrid';
+import { HOUSES_TOUR } from '@/presentation/features/projects/utils/housesTour';
 
 export function ProjectListPage() {
   const page = useProjectListPage();
+  // Once the houses have loaded, so the tour points at real cards rather than placeholders.
+  usePageTour(page.isLoading ? null : HOUSES_TOUR);
 
   return (
     <div className="w-full space-y-7 pb-9 pt-6">
@@ -19,7 +23,7 @@ export function ProjectListPage() {
             One project per house, with as many designs as you want to compare.
           </p>
         </div>
-        <Button icon="plus" size="lg" onClick={page.openCreateDialog}>
+        <Button icon="plus" size="lg" data-tour="new-project" onClick={page.openCreateDialog}>
           New project
         </Button>
       </div>

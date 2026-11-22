@@ -67,6 +67,7 @@ export function MaterialPanel({
   if (!selectedRegion) {
     return (
       <aside
+        data-tour="material-panel"
         style={{ maxHeight }}
         className="flex max-h-[max(22rem,calc(100dvh-22rem))] min-h-64 flex-col self-start overflow-hidden rounded-2xl border border-stone-200 bg-white lg:sticky lg:top-6"
       >
@@ -144,6 +145,7 @@ export function MaterialPanel({
 
   return (
     <aside
+      data-tour="material-panel"
       style={{ maxHeight }}
       className="flex max-h-[max(22rem,calc(100dvh-22rem))] min-h-64 flex-col self-start overflow-hidden rounded-2xl border border-stone-200 bg-white lg:sticky lg:top-6"
     >

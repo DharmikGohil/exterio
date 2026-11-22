@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 
 import { Logo } from '@/presentation/shared/atoms/Logo';
 import { HeaderSlotTarget } from '@/presentation/shared/contexts/HeaderSlotContext';
+import { TourButton } from '@/presentation/shared/molecules/TourButton';
 import { PAGE_FRAME } from '@/presentation/shared/utils/pageFrame';
 
 export interface AppHeaderProps {
@@ -13,8 +14,8 @@ export interface AppHeaderProps {
 }
 
 /**
- * The brand on the left, the user menu on the right, and between them whatever the current page
- * puts in the header slot (the studio's breadcrumb and stepper).
+ * The brand on the left, the help button and user menu on the right, and between them whatever
+ * the current page puts in the header slot (the studio's breadcrumb and stepper).
  */
 export function AppHeader({ homeHref, rightSlot }: AppHeaderProps) {
   return (
@@ -28,7 +29,10 @@ export function AppHeader({ homeHref, rightSlot }: AppHeaderProps) {
         <Logo />
       </Link>
       <HeaderSlotTarget className="flex min-w-0 flex-1 items-center justify-between gap-6" />
-      {rightSlot}
+      <div className="flex shrink-0 items-center gap-2">
+        <TourButton />
+        {rightSlot}
+      </div>
     </header>
   );
 }

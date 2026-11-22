@@ -28,7 +28,11 @@ export function StudioStepper({ currentStep, hasPhoto, onStepChange }: StudioSte
   const currentIndex = STUDIO_STEPS.indexOf(currentStep);
 
   return (
-    <nav aria-label="Project steps" className="-mx-1 min-w-0 overflow-x-auto px-1 py-0.5">
+    <nav
+      aria-label="Project steps"
+      data-tour="studio-stepper"
+      className="-mx-1 min-w-0 overflow-x-auto px-1 py-0.5"
+    >
       <ol className="flex min-w-max items-center gap-1 rounded-full bg-brand-50 p-1 ring-1 ring-brand-100">
         {STUDIO_STEPS.map((step, index) => {
           const meta = STUDIO_STEP_META[step];

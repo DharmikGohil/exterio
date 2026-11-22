@@ -22,7 +22,7 @@ export function DesignCostSummary({
   isRough,
 }: DesignCostSummaryProps) {
   return (
-    <div aria-live="polite" className="min-w-[10rem] text-right">
+    <div aria-live="polite" data-tour="design-cost" className="min-w-[10rem] text-right">
       <div>
         <p
           className="text-sm text-stone-500"

@@ -55,6 +55,7 @@ export function EstimateSummary({
 
   return (
     <section
+      data-tour="estimate-summary"
       aria-label="Estimate summary"
       aria-busy={isRefreshing}
       className="grid divide-y divide-stone-200 rounded-2xl border border-stone-200 bg-white md:grid-cols-3 md:divide-x md:divide-y-0"

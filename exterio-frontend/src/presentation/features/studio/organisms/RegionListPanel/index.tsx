@@ -38,6 +38,7 @@ export function RegionListPanel({
 
   return (
     <aside
+      data-tour="region-list"
       style={{ maxHeight }}
       className="flex max-h-[max(22rem,calc(100dvh-18.5rem))] min-h-64 flex-col self-start overflow-hidden rounded-2xl border border-stone-200 bg-white lg:sticky lg:top-6"
     >

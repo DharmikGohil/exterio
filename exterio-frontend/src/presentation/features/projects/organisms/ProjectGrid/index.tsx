@@ -67,8 +67,14 @@ export function ProjectGrid({
           isCreatingSample={isCreatingSample}
         />
       )}
-      {projects.map((project) => (
-        <ProjectCard key={project.id} project={project} onRename={onRename} onDelete={onDelete} />
+      {projects.map((project, index) => (
+        <ProjectCard
+          key={project.id}
+          project={project}
+          onRename={onRename}
+          onDelete={onDelete}
+          tourTarget={index === 0 ? 'project-card' : undefined}
+        />
       ))}
     </div>
   );

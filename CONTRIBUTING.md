@@ -63,6 +63,11 @@ same texture the preview uses. Re-run `make check`.
 fake-backed test, wire it in `infrastructure/registry.py` and document the choice in
 `docs/ARCHITECTURE.md`. For detection, measure it first with `scripts/benchmark_detection.py`.
 
+**Add or change a tour step.** Mark the element with `data-tour="<name>"`, then add a step
+with that `target` to the page's tour (`HOUSES_TOUR` in `features/projects/utils/housesTour.ts`,
+`STUDIO_TOURS` in `features/studio/utils/studioTour.ts`). A step whose element is missing is
+skipped, so a tour can describe a page in all its states.
+
 **Change a sample house or the renderer.** Edit
 `sample_houses/<name>/house.json`, then regenerate the sign-in images with
 `uv run python scripts/render_showcase.py` and check each render by eye.

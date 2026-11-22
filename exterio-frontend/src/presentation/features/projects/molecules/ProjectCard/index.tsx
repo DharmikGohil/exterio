@@ -12,17 +12,22 @@ export interface ProjectCardProps {
   project: ProjectSummary;
   onRename: (project: ProjectSummary) => void;
   onDelete: (project: ProjectSummary) => void;
+  /** Marks the card for the guided tour (the first card on the page). */
+  tourTarget?: string;
 }
 
 /**
  * One house on the home screen: its photo, how far along it is, when it was last edited and
  * what it is estimated to cost. Rename and delete are in the ⋯ menu.
  */
-export function ProjectCard({ project, onRename, onDelete }: ProjectCardProps) {
+export function ProjectCard({ project, onRename, onDelete, tourTarget }: ProjectCardProps) {
   const thumbnailUrl = resolveFileUrl(project.thumbnailUrl);
 
   return (
-    <article className="relative flex flex-col overflow-hidden rounded-xl border border-stone-200 bg-white transition-colors hover:border-stone-300">
+    <article
+      data-tour={tourTarget}
+      className="relative flex flex-col overflow-hidden rounded-xl border border-stone-200 bg-white transition-colors hover:border-stone-300"
+    >
       <div className="aspect-[16/10] w-full overflow-hidden bg-stone-100">
         {thumbnailUrl ? (
           <img src={thumbnailUrl} alt="" decoding="async" className="h-full w-full object-cover" />

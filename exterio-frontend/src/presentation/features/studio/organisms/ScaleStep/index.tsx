@@ -40,6 +40,7 @@ export function ScaleStep({ project, image, onStepChange }: ScaleStepProps) {
       >
         <div
           className="relative mx-auto min-w-0"
+          data-tour="scale-photo"
           style={photoFrameStyle(image.width, image.height)}
         >
           <ScaleCanvas
@@ -55,7 +56,10 @@ export function ScaleStep({ project, image, onStepChange }: ScaleStepProps) {
           </p>
         </div>
 
-        <aside className="space-y-5 self-start rounded-2xl border border-stone-200 bg-white p-6 lg:sticky lg:top-6">
+        <aside
+          data-tour="scale-form"
+          className="space-y-5 self-start rounded-2xl border border-stone-200 bg-white p-6 lg:sticky lg:top-6"
+        >
           <p className="flex items-center gap-2 text-[15px] font-medium text-stone-900">
             <Icon name="check" className="text-brand-700" />
             Wall outlined on the photo

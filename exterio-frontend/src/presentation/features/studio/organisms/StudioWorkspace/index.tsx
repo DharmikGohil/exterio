@@ -1,3 +1,4 @@
+import { usePageTour } from '@/presentation/shared/contexts/GuidedTourContext';
 import { HeaderSlot } from '@/presentation/shared/contexts/HeaderSlotContext';
 import { AdvisorDockProvider } from '@/presentation/features/advisor/contexts/AdvisorDockContext';
 import { useActiveDesign } from '@/presentation/features/design/hooks/useActiveDesign';
@@ -8,6 +9,7 @@ import { PhotoStep } from '@/presentation/features/studio/organisms/PhotoStep';
 import { RegionsStep } from '@/presentation/features/studio/organisms/RegionsStep';
 import { ScaleStep } from '@/presentation/features/studio/organisms/ScaleStep';
 import { StudioHeaderNav } from '@/presentation/features/studio/organisms/StudioHeaderNav';
+import { STUDIO_TOURS } from '@/presentation/features/studio/utils/studioTour';
 import type { StudioStep } from '@/presentation/routes/paths';
 import type { Project, ProjectImage } from '@/domain/models/project';
 
@@ -41,11 +43,13 @@ function StepContent({ step, project, image, onStepChange }: StepContentProps) {
 
 /**
  * The Studio for one loaded project: its breadcrumb and stepper in the app header, the current
- * step, and the material advisor (whose panel outlives step changes).
+ * step, and the material advisor (whose panel outlives step changes). Each step has a short
+ * guided tour, shown the first time it is opened in this browser.
  */
 export function StudioWorkspace({ project }: StudioWorkspaceProps) {
   const { step, goToStep, hasPhoto } = useStudioStep(project);
   const { activeDesign } = useActiveDesign(project);
+  usePageTour(STUDIO_TOURS[step]);
 
   return (
     <AdvisorDockProvider

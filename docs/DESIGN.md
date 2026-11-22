@@ -215,6 +215,29 @@ Wherever the interface states a measured or estimated quantity, it can draw it a
 - `SvgDimension` (SVG) on the photo, like the wall width and height in the Scale step, drawn
   outside the wall with extension lines, end ticks and the figure set into the middle.
 
+## The guided tour
+
+A first-time visitor is shown around each page once: the page dims except for one element, and a
+small card beside it says what that element is for, with Back, Next and Skip tour. It starts by
+itself the first time a page is opened in a browser; the ⓘ button in the header ("Show me
+around") replays it at any time.
+
+- **One tour per page.** Your houses has five steps (welcome, a house card, New project, the
+  sample house, the help button). Each studio step has its own short tour, shown the first time
+  that step is opened, after a one-card introduction to the five-step bar the first time the
+  studio is opened at all.
+- **It points at what is really there.** A step names its element by a `data-tour` attribute
+  and is left out when that element is not on the page (the render button on a server without
+  an image model, a part list that is still loading). On a first visit the tour waits up to
+  four seconds for late elements, such as a photo fading in, before it starts.
+- **The card never covers its element.** Below a short element, else above; beside a tall one
+  (the photo, a side panel), left then right; over its lower part only when there is no room,
+  as on a phone. It always stays inside the screen.
+- **Keyboard and motion.** Esc skips, the arrow keys step through, focus starts on Next. Reduced
+  motion turns off the sliding between steps.
+- **Remembered per browser,** in local storage (`exterio.tourSeen.<tour>`). Where storage is
+  blocked the tour never starts by itself, so it can never get stuck; the ⓘ button still works.
+
 ## Type
 
 | Use | Family | Size / weight |
@@ -267,7 +290,10 @@ No sparkle or wand icons; each icon says what its button does.
 | `AppLayout`, `AuthLayout`, `CenteredLayout` | `shared/layouts` | How each kind of page is laid out |
 | `Avatar`, `AccountMenu` | `shared/atoms`, `features/auth` | Initials badge, and the account menu built on it |
 | `PAGE_FRAME`, `PAGE_FRAME_BLEED` | `shared/utils/pageFrame` | The full-width frame shared by the app bar, pages and the step bar |
-| `AppHeader` | `shared/organisms` | The logo, the page's header slot and the user menu |
+| `AppHeader` | `shared/organisms` | The logo, the page's header slot, the tour button and the user menu |
+| `GuidedTourProvider`, `usePageTour` | `shared/contexts/GuidedTourContext` | The page's guided tour: starts it once, replays it from the header |
+| `GuidedTour`, `TourButton` | `shared/organisms`, `shared/molecules` | The dimmed page with one element lit and its card; the ⓘ button. Placement and "seen" in `utils/guidedTour` |
+| `HOUSES_TOUR`, `STUDIO_TOURS` | `features/projects/utils`, `features/studio/utils` | The words of each page's tour |
 | `HeaderSlot` | `shared/contexts/HeaderSlotContext` | Lets a page (the studio) put its navigation into the app header |
 | `DropdownMenu`, `FloatingSaveBar`, `NameTagToggle` | `shared/molecules` | The menus, the unsaved-changes bar and the eye button used on the photo |
 | `DesignSwitcher` | `features/design` | Design dropdown, ⋯ menu and New design |

@@ -8,7 +8,13 @@ export function AdvisorButton() {
     return null;
   }
   return (
-    <Button variant="outline" icon="message" onClick={open} aria-expanded={isOpen}>
+    <Button
+      variant="outline"
+      icon="message"
+      data-tour="advisor"
+      onClick={open}
+      aria-expanded={isOpen}
+    >
       Ask about materials
     </Button>
   );

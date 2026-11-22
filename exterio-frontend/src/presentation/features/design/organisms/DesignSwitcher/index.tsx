@@ -22,7 +22,7 @@ export function DesignSwitcher({ project, activeDesign, onSelect }: DesignSwitch
   const { dialog } = manager;
 
   return (
-    <div className="flex min-w-0 flex-wrap items-center gap-3">
+    <div className="flex min-w-0 flex-wrap items-center gap-3" data-tour="design-switcher">
       <DropdownMenu
         label="Designs"
         triggerClassName="flex h-11 max-w-[min(22rem,70vw)] items-center gap-2 rounded-xl bg-stone-900 px-5 text-[15px] font-medium text-white transition-colors hover:bg-stone-800"

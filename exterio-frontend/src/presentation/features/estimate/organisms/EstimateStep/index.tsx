@@ -89,6 +89,7 @@ function EstimateWorkspace({
   const downloadButton = (
     <Button
       icon="download"
+      data-tour="estimate-pdf"
       disabled={!estimate}
       isLoading={isDownloading}
       onClick={() => downloadReport(design)}
