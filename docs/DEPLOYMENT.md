@@ -20,9 +20,8 @@ web app's address.
 - `VITE_API_BASE_URL` on Vercel is `https://exterio-api.dharmikgohil.in`; `CORS_ORIGINS` on Railway
   lists both web addresses.
 
-The Railway service was created from the public repository URL, so a push to `main` does not
-redeploy it on its own: redeploy from the service's Deployments tab (or connect GitHub there).
-Check the Vercel project's Git settings the same way.
+Both redeploy on every push to `main`: Vercel through its Git connection, Railway through the
+Railway GitHub App, which is installed on `DharmikGohil` with access to this repository only.
 
 ## 1. API on Railway
 
