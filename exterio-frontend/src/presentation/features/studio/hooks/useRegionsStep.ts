@@ -94,7 +94,19 @@ export function useRegionsStep(project: Project) {
     selectRegion(null);
   }, [draft, selectRegion]);
 
+  const undo = useCallback(() => {
+    draft.undo();
+    setSelectedVertexIndex(null);
+  }, [draft]);
+
+  const redo = useCallback(() => {
+    draft.redo();
+    setSelectedVertexIndex(null);
+  }, [draft]);
+
   const runDetection = useCallback(() => {
+    // Detection replaces the regions; Undo can bring the earlier ones back.
+    draft.checkpoint();
     detectConfirm.close();
     drawing.cancelDrawing();
     selectRegion(null);
@@ -108,7 +120,7 @@ export function useRegionsStep(project: Project) {
         );
       },
     });
-  }, [actions, detectConfirm, drawing, selectRegion, toast]);
+  }, [actions, detectConfirm, draft, drawing, selectRegion, toast]);
 
   // Detection replaces earlier AI regions and discards unsaved edits, so ask first.
   const requestDetection = useCallback(() => {
@@ -126,6 +138,8 @@ export function useRegionsStep(project: Project) {
     onUndoPoint: drawing.undoPoint,
     onRemoveSelectedVertex: removeSelectedVertex,
     onClearSelection: () => selectRegion(null),
+    onUndo: undo,
+    onRedo: redo,
   });
 
   return {
@@ -154,6 +168,11 @@ export function useRegionsStep(project: Project) {
     finishDrawing: drawing.finishDrawing,
     confirmDrawnRegion,
     discardDrawnRegion: drawing.clearPending,
+
+    undo,
+    redo,
+    canUndo: draft.canUndo,
+    canRedo: draft.canRedo,
 
     save,
     isSaving: actions.isSavingRegions,

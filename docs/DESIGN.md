@@ -88,10 +88,19 @@ names stay as tooltips and accessible names.
   once done, a skeleton until the text starts, then the text typed out with a caret. Once
   answered, the steps fold into one line ("✓ Searched material notes · Checked your house ›")
   that opens them again.
-- **Tools float on the photo** (white cards with one soft shadow):
-  - top left, the step's own tools: Draw region and Auto-detect (Regions). On Design, the view
-    switches (Design or Before / after, Preview or Photoreal, each with an icon) sit instead in
-    the row above the photo, right-aligned with its edge, so the photo stays clear;
+- **A row of tools above the photo**, as wide as it, so no tool ever covers part of the house:
+  - Regions: Draw region and Auto-detect on the left (Finish shape, Undo point and Cancel while
+    drawing; Remove point with a point selected), Undo and Redo on the right;
+  - Design: the design picker on the left, the view switches (Design or Before / after, Preview
+    or Photoreal, each with an icon) on the right.
+  The row is measured, and the photo and the side panel give up its real height, so the step bar
+  stays on screen even when the row wraps.
+- **Undo and redo on Regions** (`useRegionDraft`): every change to the parts can be undone with
+  Ctrl+Z (⌘Z) or the Undo button and redone with Ctrl+Shift+Z or Ctrl+Y. A corner dragged across
+  the photo, or a name typed letter by letter, is one step; deleting a part, Discard and
+  Auto-detect can be undone too. While drawing, Ctrl+Z removes the last point. Typing in a field
+  keeps the field's own undo.
+- **On the photo itself**, only light overlays:
   - top right, the names toggle, an eye button (`NameTagToggle`);
   - top centre, a short hint or progress note (drawing help, "Updating preview…");
   - bottom centre, the one action the photo is waiting for: the unsaved-changes bar with Discard

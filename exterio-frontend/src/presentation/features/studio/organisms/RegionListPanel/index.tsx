@@ -15,6 +15,8 @@ export interface RegionListPanelProps {
   onSelect: (regionId: string) => void;
   onChange: (regionId: string, patch: RegionPatch) => void;
   onDelete: (regionId: string) => void;
+  /** As tall as the photo may be, so the panel never pushes the step bar off screen. */
+  maxHeight?: string;
 }
 
 /** Side panel: every region grouped by type. Selecting one opens its details in place. */
@@ -25,11 +27,15 @@ export function RegionListPanel({
   onSelect,
   onChange,
   onDelete,
+  maxHeight,
 }: RegionListPanelProps) {
   const groups = groupRegionsByLabel(regions);
 
   return (
-    <aside className="flex max-h-[max(22rem,calc(100dvh-18.5rem))] min-h-64 flex-col self-start overflow-hidden rounded-2xl border border-stone-200 bg-white lg:sticky lg:top-6">
+    <aside
+      style={{ maxHeight }}
+      className="flex max-h-[max(22rem,calc(100dvh-18.5rem))] min-h-64 flex-col self-start overflow-hidden rounded-2xl border border-stone-200 bg-white lg:sticky lg:top-6"
+    >
       <div className="mx-4 flex h-16 items-center border-b border-stone-200 px-1">
         <h3 className="text-xl font-medium text-stone-900">
           Regions

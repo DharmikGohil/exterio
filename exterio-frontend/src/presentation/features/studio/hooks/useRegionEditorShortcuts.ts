@@ -12,6 +12,10 @@ export interface RegionEditorShortcutHandlers {
   onRemoveSelectedVertex: () => void;
   /** Escape while not drawing. */
   onClearSelection: () => void;
+  /** Ctrl/⌘ + Z while not drawing (while drawing it removes the last point). */
+  onUndo: () => void;
+  /** Ctrl/⌘ + Shift + Z, or Ctrl + Y. */
+  onRedo: () => void;
 }
 
 function isTypingTarget(target: EventTarget | null): boolean {
@@ -40,6 +44,25 @@ export function useRegionEditorShortcuts(handlers: RegionEditorShortcutHandlers)
         return;
       }
       const current = handlersRef.current;
+      const isCommand = event.ctrlKey || event.metaKey;
+      const key = event.key.toLowerCase();
+
+      if (isCommand && (key === 'y' || (key === 'z' && event.shiftKey))) {
+        event.preventDefault();
+        if (!current.isDrawing) {
+          current.onRedo();
+        }
+        return;
+      }
+      if (isCommand && key === 'z') {
+        event.preventDefault();
+        if (current.isDrawing) {
+          current.onUndoPoint();
+        } else {
+          current.onUndo();
+        }
+        return;
+      }
 
       if (current.isDrawing) {
         if (event.key === 'Enter') {
