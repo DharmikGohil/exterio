@@ -7,6 +7,16 @@ Vite build) on **Vercel**. The photoreal renderer (`exterio-render`) is already 
 Deploy the API first (the web app needs its address), then the web app, then tell the API the
 web app's address.
 
+## Live
+
+- Web app: <https://exterio-mu.vercel.app> (Vercel project `exterio`, root `exterio-frontend`)
+- API: <https://exterio-production.up.railway.app> (Railway service `exterio`, root `exterio-backend`,
+  volume at `/app/data`); interactive docs at `/api/docs`
+
+The Railway service was created from the public repository URL, so a push to `main` does not
+redeploy it on its own: redeploy from the service's Deployments tab (or connect GitHub there).
+Check the Vercel project's Git settings the same way.
+
 ## 1. API on Railway
 
 1. New project → **Deploy from GitHub repo** → `DharmikGohil/exterio`.

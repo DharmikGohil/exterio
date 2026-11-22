@@ -12,6 +12,7 @@
 ![Claude](https://img.shields.io/badge/Claude-Opus%205.5-D97757)
 ![Gemini](https://img.shields.io/badge/Gemini-Vertex%20AI-4285F4?logo=googlegemini&logoColor=white)
 
+**[Live demo](https://exterio-mu.vercel.app)** ·
 [How it works](#how-it-works) ·
 [Screenshots](#screenshots) ·
 [Quick start](#quick-start) ·
