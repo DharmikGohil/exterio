@@ -70,7 +70,10 @@ The photo's frame hugs the photo (`utils/photoFrame`): its width is the photo's 
 tallest the photo may be, or the full column if that is narrower, so a wide screen shows no grey
 bands beside the photo and the tools in its corners sit on the photo itself. On Design, the row of
 controls above the photo is measured: when it wraps onto two lines on a narrower screen, the
-photo and the parts panel give up that height, so the step bar still fits on screen.
+photo and the parts panel give up that height, so the step bar still fits on screen. To keep that
+row on one line from 1280 px up, the view switches (Design, Before / after, Preview,
+Photoreal) show only their icons below 1400 px and New design is a "+" below 1600 px; their
+names stay as tooltips and accessible names.
 
 - **Header**: the studio puts its breadcrumb and stepper into the app header through a header slot
   (`HeaderSlot`, a portal), so there is no second bar. The stepper (`StudioStepper`) is plain text:

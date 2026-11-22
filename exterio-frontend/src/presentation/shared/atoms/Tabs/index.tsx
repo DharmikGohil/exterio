@@ -20,6 +20,11 @@ export interface TabsProps<T extends string> {
   label: string;
   fullWidth?: boolean;
   className?: string;
+  /**
+   * Classes for each tab's text, e.g. `sr-only min-[1400px]:not-sr-only` to show only the icons
+   * where space is short. The text stays the tab's accessible name and its hover title.
+   */
+  labelClassName?: string;
 }
 
 export function Tabs<T extends string>({
@@ -30,6 +35,7 @@ export function Tabs<T extends string>({
   label,
   fullWidth = false,
   className,
+  labelClassName,
 }: TabsProps<T>) {
   const isPill = variant === 'pill';
   return (
@@ -52,7 +58,7 @@ export function Tabs<T extends string>({
             role="tab"
             aria-selected={isActive}
             disabled={item.disabled}
-            title={item.disabled ? item.disabledReason : undefined}
+            title={item.disabled ? item.disabledReason : labelClassName ? item.label : undefined}
             onClick={() => onValueChange(item.value)}
             className={cn(
               'inline-flex items-center justify-center gap-1.5 whitespace-nowrap text-sm font-medium transition-colors',
@@ -75,7 +81,7 @@ export function Tabs<T extends string>({
             )}
           >
             {item.icon && <Icon name={item.icon} />}
-            {item.label}
+            {labelClassName ? <span className={labelClassName}>{item.label}</span> : item.label}
           </button>
         );
       })}

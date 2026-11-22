@@ -37,6 +37,11 @@ import type { Project, ProjectImage } from '@/domain/models/project';
 
 /** The view switches sit in the row above the photo, the same height as the design picker. */
 const ROW_TABS = 'h-11 items-center rounded-xl border border-stone-300 bg-white px-1.5';
+/**
+ * The row above the photo fits on one line from a 1280 px screen up: below 1400 px the view
+ * switches show only their icons (their names are the tooltip and the accessible name).
+ */
+const ROW_TAB_LABEL = 'sr-only min-[1400px]:not-sr-only';
 
 const VIEW_TABS: TabItem<DesignViewMode>[] = [
   { value: 'design', label: 'Design', icon: 'palette' },
@@ -183,6 +188,7 @@ function DesignWorkspace({
               variant="pill"
               label="Canvas view"
               className={ROW_TABS}
+              labelClassName={ROW_TAB_LABEL}
             />
             {photoreal.showsSourceSwitch && (
               <Tabs
@@ -192,6 +198,7 @@ function DesignWorkspace({
                 variant="pill"
                 label="Picture type"
                 className={ROW_TABS}
+                labelClassName={ROW_TAB_LABEL}
               />
             )}
           </div>

@@ -70,8 +70,16 @@ export function DesignSwitcher({ project, activeDesign, onSelect }: DesignSwitch
           },
         ]}
       />
-      <Button variant="outline" size="lg" icon="plus" onClick={manager.openCreate}>
-        New design
+      {/* Just the plus below 1600 px, so the row above the photo stays on one line. */}
+      <Button
+        variant="outline"
+        size="lg"
+        icon="plus"
+        title="New design"
+        className="max-[1599px]:w-11 max-[1599px]:px-0"
+        onClick={manager.openCreate}
+      >
+        <span className="sr-only min-[1600px]:not-sr-only">New design</span>
       </Button>
 
       <NameDialog
