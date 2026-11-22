@@ -20,6 +20,8 @@ export interface RegionListItemProps {
   onSelect: (regionId: string) => void;
   onChange: (regionId: string, patch: RegionPatch) => void;
   onDelete: (regionId: string) => void;
+  /** Just found by Auto-detect: the row slides in. */
+  isFresh?: boolean;
 }
 
 /** One region in the side panel. Selecting it reveals its editable details. */
@@ -29,6 +31,7 @@ export function RegionListItem({
   onSelect,
   onChange,
   onDelete,
+  isFresh = false,
 }: RegionListItemProps) {
   const nameId = `region-name-${region.id}`;
   const labelId = `region-label-${region.id}`;
@@ -36,7 +39,9 @@ export function RegionListItem({
   const { color } = REGION_LABEL_META[region.label];
 
   return (
-    <li className={cn('group rounded-lg', isSelected && 'bg-stone-100')}>
+    <li
+      className={cn('group rounded-lg', isSelected && 'bg-stone-100', isFresh && 'animate-row-in')}
+    >
       <div className="flex h-11 items-center gap-1 pr-1">
         <button
           type="button"

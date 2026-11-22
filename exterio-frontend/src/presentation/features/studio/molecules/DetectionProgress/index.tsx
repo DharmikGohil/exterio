@@ -1,86 +1,80 @@
 import { Icon } from '@/presentation/shared/atoms/Icon';
-import { cn } from '@/presentation/shared/utils/cn';
 import {
   DETECTION_STAGES,
-  TYPICAL_DETECTION_SECONDS,
   useDetectionProgress,
 } from '@/presentation/features/studio/hooks/useDetectionProgress';
+import { revealPhrase } from '@/presentation/features/studio/utils/detectionReveal';
+import type { RegionLabel } from '@/domain/models/project';
+
+export interface DetectionRevealStatus {
+  isActive: boolean;
+  isDone: boolean;
+  shown: number;
+  total: number;
+  /** The kind of the part drawn most recently. */
+  latestLabel: RegionLabel | null;
+}
 
 export interface DetectionProgressProps {
-  isActive: boolean;
+  isDetecting: boolean;
+  reveal: DetectionRevealStatus;
 }
 
 /**
- * Covers the photo while Auto-detect runs: a scanning line sweeps over the house, and a card
- * shows the time so far, a bar, and what the AI is looking for, step by step.
+ * Auto-detect on the photo. While the AI works, a soft green glow and a sweep pass over the
+ * house and a pill at the bottom says what it looks for and for how long. When the answer
+ * arrives the parts are drawn one after another (by the canvas) and the pill counts them, then
+ * says "All done". The pill sits at the bottom edge so the house stays visible.
  */
-export function DetectionProgress({ isActive }: DetectionProgressProps) {
-  const { seconds, stageIndex, progress, isSlow } = useDetectionProgress(isActive);
-  if (!isActive) {
+export function DetectionProgress({ isDetecting, reveal }: DetectionProgressProps) {
+  const { seconds, stageIndex, isSlow } = useDetectionProgress(isDetecting);
+  if (!isDetecting && !reveal.isActive) {
     return null;
   }
 
-  return (
-    <div
-      role="status"
-      aria-live="polite"
-      aria-label="Auto-detect is finding the parts of the house"
-      className="absolute inset-0 z-20 overflow-hidden rounded-2xl"
-    >
-      <div className="absolute inset-0 bg-white/40" />
-      <div aria-hidden className="absolute inset-x-0 animate-scan">
-        <div className="h-24 bg-gradient-to-b from-transparent via-brand-300/30 to-brand-400/40" />
-        <div className="h-0.5 bg-brand-500/80 shadow-[0_0_12px_2px_rgb(54_120_98/0.6)]" />
-      </div>
+  let title: string;
+  let detail: string;
+  if (isDetecting) {
+    title = isSlow ? 'Taking longer than usual…' : DETECTION_STAGES[stageIndex].label;
+    detail = `${seconds} s`;
+  } else if (reveal.isDone) {
+    title = `All done: ${reveal.total} part${reveal.total === 1 ? '' : 's'} found`;
+    detail = 'Review them and fix anything wrong';
+  } else {
+    title = `Found ${reveal.shown} part${reveal.shown === 1 ? '' : 's'}`;
+    detail = reveal.latestLabel ? revealPhrase(reveal.latestLabel) : '';
+  }
 
-      <div className="absolute inset-0 flex items-center justify-center p-4">
-        <div className="w-full max-w-[22rem] rounded-2xl border border-stone-200 bg-white/95 p-4 shadow-raised">
-          <div className="flex items-baseline justify-between gap-3">
-            <p className="text-[15px] font-medium text-stone-900">
-              Finding the parts of your house
-            </p>
-            <p className="shrink-0 text-xs tabular-nums text-stone-500">{seconds} s</p>
-          </div>
-          <div aria-hidden className="mt-3 h-1.5 overflow-hidden rounded-full bg-stone-100">
-            <div
-              className="h-full rounded-full bg-brand-600 transition-[width] duration-300 ease-out"
-              style={{ width: `${Math.round(progress * 100)}%` }}
-            />
-          </div>
-          <ol className="mt-3 space-y-1.5">
-            {DETECTION_STAGES.map((stage, index) => {
-              const isDone = index < stageIndex;
-              const isCurrent = index === stageIndex;
-              return (
-                <li
-                  key={stage.label}
-                  className={cn(
-                    'flex items-center gap-2 text-sm',
-                    isDone && 'text-stone-500',
-                    isCurrent && 'font-medium text-stone-900',
-                    !isDone && !isCurrent && 'text-stone-400'
-                  )}
-                >
-                  <span className="flex h-4 w-4 shrink-0 items-center justify-center">
-                    {isDone && <Icon name="check" className="h-3.5 w-3.5 text-brand-600" />}
-                    {isCurrent && (
-                      <Icon name="spinner" className="h-3.5 w-3.5 animate-spin text-brand-600" />
-                    )}
-                    {!isDone && !isCurrent && (
-                      <span className="h-1.5 w-1.5 rounded-full bg-stone-300" />
-                    )}
-                  </span>
-                  {stage.label}
-                </li>
-              );
-            })}
-          </ol>
-          <p className="mt-3 text-xs text-stone-500">
-            {isSlow
-              ? 'Taking longer than usual. The AI is still working; please keep this page open.'
-              : `Usually about ${TYPICAL_DETECTION_SECONDS - 5} to ${TYPICAL_DETECTION_SECONDS + 5} seconds. You can review and fix every part afterwards.`}
-          </p>
-        </div>
+  return (
+    <div className="pointer-events-none absolute inset-0 z-20 overflow-hidden rounded-2xl">
+      {isDetecting && (
+        <>
+          <div
+            aria-hidden
+            className="absolute inset-0 rounded-2xl shadow-[inset_0_0_80px_rgb(95_191_147/0.45)]"
+          />
+          <div
+            aria-hidden
+            className="absolute inset-y-0 left-0 w-1/2 animate-sweep bg-gradient-to-r from-transparent via-white/30 to-transparent"
+          />
+        </>
+      )}
+      <div
+        role="status"
+        aria-live="polite"
+        className="absolute bottom-4 left-1/2 flex max-w-[calc(100%-1.5rem)] -translate-x-1/2 animate-fade-in items-center gap-2.5 rounded-full bg-white px-4 py-2.5 text-sm shadow-[0_4px_18px_rgb(0_0_0/0.22)]"
+      >
+        {reveal.isDone && !isDetecting ? (
+          <span className="flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full bg-brand-700 text-white">
+            <Icon name="check" className="h-3 w-3" />
+          </span>
+        ) : (
+          <Icon name="spinner" className="h-4 w-4 shrink-0 animate-spin text-brand-600" />
+        )}
+        <span className="whitespace-nowrap font-semibold text-stone-900">{title}</span>
+        {detail && (
+          <span className="truncate text-[13px] tabular-nums text-stone-500">{detail}</span>
+        )}
       </div>
     </div>
   );

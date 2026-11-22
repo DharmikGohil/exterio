@@ -17,7 +17,13 @@ export interface RegionListPanelProps {
   onDelete: (regionId: string) => void;
   /** As tall as the photo may be, so the panel never pushes the step bar off screen. */
   maxHeight?: string;
+  /** Parts Auto-detect found that are not shown yet (they appear one after another). */
+  hiddenIds?: ReadonlySet<string>;
+  /** Parts shown during that reveal: their rows slide in. */
+  freshIds?: ReadonlySet<string>;
 }
+
+const NO_IDS: ReadonlySet<string> = new Set();
 
 /** Side panel: every region grouped by type. Selecting one opens its details in place. */
 export function RegionListPanel({
@@ -28,8 +34,12 @@ export function RegionListPanel({
   onChange,
   onDelete,
   maxHeight,
+  hiddenIds = NO_IDS,
+  freshIds = NO_IDS,
 }: RegionListPanelProps) {
-  const groups = groupRegionsByLabel(regions);
+  const visible =
+    hiddenIds.size > 0 ? regions.filter((region) => !hiddenIds.has(region.id)) : regions;
+  const groups = groupRegionsByLabel(visible);
 
   return (
     <aside
@@ -40,7 +50,9 @@ export function RegionListPanel({
         <h3 className="text-xl font-medium text-stone-900">
           Regions
           {!isLoading && (
-            <span className="ml-1.5 text-sm font-normal text-stone-500">· {regions.length}</span>
+            <span className="ml-1.5 text-sm font-normal tabular-nums text-stone-500">
+              · {visible.length}
+            </span>
           )}
         </h3>
       </div>
@@ -65,7 +77,7 @@ export function RegionListPanel({
       )}
 
       {!isLoading && groups.length > 0 && (
-        <div className="overflow-y-auto px-2 pb-3">
+        <div className="overflow-y-auto overflow-x-hidden px-2 pb-3">
           {groups.map((group) => (
             <section key={group.label} className="pt-3">
               <h4 className="flex h-7 items-center px-3 text-xs font-medium uppercase tracking-[0.08em] text-stone-500">
@@ -74,6 +86,7 @@ export function RegionListPanel({
               <ul className="space-y-0.5">
                 {group.regions.map((region) => (
                   <RegionListItem
+                    isFresh={freshIds.has(region.id)}
                     key={region.id}
                     region={region}
                     isSelected={region.id === selectedRegionId}

@@ -101,12 +101,18 @@ names stay as tooltips and accessible names.
     or Photoreal, each with an icon) on the right.
   The row is measured, and the photo and the side panel give up its real height, so the step bar
   stays on screen even when the row wraps.
-- **Auto-detect progress** (`DetectionProgress`): while the AI works (about 25 to 40 s), a
-  scanning line sweeps down the photo and a card shows the seconds so far, a bar that slows as it
-  nears the usual time, and a checklist of what the AI looks for (walls and roof, windows and
-  doors, pillars and railings, naming and tidying). The AI reports nothing until it answers, so
-  the checklist is paced by time (`useDetectionProgress`), not by the model; after 55 s it says
-  the wait is longer than usual. The panel shows skeleton rows meanwhile.
+- **Auto-detect progress** (`DetectionProgress`, `useRegionReveal`):
+  - While the AI works (about 25 to 40 s), a soft green glow and a sheen sweep over the photo,
+    and a pill at its bottom edge says what the AI looks for and the seconds so far ("Outlining
+    the walls and the roof · 12 s"); after 55 s it says the wait is longer than usual. The AI
+    reports nothing until it answers, so these phrases are paced by time (`useDetectionProgress`).
+  - When the answer arrives, the parts it found are drawn one after another, 160 ms apart: roofs
+    and walls first, then openings, then pillars, railings, gates and fences, each kind top to
+    bottom (`utils/detectionReveal`). Each outline traces in and its fill fades up, its name tag
+    pops up, and its row slides into the list with a mint flash. The pill counts them ("Found 6
+    parts · Outlining the walls and roof"), then says "All done: 20 parts found · Review them and
+    fix anything wrong" for 3 s. This paces how the real result is shown; with reduced motion
+    every part appears at once.
 - **Undo and redo on Regions** (`useRegionDraft`): every change to the parts can be undone with
   Ctrl+Z (⌘Z) or the Undo button and redone with Ctrl+Shift+Z or Ctrl+Y. A corner dragged across
   the photo, or a name typed letter by letter, is one step; deleting a part, Discard and

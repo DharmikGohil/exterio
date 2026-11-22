@@ -2,6 +2,7 @@ import { useCallback, useState } from 'react';
 
 import type { Project, RegionLabel } from '@/domain/models/project';
 import { useRegionActions } from '@/presentation/features/projects/hooks/useRegionActions';
+import { orderForReveal } from '@/presentation/features/studio/utils/detectionReveal';
 import { toRegionInputs } from '@/presentation/features/studio/utils/regionDraft';
 import { useCapabilities } from '@/presentation/features/system/hooks/useCapabilities';
 import { STUDIO_PARAMS } from '@/presentation/routes/paths';
@@ -12,6 +13,7 @@ import { useUnsavedChangesGuard } from '@/presentation/shared/hooks/useUnsavedCh
 import { MIN_POLYGON_POINTS, useRegionDraft } from './useRegionDraft';
 import { useRegionDrawing } from './useRegionDrawing';
 import { useRegionEditorShortcuts } from './useRegionEditorShortcuts';
+import { useRegionReveal } from './useRegionReveal';
 
 /** Wires the Regions step together: local draft, selection, drawing, saving and detection. */
 export function useRegionsStep(project: Project) {
@@ -20,6 +22,7 @@ export function useRegionsStep(project: Project) {
   const actions = useRegionActions(project.id);
   const draft = useRegionDraft(project.regions);
   const drawing = useRegionDrawing();
+  const reveal = useRegionReveal();
   const detectConfirm = useDisclosure();
   const leaveGuard = useUnsavedChangesGuard(draft.isDirty, STUDIO_PARAMS.step);
 
@@ -67,9 +70,10 @@ export function useRegionsStep(project: Project) {
   );
 
   const startDrawing = useCallback(() => {
+    reveal.stop();
     selectRegion(null);
     drawing.startDrawing();
-  }, [drawing, selectRegion]);
+  }, [drawing, reveal, selectRegion]);
 
   const confirmDrawnRegion = useCallback(
     (label: RegionLabel, name: string) => {
@@ -95,9 +99,10 @@ export function useRegionsStep(project: Project) {
   }, [draft, selectRegion]);
 
   const undo = useCallback(() => {
+    reveal.stop();
     draft.undo();
     setSelectedVertexIndex(null);
-  }, [draft]);
+  }, [draft, reveal]);
 
   const redo = useCallback(() => {
     draft.redo();
@@ -112,15 +117,16 @@ export function useRegionsStep(project: Project) {
     selectRegion(null);
     actions.detectRegions(undefined, {
       onSuccess: (updated) => {
-        const found = updated.regions.filter((region) => region.source === 'auto').length;
-        toast.success(
-          found > 0
-            ? `Found ${found} regions. Check them and fix anything that looks off.`
-            : 'No regions were found. You can draw them by hand.'
-        );
+        // The parts are drawn one after another; the status pill on the photo says how many.
+        const found = orderForReveal(updated.regions);
+        if (found.length > 0) {
+          reveal.start(found);
+        } else {
+          toast.info('No regions were found. You can draw them by hand.');
+        }
       },
     });
-  }, [actions, detectConfirm, draft, drawing, selectRegion, toast]);
+  }, [actions, detectConfirm, draft, drawing, reveal, selectRegion, toast]);
 
   // Detection replaces earlier AI regions and discards unsaved edits, so ask first.
   const requestDetection = useCallback(() => {
@@ -177,6 +183,8 @@ export function useRegionsStep(project: Project) {
     save,
     isSaving: actions.isSavingRegions,
     discardChanges,
+
+    reveal,
 
     canAutoDetect: capabilities.autoDetect,
     isLoadingCapabilities,

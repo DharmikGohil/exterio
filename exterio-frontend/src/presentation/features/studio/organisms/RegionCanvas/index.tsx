@@ -1,4 +1,4 @@
-import { useState, type PointerEvent } from 'react';
+import { useState, type CSSProperties, type PointerEvent } from 'react';
 
 import { ImageCanvas } from '@/presentation/shared/molecules/ImageCanvas';
 import { RegionNameTag } from '@/presentation/shared/molecules/RegionNameTag';
@@ -38,6 +38,22 @@ export interface RegionCanvasProps {
   onFinishDrawing: () => void;
   /** Draw each region's name on the photo. */
   showNames: boolean;
+  /** Parts Auto-detect found that are not drawn yet (they appear one after another). */
+  hiddenIds?: ReadonlySet<string>;
+  /** Parts drawn during that reveal: their outline traces in and their tag pops up. */
+  freshIds?: ReadonlySet<string>;
+}
+
+const NO_IDS: ReadonlySet<string> = new Set();
+
+/** Outline length in screen pixels, for tracing a part's edge in as it appears. */
+function perimeterPx(polygon: Point[], unitsPerPixel: number): number {
+  let length = 0;
+  polygon.forEach((point, index) => {
+    const next = polygon[(index + 1) % polygon.length];
+    length += Math.hypot(next[0] - point[0], next[1] - point[1]);
+  });
+  return Math.ceil(length / Math.max(unitsPerPixel, 1e-6));
 }
 
 /**
@@ -60,8 +76,12 @@ export function RegionCanvas({
   onAddDrawPoint,
   onFinishDrawing,
   showNames,
+  hiddenIds = NO_IDS,
+  freshIds = NO_IDS,
 }: RegionCanvasProps) {
   const { svgRef, unitsPerPixel, toImagePoint } = useSvgCanvas(image.width, image.height);
+  const visibleRegions =
+    hiddenIds.size > 0 ? regions.filter((region) => !hiddenIds.has(region.id)) : regions;
   const [hoverPoint, setHoverPoint] = useState<Point | null>(null);
   const selectedRegion = regions.find((region) => region.id === selectedRegionId) ?? null;
 
@@ -102,11 +122,13 @@ export function RegionCanvas({
       onPointerLeave={() => setHoverPoint(null)}
       onContextMenu={(event) => event.preventDefault()}
     >
-      {sortByAreaDescending(regions).map((region) => {
+      {sortByAreaDescending(visibleRegions).map((region) => {
         if (region.id === selectedRegionId) {
           return null;
         }
         const { color } = REGION_LABEL_META[region.label];
+        const isFresh = freshIds.has(region.id);
+        const length = isFresh ? perimeterPx(region.polygon, unitsPerPixel) : 0;
         return (
           <polygon
             key={region.id}
@@ -119,8 +141,14 @@ export function RegionCanvas({
             vectorEffect="non-scaling-stroke"
             className={cn(
               'transition-[fill-opacity] hover:[fill-opacity:0.45]',
-              isDrawing ? 'pointer-events-none' : 'cursor-pointer'
+              isDrawing ? 'pointer-events-none' : 'cursor-pointer',
+              isFresh && 'animate-draw-in'
             )}
+            style={
+              isFresh
+                ? ({ strokeDasharray: `${length}px`, '--outline': `${length}px` } as CSSProperties)
+                : undefined
+            }
             onPointerDown={(event) => {
               if (event.button === 0) {
                 event.stopPropagation();
@@ -202,8 +230,8 @@ export function RegionCanvas({
 
       {showNames &&
         !isDrawing &&
-        layoutNameTags(regions, unitsPerPixel).map((placement) => {
-          const region = regions.find((item) => item.id === placement.id);
+        layoutNameTags(visibleRegions, unitsPerPixel).map((placement) => {
+          const region = visibleRegions.find((item) => item.id === placement.id);
           return region ? (
             <RegionNameTag
               key={`name-${placement.id}`}
@@ -211,6 +239,11 @@ export function RegionCanvas({
               color={REGION_LABEL_META[region.label].color}
               unitsPerPixel={unitsPerPixel}
               emphasised={placement.id === selectedRegionId}
+              className={
+                freshIds.has(placement.id)
+                  ? 'origin-bottom-left animate-tag-in [transform-box:fill-box]'
+                  : undefined
+              }
             />
           ) : null;
         })}

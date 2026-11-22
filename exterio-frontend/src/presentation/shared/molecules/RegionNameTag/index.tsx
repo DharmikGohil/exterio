@@ -1,3 +1,4 @@
+import { cn } from '@/presentation/shared/utils/cn';
 import {
   NAME_TAG_BAR_WIDTH_PX,
   NAME_TAG_PADDING_X_PX,
@@ -12,6 +13,7 @@ export interface RegionNameTagProps {
   color: string;
   unitsPerPixel: number;
   emphasised?: boolean;
+  className?: string;
 }
 
 /** A small name tag on the photo, so each shape can be matched to its name in the list. */
@@ -20,11 +22,12 @@ export function RegionNameTag({
   color,
   unitsPerPixel,
   emphasised = false,
+  className,
 }: RegionNameTagProps) {
   const unit = unitsPerPixel;
   const { x, y, width, height, name } = placement;
   return (
-    <g className="pointer-events-none" aria-hidden>
+    <g className={cn('pointer-events-none', className)} aria-hidden>
       <rect
         x={x}
         y={y}

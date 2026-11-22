@@ -112,10 +112,23 @@ const config: Config = {
           from: { transform: 'translateX(-100%)' },
           to: { transform: 'translateX(100%)' },
         },
-        // A scanning line passing down a photo while the AI looks at it.
-        scan: {
-          '0%': { top: '-6rem' },
-          '100%': { top: '100%' },
+        // Auto-detect: a sheen sweeping across the photo while the AI works, then each found
+        // part's outline tracing in, its name tag popping up and its row sliding into the list.
+        sweep: {
+          from: { transform: 'translateX(-100%)' },
+          to: { transform: 'translateX(200%)' },
+        },
+        'draw-in': {
+          from: { strokeDashoffset: 'var(--outline)', fillOpacity: '0' },
+          to: { strokeDashoffset: '0' },
+        },
+        'tag-in': {
+          '0%, 40%': { opacity: '0', transform: 'scale(0.7)' },
+          '100%': { opacity: '1', transform: 'scale(1)' },
+        },
+        'row-in': {
+          from: { opacity: '0', transform: 'translateX(10px)', backgroundColor: '#d7e8e0' },
+          to: { opacity: '1', transform: 'translateX(0)' },
         },
         // A light sweeping through a line of text, for a step that is still running.
         'text-shimmer': {
@@ -149,7 +162,10 @@ const config: Config = {
         'slide-in-right': 'slide-in-right 300ms cubic-bezier(0.22, 1, 0.36, 1)',
         shimmer: 'shimmer 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite',
         'text-shimmer': 'text-shimmer 1.8s linear infinite',
-        scan: 'scan 2.8s cubic-bezier(0.45, 0, 0.55, 1) infinite',
+        sweep: 'sweep 1.8s ease-in-out infinite',
+        'draw-in': 'draw-in 700ms ease-out both',
+        'tag-in': 'tag-in 600ms cubic-bezier(0.2, 1.4, 0.4, 1) both',
+        'row-in': 'row-in 450ms ease-out both',
         reveal: 'reveal 6s cubic-bezier(0.65, 0, 0.35, 1) both',
         divider: 'divider 6s cubic-bezier(0.65, 0, 0.35, 1) both',
         draw: 'draw 6s cubic-bezier(0.22, 1, 0.36, 1) both',
