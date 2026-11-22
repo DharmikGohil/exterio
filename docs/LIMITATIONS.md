@@ -33,7 +33,7 @@ Two providers implement detection; the first one configured is used.
 - **Vision LLM (needs only the Claude key).** Asks the model to outline each component as a polygon.
   It returns corners rather than pixel-exact edges, so curved or irregular shapes are approximated,
   and results vary a little between runs (the same photo gave 14 regions on one run and 16 on
-  another). On the built-in sample house it matched the true outlines closely (overlap above 0.9 for
+  another). On the drawn test house it matched the true outlines closely (overlap above 0.9 for
   walls, windows, door, pillars and gate), but that is a clean drawing; it has **not been
   evaluated on real photographs**, where clutter, shadows and occlusion will lower accuracy.
 - **Open-ended parts.** The vision model is asked to outline any exterior part a homeowner could
@@ -52,6 +52,10 @@ Two providers implement detection; the first one configured is used.
   of what is physically behind a region.
 - **Replacing a railing does not remove the old one.** A transparent material such as glass is
   blended over whatever was there.
+- **The wall behind a railing is painted in the picture but not counted in the estimate.** The
+  preview gives the wall behind a railing the wall's finish, as a painter would, but the
+  measurement still gives those pixels to the railing, so the wall's area is a little low where a
+  railing covers it (about 46 sq ft on the sample house).
 - **The photoreal render's first run after an idle spell is slow.** The Modal renderer shuts down
   after 5 idle minutes. The first render after that took about 30 seconds in testing while the
   GPU starts and loads the model; renders while it is warm took 7–8 seconds.

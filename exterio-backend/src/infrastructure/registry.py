@@ -61,7 +61,7 @@ from infrastructure.services.imaging.opencv_preview_render_service import (
 from infrastructure.services.imaging.opencv_surface_measurement_service import (
     OpenCvSurfaceMeasurementService,
 )
-from infrastructure.services.imaging.sample_house_provider import SampleHouseProvider
+from infrastructure.services.imaging.photo_sample_house_provider import PhotoSampleHouseProvider
 from infrastructure.services.report.reportlab_report_service import ReportLabReportService
 from infrastructure.services.security.bcrypt_password_hasher import BcryptPasswordHasher
 from infrastructure.services.security.jwt_token_service import JwtTokenService
@@ -170,7 +170,7 @@ def build_registry(config: InfrastructureConfig) -> InfrastructureRegistry:
         measurement=OpenCvSurfaceMeasurementService(),
         preview=preview,
         photoreal=photoreal,
-        sample_house=SampleHouseProvider(),
+        sample_house=PhotoSampleHouseProvider(),
         report=ReportLabReportService(),
         advisor_model=AnthropicAdvisorLanguageModel(claude, config.anthropic_model),
     )

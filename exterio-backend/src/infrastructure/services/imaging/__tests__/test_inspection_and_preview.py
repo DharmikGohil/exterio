@@ -179,3 +179,33 @@ def test_stone_shows_less_of_the_photo_than_paint_but_not_none():
     stone = _bar_contrast(_paint_whole_photo(photo, "stone-grey-ledge"))
 
     assert 8 < stone < paint
+
+
+def test_the_wall_behind_a_railing_takes_the_wall_finish():
+    """A railing is see-through: repainting the wall must repaint it between the bars too."""
+    photo = encode_jpeg(np.full((600, 600, 3), (40, 170, 230), dtype=np.uint8))  # a yellow wall
+    corners = ((0, 0), (600, 0), (600, 600), (0, 600))
+    wall = Region("wall", RegionLabel.WALL, "Front wall", corners)
+    railing = Region(
+        "railing", RegionLabel.RAILING, "Railing", ((0, 300), (600, 300), (600, 450), (0, 450))
+    )
+    materials = JsonMaterialRepository()
+    request = PreviewRequest(
+        image=photo,
+        regions=(wall, railing),
+        materials_by_region={
+            wall.id: materials.find_by_id("paint-sage-grey"),
+            railing.id: materials.find_by_id("railing-ms-black"),
+        },
+        facade_corners=corners,
+        facade_width_ft=10.0,
+        facade_height_ft=10.0,
+    )
+
+    actual = decode_image(OpenCvPreviewRenderService().render(request)).astype(np.int16)
+
+    open_wall = actual[100:200, 100:500].reshape(-1, 3).mean(axis=0)
+    behind_railing = np.median(actual[330:440, 50:550].reshape(-1, 3), axis=0)
+    assert np.abs(behind_railing - open_wall).max() < 25, (
+        "between the bars the wall must look like the rest of the repainted wall, not the old one"
+    )

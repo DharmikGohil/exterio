@@ -132,6 +132,13 @@ The backend tests include:
 - Estimates are advisory, not quotations. Default rates are indicative 2026 figures for India and
   are meant to be edited; see [docs/ESTIMATION.md](docs/ESTIMATION.md) for sources.
 
+### Sample house photo
+
+The sample house is "Vibrant yellow house with white accents" by Hale Ş, from
+[Pexels](https://www.pexels.com/photo/vibrant-yellow-house-with-white-accents-36284873/), used under
+the Pexels License. Its parts are traced by hand in
+`exterio-backend/src/infrastructure/services/imaging/sample_house/house.json`.
+
 ## How AI tools were used
 
 This project was built with an AI coding assistant, as the brief allowed. The architecture, the

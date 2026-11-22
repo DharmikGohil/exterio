@@ -109,8 +109,9 @@ Code: `domain/services/area_calculator.py`.
 
 ### Measured accuracy
 
-The built-in sample house is drawn at known dimensions and photographed by a simulated camera 13°
-off-axis, so it doubles as ground truth (`imaging/__tests__/test_surface_measurement.py`):
+A test house is drawn at known dimensions and photographed by a simulated camera 13° off-axis,
+so it doubles as ground truth (`imaging/__tests__/test_surface_measurement.py`). It is used only by
+the tests; the sample house people open in the app is a real photo (see the README):
 
 | Surface | True | Measured | Error |
 |---|---|---|---|
@@ -242,6 +243,9 @@ the wall's perspective. It is then lit with the photo's own lightness, in two pa
   old surface's grain) carries over by finish. Paint keeps all of it, as real repainting does;
   texture coatings keep most; stone, tiles and panels keep part, so their own pattern leads but
   whatever stands in front of the wall stays visible.
+
+A railing is see-through, so the part behind it (usually the wall) is given its own new finish
+first and the railing is drawn over it; otherwise the old colour would show between the bars.
 
 The result is blended inside the region mask only. An earlier version used the soft shading alone,
 which turned a painted gate into a flat smudge with no bars; a regression test now paints a

@@ -20,7 +20,7 @@ import numpy as np
 from numpy.typing import NDArray
 
 from domain.entities.material_entity import Material, MaterialCategory, MaterialUnit
-from domain.entities.region_entity import Region
+from domain.entities.region_entity import Region, RegionLabel
 from domain.interfaces.services.image_services import IPreviewRenderService, PreviewRequest
 from infrastructure.services.imaging.image_codec import (
     decode_image,
@@ -56,6 +56,8 @@ EDGE_FEATHER_PX = 3
 MERGE_DILATE_PX = 5
 MERGE_FEATHER_PX = 9
 SWATCH_BACKGROUND = (0.86, 0.9, 0.93)
+# Parts you can see through: what is behind one takes its own finish, then it is drawn on top.
+SEE_THROUGH_LABELS = frozenset({RegionLabel.RAILING})
 RAIL_COLOR_SCALE = 0.85
 RAIL_THICKNESS_RATIO = 0.004
 
@@ -65,13 +67,39 @@ class OpenCvPreviewRenderService(IPreviewRenderService):
         image = decode_image(request.image)
         height, width = image.shape[:2]
         label_map, ordered = self._label_map(request.regions, width, height)
+        # The same map without see-through parts: what lies behind a railing.
+        behind_map, behind_ordered = self._label_map(
+            tuple(region for region in request.regions if region.label not in SEE_THROUGH_LABELS),
+            width,
+            height,
+        )
+        see_through = np.isin(
+            label_map,
+            [
+                index
+                for index, region in enumerate(ordered, 1)
+                if region.label in SEE_THROUGH_LABELS
+            ],
+        )
         lightness = cv2.cvtColor(image, cv2.COLOR_BGR2LAB)[:, :, 0].astype(np.float32) / 255.0
         sigma = max(width * SHADE_BLUR_RATIO, 1.5)
         output = image.astype(np.float32) / 255.0
 
-        for material, region_ids in self._group_by_material(request).items():
+        # Railings last, so the wall behind them is already in its new finish.
+        groups = sorted(
+            self._group_by_material(request).items(),
+            key=lambda group: group[0].unit == MaterialUnit.RFT,
+        )
+        for material, region_ids in groups:
             indices = [index for index, region in enumerate(ordered, 1) if region.id in region_ids]
             mask = np.isin(label_map, indices)
+            if material.unit != MaterialUnit.RFT:
+                behind = [
+                    index
+                    for index, region in enumerate(behind_ordered, 1)
+                    if region.id in region_ids
+                ]
+                mask |= see_through & np.isin(behind_map, behind)
             if not mask.any():
                 continue
             texture = self._texture_in_photo(material, request, width, height)
