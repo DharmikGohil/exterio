@@ -96,6 +96,14 @@ Two providers implement detection; the first one configured is used.
 - **The photoreal render's first run after an idle spell is slow.** The Modal renderer shuts down
   after 5 idle minutes. The first render after that took about 30 seconds in testing while the
   GPU starts and loads the model; renders while it is warm took 7–8 seconds.
+- **Modal against Gemini for the photoreal render** (`scripts/compare_photoreal.py`, the four
+  sample houses, 22 Nov 2026). Gemini 2.5 Flash Image looked more photographic and was the only
+  one to show the chosen metal roofs as metal (Modal's SDXL left them looking like shingles). But
+  it took liberties the brief forbids: it removed the lamp post in front of the ranch's garage,
+  turned the two-storey house's white trim dark and its sage walls a deeper green than chosen.
+  Modal kept every object, edge and colour. Gemini took about 10 s every time; Modal 7 to 8 s
+  when warm and about 50 s from cold. Modal stays the default (`PHOTOREAL_RENDERER=modal`);
+  Gemini is one setting away.
 - **The photoreal render depends on an image model.** Its realism varies between runs, and
   it can subtly restyle a surface it was asked only to relight. Geometry outside the edited regions
   is protected by pasting the original pixels back, but *inside* an edited region the model's

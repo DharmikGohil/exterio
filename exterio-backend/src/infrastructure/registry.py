@@ -54,6 +54,9 @@ from infrastructure.services.ai.fal_photoreal_render_service import FalPhotoreal
 from infrastructure.services.ai.fal_sam3_segmentation_service import FalSam3SegmentationService
 from infrastructure.services.ai.fallback_segmentation_service import FallbackSegmentationService
 from infrastructure.services.ai.gemini_client import GeminiVisionJsonClient, build_gemini_client
+from infrastructure.services.ai.gemini_photoreal_render_service import (
+    GeminiPhotorealRenderService,
+)
 from infrastructure.services.ai.modal_photoreal_render_service import ModalPhotorealRenderService
 from infrastructure.services.ai.vision_json_client import VisionJsonClient
 from infrastructure.services.ai.vision_llm_check_service import VisionLlmCheckService
@@ -102,6 +105,8 @@ class InfrastructureConfig:
     gemini_model: str = "gemini-3-flash-preview"
     gemini_detection_model: str = "gemini-3.1-pro-preview"
     gemini_timeout_seconds: float = 150.0
+    photoreal_renderer: str = "modal"
+    gemini_image_model: str = "gemini-2.5-flash-image"
 
 
 @dataclass(frozen=True)
@@ -159,6 +164,18 @@ def build_registry(config: InfrastructureConfig) -> InfrastructureRegistry:
             fal_client, config.fal_render_model, config.daily_render_limit
         )
     )
+    if config.photoreal_renderer == "gemini":
+        gemini_photoreal = GeminiPhotorealRenderService(
+            build_gemini_client(
+                config.google_vertex_credentials,
+                config.google_vertex_location,
+                config.gemini_timeout_seconds,
+            ),
+            config.gemini_image_model,
+            config.daily_render_limit,
+        )
+        if gemini_photoreal.is_available():
+            photoreal = gemini_photoreal
 
     # Catalogue swatches are generated once at start-up from the same textures the preview uses.
     for material in material_repo.find_all():

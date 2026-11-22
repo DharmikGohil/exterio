@@ -2,11 +2,16 @@ import json
 from typing import Any
 
 import pytest
+from google.genai import types
 
 from domain.errors.project_errors import AiProviderError
+from domain.interfaces.services.image_services import RenderFinish
 from infrastructure.services.ai.gemini_client import (
     build_gemini_client,
     load_service_account_info,
+)
+from infrastructure.services.ai.gemini_photoreal_render_service import (
+    GeminiPhotorealRenderService,
 )
 from infrastructure.services.ai.vision_json_client import (
     LlmBusyError,
@@ -126,3 +131,46 @@ def test_detection_hands_over_each_part_before_the_model_has_finished():
     assert first.label == "wall"
     assert client.written < len(answer), "the first part must arrive while the answer is written"
     assert [region.label for region in stream] == ["door"]
+
+
+class _Part:
+    def __init__(self, data: bytes | None) -> None:
+        self.inline_data = type("Inline", (), {"data": data})() if data is not None else None
+
+
+def _image_response(data: bytes | None):
+    parts = [_Part(None), _Part(data)] if data else [_Part(None)]
+    content = type("Content", (), {"parts": parts})()
+    candidate = type(
+        "Candidate", (), {"content": content, "finish_reason": types.FinishReason.STOP}
+    )()
+    return type("Response", (), {"candidates": [candidate], "prompt_feedback": None})()
+
+
+class _FakeGemini:
+    def __init__(self, response) -> None:
+        self.calls: list[dict[str, Any]] = []
+        self.models = self
+        self._response = response
+
+    def generate_content(self, **kwargs):
+        self.calls.append(kwargs)
+        return self._response
+
+
+def test_gemini_render_returns_the_edited_image_and_asks_for_an_image():
+    client = _FakeGemini(_image_response(b"edited-jpeg"))
+    renderer = GeminiPhotorealRenderService(client, "image-model", 10)  # type: ignore[arg-type]
+
+    actual = renderer.render(b"preview", (RenderFinish("wall", "Sage paint", "matt"),))
+
+    assert actual == b"edited-jpeg"
+    assert client.calls[0]["config"].response_modalities == ["IMAGE"]
+
+
+def test_gemini_render_without_an_image_is_an_error():
+    client = _FakeGemini(_image_response(None))
+    renderer = GeminiPhotorealRenderService(client, "m", 10)  # type: ignore[arg-type]
+
+    with pytest.raises(AiProviderError):
+        renderer.render(b"preview", ())
