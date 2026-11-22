@@ -103,6 +103,7 @@ class InfrastructureConfig:
     anthropic_gateway_url: str
     anthropic_model: str
     anthropic_timeout_seconds: float
+    anthropic_detection_timeout_seconds: float = 60.0
     google_vertex_credentials: str = ""
     google_vertex_location: str = "global"
     gemini_model: str = "gemini-3-flash-preview"
@@ -145,11 +146,12 @@ def build_registry(config: InfrastructureConfig) -> InfrastructureRegistry:
     preview = OpenCvPreviewRenderService()
     fal_client = FalClient(config.fal_api_key, config.fal_timeout_seconds)
     language = _build_language_models(config)
-    # A dedicated segmentation model is preferred; a vision LLM is the fallback.
+    # A dedicated segmentation model is preferred; then the vision LLMs, best first. Each one is
+    # asked only if the one before is not configured or fails before finding any part.
     segmentation = FallbackSegmentationService(
         [
             FalSam3SegmentationService(fal_client, config.fal_segmentation_model),
-            VisionLlmSegmentationService(language.detection),
+            *(VisionLlmSegmentationService(client) for client in language.detection),
         ]
     )
 
@@ -185,7 +187,8 @@ def build_registry(config: InfrastructureConfig) -> InfrastructureRegistry:
 @dataclass(frozen=True)
 class _LanguageModels:
     vision: VisionJsonClient
-    detection: VisionJsonClient
+    # Best first; the next one is asked when the one before fails before finding any part.
+    detection: tuple[VisionJsonClient, ...]
     advisor: IAdvisorLanguageModel
 
 
@@ -195,7 +198,10 @@ def _build_language_models(config: InfrastructureConfig) -> _LanguageModels:
     - Outlining parts: Claude first. On the four hand-traced sample houses
       (`scripts/benchmark_detection.py`) it matched the traced walls with IoU 0.88 against
       Gemini 3.1 Pro's 0.78, found 74% of the traced parts against 57%, and drew less on
-      neighbouring buildings. Gemini is the fallback when no Claude key is set.
+      neighbouring buildings. Gemini 3.1 Pro is the backup: it is asked when no Claude key is
+      set, or when Claude fails before sending a part. Claude gets a short wait for this job
+      (`anthropic_detection_timeout_seconds`) and no automatic retries, so a dead endpoint hands
+      over to Gemini in about a minute instead of hanging for several.
     - Photo check and advisor: Gemini first. It answers in a few seconds and streams the advice
       word by word; these jobs need judgement, not geometry. Claude is the fallback.
     """
@@ -207,19 +213,27 @@ def _build_language_models(config: InfrastructureConfig) -> _LanguageModels:
     claude = build_anthropic_client(
         config.anthropic_api_key, config.anthropic_gateway_url, config.anthropic_timeout_seconds
     )
+    claude_detection = build_anthropic_client(
+        config.anthropic_api_key,
+        config.anthropic_gateway_url,
+        config.anthropic_detection_timeout_seconds,
+        max_retries=0,
+    )
     claude_json = AnthropicVisionJsonClient(claude, config.anthropic_model)
+    claude_detection_json = AnthropicVisionJsonClient(claude_detection, config.anthropic_model)
     if gemini is None:
         return _LanguageModels(
             vision=claude_json,
-            detection=claude_json,
+            detection=(claude_detection_json,),
             advisor=AnthropicAdvisorLanguageModel(claude, config.anthropic_model),
         )
+    gemini_detection_json = GeminiVisionJsonClient(gemini, config.gemini_detection_model)
     return _LanguageModels(
         vision=GeminiVisionJsonClient(gemini, config.gemini_model),
         detection=(
-            claude_json
-            if claude is not None
-            else GeminiVisionJsonClient(gemini, config.gemini_detection_model)
+            (claude_detection_json, gemini_detection_json)
+            if claude_detection is not None
+            else (gemini_detection_json,)
         ),
         advisor=GeminiAdvisorLanguageModel(gemini, config.gemini_model),
     )

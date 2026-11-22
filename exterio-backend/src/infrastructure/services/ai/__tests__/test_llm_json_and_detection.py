@@ -128,6 +128,51 @@ def test_fallback_uses_the_first_available_provider():
     assert actual.detect(b"", 10, 10)[0].label == RegionLabel.DOOR
 
 
+class FailingSegmentation(ISegmentationService):
+    """Yields `parts_before_failing` walls, then fails the way an unreachable model does."""
+
+    def __init__(self, parts_before_failing: int = 0) -> None:
+        self._parts_before_failing = parts_before_failing
+        self.calls = 0
+
+    def is_available(self) -> bool:
+        return True
+
+    def detect(self, image: bytes, width: int, height: int) -> list[DetectedRegion]:
+        return list(self.detect_stream(image, width, height))
+
+    def detect_stream(self, image: bytes, width: int, height: int):
+        self.calls += 1
+        for _ in range(self._parts_before_failing):
+            yield DetectedRegion(RegionLabel.WALL, ((0.0, 0.0), (1.0, 0.0), (1.0, 1.0)), 1.0)
+        raise AiProviderError("Region detection could not be reached. Try again.")
+
+
+def test_fallback_asks_the_next_provider_when_the_first_fails_before_any_part():
+    input_providers = [FailingSegmentation(), StubSegmentation(True, RegionLabel.DOOR)]
+
+    actual = FallbackSegmentationService(input_providers).detect(b"", 10, 10)
+
+    assert [region.label for region in actual] == [RegionLabel.DOOR]
+
+
+def test_fallback_keeps_the_error_when_parts_were_already_shown():
+    input_backup = FailingSegmentation()
+    input_providers = [FailingSegmentation(parts_before_failing=2), input_backup]
+
+    with pytest.raises(AiProviderError):
+        FallbackSegmentationService(input_providers).detect(b"", 10, 10)
+
+    assert input_backup.calls == 0, "parts already on screen must not be replaced mid-way"
+
+
+def test_fallback_reports_the_last_providers_error_when_all_fail():
+    input_providers = [FailingSegmentation(), FailingSegmentation()]
+
+    with pytest.raises(AiProviderError, match="could not be reached"):
+        FallbackSegmentationService(input_providers).detect(b"", 10, 10)
+
+
 def test_fallback_with_no_provider_configured_is_unavailable():
     actual = FallbackSegmentationService([StubSegmentation(False, RegionLabel.WALL)])
 

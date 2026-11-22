@@ -49,6 +49,9 @@ class Settings(BaseSettings):
     anthropic_gateway_url: str = ""
     anthropic_model: str = "claude-opus-5-5"
     anthropic_timeout_seconds: float = 150.0
+    # Outlining parts: the longest wait for the next piece of Claude's reply, with no retries.
+    # A healthy endpoint starts answering in about 25 s; past this, Gemini 3.1 Pro takes over.
+    anthropic_detection_timeout_seconds: float = 60.0
 
     # Gemini on Google Cloud Vertex AI. A service-account key: the path to its JSON file, or the
     # JSON itself (handy on a host). When set, Gemini powers the photo check and the material
@@ -97,6 +100,7 @@ class Settings(BaseSettings):
             anthropic_gateway_url=self.anthropic_gateway_url,
             anthropic_model=self.anthropic_model,
             anthropic_timeout_seconds=self.anthropic_timeout_seconds,
+            anthropic_detection_timeout_seconds=self.anthropic_detection_timeout_seconds,
             google_vertex_credentials=self.google_vertex_credentials,
             google_vertex_location=self.google_vertex_location,
             gemini_model=self.gemini_model,

@@ -194,6 +194,7 @@ development; see [`.env.example`](exterio-backend/.env.example) for the full lis
 |---|---|
 | `ANTHROPIC_API_KEY` | Auto-detect on Claude (when `FAL_KEY` is not set), and the photo check and advisor when no Vertex key is set |
 | `ANTHROPIC_GATEWAY_URL` | Optional Anthropic-compatible endpoint to use instead of Anthropic's API |
+| `ANTHROPIC_DETECTION_TIMEOUT_SECONDS` | How long Auto-detect waits on Claude before Gemini 3.1 Pro takes over (default 60) |
 | `GOOGLE_VERTEX_CREDENTIALS` | Gemini on Vertex AI for the photo check, the advisor and the photoreal render. A service-account key: the path to its JSON file locally, or the JSON itself on a host |
 | `PHOTOREAL_RENDERER` | `gemini` (default: Gemini renders first) or `modal` (Modal first) |
 | `MODAL_RENDER_URL`, `MODAL_RENDER_TOKEN` | Exterio's own SDXL renderer on Modal ([`exterio-render/`](exterio-render/README.md)), the render fallback |

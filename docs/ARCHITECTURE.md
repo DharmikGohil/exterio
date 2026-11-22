@@ -123,7 +123,8 @@ The photo check and the detection fallback keep their prompts, JSON schemas and 
 validation in one place and ask through a small `VisionJsonClient` (in `infrastructure`), with
 two implementations: `GeminiVisionJsonClient` and `AnthropicVisionJsonClient`. The registry gives
 each job to the model that measured best at it, among those configured: outlining parts goes to
-Claude (Gemini when no Claude key is set), and the photo check and the advisor go to Gemini
+Claude, with Gemini 3.1 Pro as its backup (used when no Claude key is set, or when Claude fails
+before sending a single part: unreachable, timed out or busy), and the photo check and the advisor go to Gemini
 (Claude when no Vertex key is set). See "Choosing the detection model" in
 [LIMITATIONS.md](LIMITATIONS.md#choosing-the-detection-model). Both request schema-constrained JSON and also parse the reply
 leniently, so an endpoint that ignores the schema (such as an Anthropic-compatible gateway) still
@@ -140,7 +141,11 @@ through the default `detect_stream`.)
 
 Gemini runs on the user's own Google Cloud project through a service-account key. Gemini 3 Flash
 answers the photo check and the advisor (first words of an answer in about 3 to 6 s). When Gemini
-does outline parts (no Claude key), it uses Gemini 3.1 Pro, the better of the two at geometry.
+does outline parts (no Claude key, or Claude failed), it uses Gemini 3.1 Pro, the better of the two
+at geometry. For detection Claude gets a short wait (`ANTHROPIC_DETECTION_TIMEOUT_SECONDS`,
+60 s, against about 25 s for a healthy first answer) and no automatic retries, so a dead endpoint
+hands over to Gemini in about a minute instead of hanging for several. A model that fails after
+parts are already on screen is not replaced; the error is shown and the user can run it again.
 
 ## The material advisor
 

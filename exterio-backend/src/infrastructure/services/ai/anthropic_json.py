@@ -29,12 +29,20 @@ MAX_TOKENS = 16000
 
 
 def build_anthropic_client(
-    api_key: str, base_url: str, timeout_seconds: float
+    api_key: str, base_url: str, timeout_seconds: float, max_retries: int = 2
 ) -> anthropic.Anthropic | None:
-    """A client for Anthropic's API, or for a compatible gateway when a base URL is given."""
+    """A client for Anthropic's API, or for a compatible gateway when a base URL is given.
+
+    `timeout_seconds` is the longest wait for the next piece of the reply; `max_retries` is how
+    many times a failed request is sent again (the SDK's default is 2)."""
     if not api_key:
         return None
-    return anthropic.Anthropic(api_key=api_key, base_url=base_url or None, timeout=timeout_seconds)
+    return anthropic.Anthropic(
+        api_key=api_key,
+        base_url=base_url or None,
+        timeout=timeout_seconds,
+        max_retries=max_retries,
+    )
 
 
 def jpeg_block(image: bytes) -> ImageBlockParam:
