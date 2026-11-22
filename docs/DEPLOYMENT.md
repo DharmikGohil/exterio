@@ -9,9 +9,16 @@ web app's address.
 
 ## Live
 
-- Web app: <https://exterio-mu.vercel.app> (Vercel project `exterio`, root `exterio-frontend`)
-- API: <https://exterio-production.up.railway.app> (Railway service `exterio`, root `exterio-backend`,
-  volume at `/app/data`); interactive docs at `/api/docs`
+- Web app: <https://exterio.dharmikgohil.in> (Vercel project `exterio`, root `exterio-frontend`;
+  also at <https://exterio-mu.vercel.app>)
+- API: <https://exterio-api.dharmikgohil.in> (Railway service `exterio`, root `exterio-backend`,
+  volume at `/app/data`; also at <https://exterio-production.up.railway.app>); interactive docs at
+  `/api/docs`
+- DNS (Cloudflare, `dharmikgohil.in`): `exterio` CNAME to Vercel, `exterio-api` CNAME to Railway
+  plus its `_railway-verify.exterio-api` TXT record. Both CNAMEs are **DNS only**: Vercel and
+  Railway issue their own certificates, which Cloudflare's proxy would get in the way of.
+- `VITE_API_BASE_URL` on Vercel is `https://exterio-api.dharmikgohil.in`; `CORS_ORIGINS` on Railway
+  lists both web addresses.
 
 The Railway service was created from the public repository URL, so a push to `main` does not
 redeploy it on its own: redeploy from the service's Deployments tab (or connect GitHub there).
