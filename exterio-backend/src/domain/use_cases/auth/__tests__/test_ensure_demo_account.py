@@ -64,7 +64,7 @@ class SampleCreator:
     def __init__(self, projects: MemoryProjects) -> None:
         self.projects = projects
 
-    def execute(self, user_id: str) -> None:
+    def execute_all(self, user_id: str) -> None:
         self.projects.owners.append(user_id)
 
 

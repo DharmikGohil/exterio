@@ -133,14 +133,28 @@ class IPhotorealRenderService(ABC):
 
 @dataclass(frozen=True)
 class SampleHouse:
+    name: str
+    design_name: str
     image: bytes
     regions: tuple[Region, ...]
     scale: ScaleReference
-    material_by_label: dict[RegionLabel, str]
+    # The finished design: region id -> material id.
+    assignments: dict[str, str]
+
+
+@dataclass(frozen=True)
+class SampleHouseSummary:
+    key: str
+    name: str
 
 
 class ISampleHouseProvider(ABC):
-    """Supplies the ready-made demo house used by "Try with a sample"."""
+    """Supplies the ready-made demo houses used by "Try it with a sample house"."""
 
     @abstractmethod
-    def build(self) -> SampleHouse: ...
+    def samples(self) -> tuple[SampleHouseSummary, ...]:
+        """Every sample, in the order they are offered; the first is the default."""
+
+    @abstractmethod
+    def build(self, key: str | None = None) -> SampleHouse:
+        """The sample with this key, or the first one."""

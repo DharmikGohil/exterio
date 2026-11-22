@@ -55,7 +55,7 @@ Two providers implement detection; the first one configured is used.
 - **The wall behind a railing is painted in the picture but not counted in the estimate.** The
   preview gives the wall behind a railing the wall's finish, as a painter would, but the
   measurement still gives those pixels to the railing, so the wall's area is a little low where a
-  railing covers it (about 46 sq ft on the sample house).
+  railing covers it (about 46 sq ft on a two-storey house with two 23 ft balcony railings).
 - **The photoreal render's first run after an idle spell is slow.** The Modal renderer shuts down
   after 5 idle minutes. The first render after that took about 30 seconds in testing while the
   GPU starts and loads the model; renders while it is warm took 7–8 seconds.

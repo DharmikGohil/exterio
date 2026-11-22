@@ -560,7 +560,8 @@
       "wall",
       "parapet",
       "balcony",
-      "other"
+      "other",
+      "garage_door"
     ],
     "durability": "10-15 years",
     "maintenance": "Wipe clean. Colour can fade on walls facing strong afternoon sun.",
@@ -734,7 +735,7 @@
       "note": "Bought by the square foot of sheet"
     },
     "texture": {
-      "pattern": "bars",
+      "pattern": "standing_seam",
       "tileSizeFt": 0.8,
       "opacity": 1,
       "secondaryColorHex": "#2B2F34"

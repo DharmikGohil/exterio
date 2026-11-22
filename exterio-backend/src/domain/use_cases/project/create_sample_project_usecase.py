@@ -16,12 +16,9 @@ from domain.use_cases.design.render_design_preview_usecase import (
 from domain.use_cases.project.project_reader import ProjectReader
 from domain.use_cases.project.upload_project_image_usecase import THUMBNAIL_SIDE
 
-SAMPLE_PROJECT_NAME = "Sample house"
-SAMPLE_DESIGN_NAME = "Warm stone and cream"
-
 
 class CreateSampleProjectUseCase:
-    """Creates a finished demo project so the whole flow can be seen without a photo."""
+    """Creates a finished demo house so the whole flow can be seen without a photo."""
 
     def __init__(
         self,
@@ -41,8 +38,21 @@ class CreateSampleProjectUseCase:
         self._render_preview = render_preview
         self._reader = reader
 
-    def execute(self, user_id: str) -> ProjectDTO:
-        sample = self._sample_house.build()
+    def execute(self, user_id: str, key: str | None = None) -> ProjectDTO:
+        """The sample with this key; without one, the first sample the user does not have yet."""
+        return self._create(user_id, key or self._next_key(user_id))
+
+    def execute_all(self, user_id: str) -> list[ProjectDTO]:
+        """Every sample, in order: what a fresh demo account starts with."""
+        return [self._create(user_id, sample.key) for sample in self._sample_house.samples()]
+
+    def _next_key(self, user_id: str) -> str:
+        samples = self._sample_house.samples()
+        owned = {project.name for project in self._project_repo.find_all_by_user(user_id)}
+        return next((sample.key for sample in samples if sample.name not in owned), samples[0].key)
+
+    def _create(self, user_id: str, key: str) -> ProjectDTO:
+        sample = self._sample_house.build(key)
         prepared = self._inspection.prepare(sample.image)
         now = datetime.now(UTC)
         project_id = str(uuid4())
@@ -56,7 +66,7 @@ class CreateSampleProjectUseCase:
             Project(
                 id=project_id,
                 user_id=user_id,
-                name=SAMPLE_PROJECT_NAME,
+                name=sample.name,
                 created_at=now,
                 updated_at=now,
                 image=ProjectImage(path, prepared.width, prepared.height, prepared.report),
@@ -64,19 +74,14 @@ class CreateSampleProjectUseCase:
                 scale=sample.scale,
             )
         )
-        assignments = {
-            region.id: sample.material_by_label[region.label]
-            for region in sample.regions
-            if region.label in sample.material_by_label
-        }
         design = self._design_repo.create(
             Design(
                 id=str(uuid4()),
                 project_id=project.id,
-                name=SAMPLE_DESIGN_NAME,
+                name=sample.design_name,
                 created_at=now,
                 updated_at=now,
-                assignments=assignments,
+                assignments=dict(sample.assignments),
             )
         )
         self._render_preview.execute(project, design)

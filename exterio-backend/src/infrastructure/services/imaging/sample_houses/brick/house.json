@@ -1,0 +1,27 @@
+{
+  "name": "Brick house with dormers",
+  "design_name": "Limewashed brick",
+  "source": {"title": "White and brown concrete house near green grass", "photographer": "Curtis Adams", "url": "https://www.pexels.com/photo/white-and-brown-concrete-house-near-green-grass-3990589/", "licence": "Pexels License"},
+  "scale": {"facade_corners": [[300, 440], [1275, 440], [1275, 700], [300, 700]], "facade_width_ft": 50, "facade_height_ft": 12, "storeys": 2},
+  "materials": {"wall": "paint-classic-white", "roof": "roof-metal-sheet", "roof_edge": "paint-charcoal", "garage_door": "panel-hpl-walnut", "other": "paint-charcoal", "pillar": "paint-charcoal"},
+  "regions": [
+    {"label": "wall", "name": "Garage wall", "polygon": [[300, 440], [745, 440], [745, 700], [300, 700]]},
+    {"label": "wall", "name": "Front gable", "polygon": [[1000, 358], [1115, 252], [1262, 388], [1275, 545], [960, 545], [960, 440], [1000, 440]]},
+    {"label": "wall", "name": "Porch wall", "polygon": [[770, 450], [945, 450], [945, 650], [770, 650]]},
+    {"label": "roof", "name": "Main roof", "polygon": [[270, 442], [445, 240], [600, 238], [600, 220], [1090, 220], [1113, 205], [955, 380], [950, 385], [735, 385], [735, 415], [505, 415], [480, 440]]},
+    {"label": "roof", "name": "Bay roof", "polygon": [[1015, 378], [1265, 378], [1265, 422], [1015, 422]]},
+    {"label": "roof_edge", "name": "Gable trim", "polygon": [[948, 388], [1115, 202], [1322, 398], [1262, 390], [1115, 254], [1000, 360]]},
+    {"label": "roof_edge", "name": "Eaves", "polygon": [[265, 436], [480, 436], [480, 452], [265, 452]]},
+    {"label": "roof_edge", "name": "Cornice", "polygon": [[472, 408], [745, 408], [745, 440], [472, 440]]},
+    {"label": "other", "name": "Dormer", "polygon": [[598, 250], [715, 250], [715, 375], [598, 375]]},
+    {"label": "other", "name": "Dormer", "polygon": [[800, 250], [905, 250], [905, 375], [800, 375]]},
+    {"label": "other", "name": "Porch", "polygon": [[728, 378], [990, 378], [990, 450], [728, 450]]},
+    {"label": "pillar", "name": "Porch column", "polygon": [[748, 440], [778, 440], [778, 700], [748, 700]]},
+    {"label": "garage_door", "name": "Garage door", "polygon": [[348, 553], [480, 553], [480, 697], [348, 697]]},
+    {"label": "garage_door", "name": "Garage door", "polygon": [[553, 550], [728, 550], [728, 698], [553, 698]]},
+    {"label": "door", "name": "Front door", "polygon": [[800, 475], [910, 475], [910, 640], [800, 640]]},
+    {"label": "window", "name": "Dormer window", "polygon": [[620, 272], [672, 272], [672, 368], [620, 368]]},
+    {"label": "window", "name": "Dormer window", "polygon": [[833, 275], [885, 275], [885, 368], [833, 368]]},
+    {"label": "window", "name": "Bay window", "polygon": [[1030, 420], [1258, 420], [1258, 545], [1030, 545]]}
+  ]
+}

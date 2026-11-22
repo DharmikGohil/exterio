@@ -40,10 +40,13 @@ flowchart TD
 - **Steady sign-in form.** The form is anchored to the top, so switching between Sign in and
   Create account never moves the tabs, and the password fields have a show/hide button. Create account asks for the
   password twice and says as soon as the two differ.
-- **A sample house.** The whole flow can be seen in under a minute without owning a suitable photo.
-  It is a real photograph of a two-storey house with its 26 parts already traced (walls, roof,
-  eaves, windows, doors, balcony, railings, steps), so finishes land on real siding and shadows,
-  and it works the same with or without AI detection.
+- **Sample houses.** The whole flow can be seen in under a minute without owning a suitable photo.
+  Four real photographs (a ranch, a two-storey, a brick house, a craftsman) come with their parts
+  already traced and a finished design, so finishes land on real siding, brick and shadows, and
+  they work the same with or without AI detection. The demo account starts with all four; each
+  "try a sample house" adds the next one.
+- **Before and after on the sign-in page.** Those houses sweep from their photo to their new
+  finishes, so the product explains itself before anyone signs in.
 - **No feature that cannot work is shown.** When the server has no image model, the photoreal
   render button and tab are hidden rather than shown disabled with an apology.
 - **Nothing is a dead end.** If detection misses a pillar, it can be drawn. If no measurement is

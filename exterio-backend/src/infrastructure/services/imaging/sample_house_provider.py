@@ -13,7 +13,11 @@ from numpy.typing import NDArray
 
 from domain.entities.region_entity import Point, Region, RegionLabel, RegionSource
 from domain.entities.scale_reference_entity import ScaleMethod, ScaleReference
-from domain.interfaces.services.image_services import ISampleHouseProvider, SampleHouse
+from domain.interfaces.services.image_services import (
+    ISampleHouseProvider,
+    SampleHouse,
+    SampleHouseSummary,
+)
 from infrastructure.services.imaging.image_codec import encode_jpeg
 
 CANVAS_WIDTH = 1500
@@ -75,8 +79,16 @@ SAMPLE_MATERIALS: dict[RegionLabel, str] = {
 }
 
 
+DRAWN_SAMPLE = SampleHouseSummary(key="drawn", name="Drawn test house")
+
+
 class SampleHouseProvider(ISampleHouseProvider):
-    def build(self) -> SampleHouse:
+    """The drawn house: ground truth for the measurement tests, not offered to people."""
+
+    def samples(self) -> tuple[SampleHouseSummary, ...]:
+        return (DRAWN_SAMPLE,)
+
+    def build(self, key: str | None = None) -> SampleHouse:
         camera = self.camera_homography()
         # The flat scene is drawn with a margin so the camera view never runs off its edge.
         unpad = np.array([[1, 0, -SCENE_MARGIN_PX], [0, 1, -SCENE_MARGIN_PX], [0, 0, 1]])
@@ -107,10 +119,16 @@ class SampleHouseProvider(ISampleHouseProvider):
             storeys=2,
         )
         return SampleHouse(
+            name=DRAWN_SAMPLE.name,
+            design_name="Warm stone and cream",
             image=encode_jpeg(photo.astype(np.uint8), quality=92),
             regions=regions,
             scale=scale,
-            material_by_label=dict(SAMPLE_MATERIALS),
+            assignments={
+                region.id: SAMPLE_MATERIALS[region.label]
+                for region in regions
+                if region.label in SAMPLE_MATERIALS
+            },
         )
 
     @staticmethod

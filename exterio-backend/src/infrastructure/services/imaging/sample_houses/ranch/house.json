@@ -1,0 +1,19 @@
+{
+  "name": "Single-storey ranch",
+  "design_name": "White farmhouse",
+  "source": {"title": "Single-storey house under blue sky", "photographer": "Clay Elliot", "url": "https://www.pexels.com/photo/single-storey-house-under-blue-sky-5785100/", "licence": "Pexels License"},
+  "scale": {"facade_corners": [[148, 470], [1472, 464], [1472, 718], [148, 720]], "facade_width_ft": 54, "facade_height_ft": 9, "storeys": 1},
+  "materials": {"wall": "paint-warm-cream", "roof": "roof-metal-sheet", "roof_edge": "paint-charcoal", "garage_door": "panel-hpl-walnut"},
+  "regions": [
+    {"label": "wall", "name": "Front wall", "polygon": [[148, 476], [745, 468], [1470, 462], [1472, 718], [148, 720]]},
+    {"label": "wall", "name": "Gable", "polygon": [[282, 420], [435, 318], [633, 416]]},
+    {"label": "roof", "name": "Garage roof", "polygon": [[100, 462], [212, 440], [282, 422], [633, 418], [662, 412], [700, 440], [690, 455]]},
+    {"label": "roof", "name": "Main roof", "polygon": [[662, 412], [440, 294], [612, 343], [670, 322], [1150, 311], [1510, 437], [1505, 440], [900, 452], [870, 448], [700, 445]]},
+    {"label": "roof_edge", "name": "Gable trim", "polygon": [[212, 440], [432, 293], [662, 412], [633, 418], [435, 319], [280, 422]]},
+    {"label": "roof_edge", "name": "Eaves", "polygon": [[100, 462], [690, 455], [700, 445], [870, 448], [900, 452], [1505, 438], [1518, 445], [1505, 462], [900, 470], [870, 466], [745, 470], [150, 484], [100, 478]]},
+    {"label": "garage_door", "name": "Garage door", "polygon": [[218, 517], [608, 517], [608, 726], [218, 726]]},
+    {"label": "door", "name": "Front door", "polygon": [[792, 490], [870, 490], [870, 700], [792, 700]]},
+    {"label": "window", "name": "Front window", "polygon": [[993, 478], [1322, 478], [1322, 650], [993, 650]]},
+    {"label": "window", "name": "Gable vent", "polygon": [[428, 326], [466, 326], [466, 366], [428, 366]]}
+  ]
+}

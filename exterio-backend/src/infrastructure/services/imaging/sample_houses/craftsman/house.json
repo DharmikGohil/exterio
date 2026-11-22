@@ -1,0 +1,30 @@
+{
+  "name": "Craftsman with stone",
+  "design_name": "Sage, cream and sandstone",
+  "source": {"title": "White and brown concrete house under blue sky", "photographer": "Get Lost Mike", "url": "https://www.pexels.com/photo/white-and-brown-concrete-house-under-blue-sky-7710011/", "licence": "Pexels License"},
+  "scale": {"facade_corners": [[200, 415], [1385, 415], [1385, 705], [200, 705]], "facade_width_ft": 44, "facade_height_ft": 9.5, "storeys": 1},
+  "materials": {"wall": "paint-sage-grey", "roof_edge": "paint-classic-white", "garage_door": "paint-charcoal", "pillar": "stone-sandstone-ashlar"},
+  "regions": [
+    {"label": "wall", "name": "Main gable", "polygon": [[525, 125], [690, 225], [578, 350], [585, 390], [225, 390]]},
+    {"label": "wall", "name": "Porch gable", "polygon": [[750, 242], [870, 352], [635, 352]]},
+    {"label": "wall", "name": "Side gable", "polygon": [[1050, 162], [1165, 258], [1162, 392], [925, 392], [928, 258]]},
+    {"label": "wall", "name": "Porch wall", "polygon": [[295, 422], [615, 422], [615, 600], [295, 600]], "material": "paint-warm-cream"},
+    {"label": "wall", "name": "Stone base", "polygon": [[295, 600], [615, 600], [615, 695], [295, 695]], "material": "stone-sandstone-ashlar"},
+    {"label": "wall", "name": "Garage wall", "polygon": [[885, 440], [1385, 440], [1385, 705], [885, 705]], "material": "stone-sandstone-ashlar"},
+    {"label": "wall", "name": "Entry", "polygon": [[685, 480], [820, 480], [820, 680], [685, 680]], "material": "paint-warm-cream"},
+    {"label": "roof", "name": "Garage roof", "polygon": [[1165, 355], [1260, 355], [1435, 415], [1420, 425], [890, 425], [895, 392], [1162, 392]]},
+    {"label": "roof_edge", "name": "Main gable trim", "polygon": [[150, 395], [525, 62], [720, 212], [690, 228], [525, 127], [225, 392]]},
+    {"label": "roof_edge", "name": "Porch gable trim", "polygon": [[570, 355], [748, 197], [930, 352], [870, 354], [750, 244], [633, 354]]},
+    {"label": "roof_edge", "name": "Side gable trim", "polygon": [[880, 300], [1050, 118], [1202, 260], [1165, 262], [1050, 164], [928, 262]]},
+    {"label": "roof_edge", "name": "Porch beam", "polygon": [[195, 390], [615, 390], [615, 422], [195, 422]]},
+    {"label": "roof_edge", "name": "Garage eave", "polygon": [[885, 418], [1435, 418], [1435, 440], [885, 440]]},
+    {"label": "pillar", "name": "Stone column", "polygon": [[200, 415], [278, 415], [278, 700], [200, 700]]},
+    {"label": "pillar", "name": "Stone column", "polygon": [[615, 392], [685, 392], [685, 705], [615, 705]]},
+    {"label": "pillar", "name": "Stone column", "polygon": [[820, 392], [885, 392], [885, 705], [820, 705]]},
+    {"label": "garage_door", "name": "Garage door", "polygon": [[890, 512], [1318, 512], [1318, 728], [890, 728]]},
+    {"label": "door", "name": "Front door", "polygon": [[735, 500], [805, 500], [805, 672], [735, 672]]},
+    {"label": "window", "name": "Sidelight", "polygon": [[705, 500], [735, 500], [735, 620], [705, 620]]},
+    {"label": "window", "name": "Porch window", "polygon": [[400, 485], [578, 485], [578, 628], [400, 628]]},
+    {"label": "window", "name": "Gable window", "polygon": [[958, 258], [1128, 258], [1128, 372], [958, 372]]}
+  ]
+}

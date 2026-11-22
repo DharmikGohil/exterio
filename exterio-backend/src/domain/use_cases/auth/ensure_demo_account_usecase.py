@@ -50,5 +50,5 @@ class EnsureDemoAccountUseCase:
             self._user_repo.update_password_hash(user.id, self._hasher.hash(password))
 
         if not self._project_repo.find_all_by_user(user.id):
-            self._create_sample_project.execute(user.id)
+            self._create_sample_project.execute_all(user.id)
         return DemoAccountDTO(email=email, password=password)

@@ -132,12 +132,22 @@ The backend tests include:
 - Estimates are advisory, not quotations. Default rates are indicative 2026 figures for India and
   are meant to be edited; see [docs/ESTIMATION.md](docs/ESTIMATION.md) for sources.
 
-### Sample house photo
+### Sample houses
 
-The sample house is "Vibrant yellow house with white accents" by Hale Ş, from
-[Pexels](https://www.pexels.com/photo/vibrant-yellow-house-with-white-accents-36284873/), used under
-the Pexels License. Its parts are traced by hand in
-`exterio-backend/src/infrastructure/services/imaging/sample_house/house.json`.
+The four sample houses are real photographs from Pexels, used under the Pexels License:
+
+| Sample | Photo |
+|---|---|
+| Single-storey ranch | [Clay Elliot](https://www.pexels.com/photo/single-storey-house-under-blue-sky-5785100/) |
+| Two-storey with garage | [Pixabay](https://www.pexels.com/photo/brown-and-white-wooden-house-164558/) |
+| Brick house with dormers | [Curtis Adams](https://www.pexels.com/photo/white-and-brown-concrete-house-near-green-grass-3990589/) |
+| Craftsman with stone | [Get Lost Mike](https://www.pexels.com/photo/white-and-brown-concrete-house-under-blue-sky-7710011/) |
+
+Each one's parts and finished design are traced by hand in
+`exterio-backend/src/infrastructure/services/imaging/sample_houses/<name>/house.json`, so the
+samples work without AI detection. The before / after pairs on the sign-in page are rendered from
+them by the instant preview; after changing a sample or the renderer, run
+`uv run python scripts/render_showcase.py` in `exterio-backend`.
 
 ## How AI tools were used
 

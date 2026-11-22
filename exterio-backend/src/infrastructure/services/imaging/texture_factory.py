@@ -224,6 +224,20 @@ def _bars(color: tuple[float, float, float], _: tuple[float, float, float]) -> T
     return tile
 
 
+def _standing_seam(
+    color: tuple[float, float, float], secondary: tuple[float, float, float]
+) -> Tile:
+    """Metal roofing: solid sheet with raised vertical seams, each lit on one side."""
+    tile = _canvas(color)
+    seams, seam_px = 4, 5
+    spacing = BASE_SIZE // seams
+    for seam in range(seams):
+        left = seam * spacing
+        tile[:, left : left + seam_px, :3] = np.clip(np.asarray(color) * 1.3, 0, 1)
+        tile[:, left + seam_px : left + seam_px + 3, :3] = secondary
+    return tile
+
+
 PATTERNS: dict[str, Callable[[tuple[float, float, float], tuple[float, float, float]], Tile]] = {
     "flat": _flat,
     "stucco": _stucco,
@@ -235,6 +249,7 @@ PATTERNS: dict[str, Callable[[tuple[float, float, float], tuple[float, float, fl
     "plank": _plank,
     "glass": _glass,
     "bars": _bars,
+    "standing_seam": _standing_seam,
 }
 
 

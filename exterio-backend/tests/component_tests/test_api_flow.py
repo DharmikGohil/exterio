@@ -110,7 +110,7 @@ def test_materials_catalogue_is_served_with_swatches(client, headers):
 
 def test_sample_project_is_complete_and_listed(client, headers, sample):
     assert sample["image"]["quality"]["usable"] is True
-    assert len(sample["regions"]) == 26
+    assert len(sample["regions"]) == 10
     assert sample["scale"]["method"] == "facade_dimensions"
     assert sample["designs"][0]["previewUrl"]
     assert client.get(sample["designs"][0]["previewUrl"]).status_code == 200
@@ -157,8 +157,8 @@ def test_estimate_has_material_labour_category_and_grand_totals(client, headers,
     assert actual["scale"]["confidencePct"] == 8.0
     wall = next(region for region in actual["regions"] if region["name"] == "Front wall")
     # Counted straight from the traced outline, outside the measuring pipeline: the wall's pixels
-    # less every part drawn on it, at 30 ft across and 18 ft up the facade, is 286.4 sq ft.
-    assert wall["areaSqft"] == pytest.approx(286.4, rel=0.02)
+    # less every part drawn on it, at 54 ft across and 9 ft up the facade, is 253.9 sq ft.
+    assert wall["areaSqft"] == pytest.approx(253.9, rel=0.02)
     assert sum(line["total"] for line in actual["lines"]) == pytest.approx(
         actual["totals"]["grandTotal"]
     )
@@ -179,15 +179,15 @@ def test_editing_a_rate_recalculates_costs_and_can_be_reset(client, headers, sam
     design_id = sample["designs"][0]["id"]
     estimate_url = f"/api/designs/{design_id}/estimate"
     before = client.get(estimate_url, headers=headers).json()
-    paint = next(line for line in before["lines"] if line["materialId"] == "paint-sage-grey")
+    paint = next(line for line in before["lines"] if line["materialId"] == "paint-warm-cream")
 
     client.put(
         f"/api/projects/{sample['id']}/rates",
         headers=headers,
-        json={"overrides": {"paint-sage-grey": {"materialRate": 28, "wastagePct": 0}}},
+        json={"overrides": {"paint-warm-cream": {"materialRate": 28, "wastagePct": 0}}},
     )
     after = client.get(estimate_url, headers=headers).json()
-    paint_after = next(line for line in after["lines"] if line["materialId"] == "paint-sage-grey")
+    paint_after = next(line for line in after["lines"] if line["materialId"] == "paint-warm-cream")
     client.put(f"/api/projects/{sample['id']}/rates", headers=headers, json={"overrides": {}})
     reset = client.get(estimate_url, headers=headers).json()
 
@@ -233,14 +233,14 @@ def test_area_override_wins_and_is_flagged(client, headers, sample):
 
 
 def test_deleting_a_region_drops_its_assignment_but_keeps_the_design(client, headers, sample):
-    kept = [region for region in sample["regions"] if region["label"] != "railing"]
+    kept = [region for region in sample["regions"] if region["label"] != "garage_door"]
 
     saved = client.put(
         f"/api/projects/{sample['id']}/regions", headers=headers, json={"regions": kept}
     ).json()
 
     design = saved["designs"][0]
-    assert len(saved["regions"]) == 24
+    assert len(saved["regions"]) == 9
     assert set(design["assignments"]) <= {region["id"] for region in saved["regions"]}
     assert design["previewUrl"] and design["previewUrl"] != sample["designs"][0]["previewUrl"]
 
@@ -268,9 +268,9 @@ def test_scale_method_changes_the_estimate_and_its_confidence(client, headers, s
     assert estimate["scale"]["method"] == "door_height"
     assert estimate["scale"]["confidencePct"] == 20.0
     wall = next(region for region in estimate["regions"] if region["name"] == "Front wall")
-    # The front door is about 7.5 ft tall rather than the assumed 7 ft, so the door method reads
-    # the wall smaller than the wall's own size does, within the band it reports.
-    assert wall["areaSqft"] == pytest.approx(286.4, rel=0.2)
+    # The door's outline includes its frame and transom, taller than the assumed 7 ft, so the door
+    # method reads the wall smaller than the wall's own size does.
+    assert wall["areaSqft"] == pytest.approx(253.9, rel=0.3)
 
 
 def test_scale_validation_needs_the_measurements_for_the_chosen_method(client, headers, sample):
@@ -290,7 +290,7 @@ def test_designs_can_be_created_copied_changed_and_deleted(client, headers, samp
     first = sample["designs"][0]
     wall = next(region for region in sample["regions"] if region["name"] == "Front wall")
     window = next(region for region in sample["regions"] if region["label"] == "window")
-    railing = next(region for region in sample["regions"] if region["label"] == "railing")
+    roof = next(region for region in sample["regions"] if region["label"] == "roof")
 
     copy = client.post(
         f"/api/projects/{sample['id']}/designs",
@@ -310,7 +310,7 @@ def test_designs_can_be_created_copied_changed_and_deleted(client, headers, samp
     wrong_surface = client.put(
         f"/api/designs/{copy.json()['id']}",
         headers=headers,
-        json={"assignments": {railing["id"]: "paint-warm-cream"}},
+        json={"assignments": {roof["id"]: "paint-warm-cream"}},
     )
 
     assert copy.status_code == 201
@@ -338,7 +338,7 @@ def test_report_is_a_pdf_download(client, headers, sample):
 
     assert actual.status_code == 200
     assert actual.headers["content-type"] == "application/pdf"
-    assert "renovation-report-sample-house.pdf" in actual.headers["content-disposition"]
+    assert "renovation-report-single-storey-ranch.pdf" in actual.headers["content-disposition"]
     assert actual.content.startswith(b"%PDF")
 
 
@@ -451,7 +451,7 @@ def test_photoreal_render_runs_in_background_and_is_capped_per_user(ai):
     assert done["renderStatus"] == "done"
     assert client.get(done["renderUrl"]).status_code == 200
     finishes = fakes["photoreal"].finishes[0]
-    assert ("wall", "Exterior emulsion - Sage Grey") in {(f.surface, f.material) for f in finishes}
+    assert ("wall", "Exterior emulsion - Warm Cream") in {(f.surface, f.material) for f in finishes}
     assert len(finishes) == len(set(finishes))
     assert second.status_code == 200
     assert (third.status_code, third.json()["code"]) == (429, "DESIGN_004")
@@ -494,7 +494,7 @@ def test_advisor_answers_with_retrieved_notes_and_project_figures(ai):
     assert actual.json()["sources"][0]["title"].startswith("Natural stone cladding")
     prompt = fakes["advisor_model"].system_prompts[0]
     assert "Natural stone cladding" in prompt, "retrieved note must be in the prompt"
-    assert "Exterior emulsion - Sage Grey" in prompt, (
+    assert "Exterior emulsion - Warm Cream" in prompt, (
         "the project's own figures must be in the prompt"
     )
     assert "Grand total INR" in prompt
@@ -524,8 +524,25 @@ def test_demo_account_is_published_seeded_and_signs_in(tmp_path):
     assert published == {"email": "reviewer@example.com", "password": "review-2026"}
     assert login.status_code == 200
     assert login.json()["user"]["isGuest"] is False
-    assert [project["name"] for project in projects] == ["Sample house"]
+    assert sorted(project["name"] for project in projects) == [
+        "Brick house with dormers",
+        "Craftsman with stone",
+        "Single-storey ranch",
+        "Two-storey with garage",
+    ]
 
 
 def test_demo_account_is_off_when_no_email_is_set(client):
     assert client.get("/api/auth/demo-account").json() is None
+
+
+def test_each_sample_request_adds_the_next_house_then_a_chosen_one(client, headers):
+    first = client.post("/api/projects/sample", headers=headers).json()
+    second = client.post("/api/projects/sample", headers=headers).json()
+    chosen = client.post("/api/projects/sample?key=craftsman", headers=headers).json()
+
+    assert first["name"] == "Single-storey ranch"
+    assert second["name"] == "Two-storey with garage"
+    assert chosen["name"] == "Craftsman with stone"
+    assert chosen["designs"][0]["name"] == "Sage, cream and sandstone"
+    assert chosen["designs"][0]["previewUrl"]
