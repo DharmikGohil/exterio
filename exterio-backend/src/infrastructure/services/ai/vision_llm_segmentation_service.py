@@ -8,6 +8,7 @@ segmentation model (corners, not pixel-exact edges), which is acceptable here
 because every region is reviewed and can be reshaped by the user.
 """
 
+from collections.abc import Iterator
 from typing import Any
 
 from pydantic import BaseModel, ValidationError
@@ -15,6 +16,7 @@ from pydantic import BaseModel, ValidationError
 from domain.entities.region_entity import MIN_POLYGON_POINTS, Point, RegionLabel
 from domain.errors.project_errors import AiProviderError
 from domain.interfaces.services.image_services import DetectedRegion, ISegmentationService
+from infrastructure.services.ai.streaming_json import JsonArrayObjectStream
 from infrastructure.services.ai.vision_json_client import (
     LlmBusyError,
     LlmUnreachableError,
@@ -121,30 +123,49 @@ class VisionLlmSegmentationService(ISegmentationService):
         return self._client.is_available()
 
     def detect(self, image: bytes, width: int, height: int) -> list[DetectedRegion]:
+        return list(self.detect_stream(image, width, height))
+
+    def detect_stream(self, image: bytes, width: int, height: int) -> Iterator[DetectedRegion]:
+        """Each part as soon as the model has finished writing it, not when the reply ends."""
         if not self._client.is_available():
             raise AiProviderError("Automatic region detection is not configured")
+        parser = JsonArrayObjectStream()
+        found = 0
         try:
-            raw = self._client.request_json(image, DETECTION_PROMPT, DETECTION_SCHEMA)
-            parsed = DetectionOutput.model_validate(self._normalise(raw))
+            for piece in self._client.stream_json_text(image, DETECTION_PROMPT, DETECTION_SCHEMA):
+                for raw in parser.feed(piece):
+                    region = self._to_region(raw, width, height)
+                    if region is not None and found < MAX_REGIONS:
+                        found += 1
+                        yield region
         except LlmBusyError as error:
             raise AiProviderError("Region detection is busy. Try again in a minute.") from error
         except LlmUnreachableError as error:
             raise AiProviderError("Region detection could not be reached. Try again.") from error
-        except (LlmUnreadableError, ValidationError) as error:
+        except LlmUnreadableError as error:
             raise AiProviderError("Region detection returned an unreadable answer.") from error
         except AiProviderError as error:
             raise AiProviderError("Region detection failed. Try again.") from error
-
-        regions = [
-            DetectedRegion(label=item.label, polygon=polygon, score=DEFAULT_SCORE, name=item.name)
-            for item in parsed.regions[:MAX_REGIONS]
-            if (polygon := self._to_pixels(item.polygon, width, height)) is not None
-        ]
-        if not regions:
+        if found == 0:
             raise AiProviderError(
                 "No building parts were found in this photo. You can draw the regions by hand."
             )
-        return regions
+
+    def _to_region(self, raw: dict[str, Any], width: int, height: int) -> DetectedRegion | None:
+        """One part of the answer as a region, or None if it is unusable."""
+        try:
+            parsed = DetectionOutput.model_validate(self._normalise({"regions": [raw]}))
+        except ValidationError:
+            return None
+        if not parsed.regions:
+            return None
+        item = parsed.regions[0]
+        polygon = self._to_pixels(item.polygon, width, height)
+        if polygon is None:
+            return None
+        return DetectedRegion(
+            label=item.label, polygon=polygon, score=DEFAULT_SCORE, name=item.name
+        )
 
     @staticmethod
     def _normalise(raw: dict[str, Any]) -> dict[str, Any]:

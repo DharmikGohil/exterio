@@ -7,6 +7,7 @@ and surrounding prose are tolerated) and validated by the caller.
 """
 
 import base64
+from collections.abc import Iterator
 from typing import Any
 
 import anthropic
@@ -97,3 +98,26 @@ class AnthropicVisionJsonClient(VisionJsonClient):
             raise AiProviderError("The AI model could not answer. Try again.") from error
         except anthropic.APIConnectionError as error:
             raise LlmUnreachableError("The AI model could not be reached.") from error
+
+    def stream_json_text(self, image: bytes, prompt: str, schema: dict[str, Any]) -> Iterator[str]:
+        if self._client is None:
+            raise AiProviderError("The vision model is not configured")
+        text_block: TextBlockParam = {"type": "text", "text": prompt + JSON_ONLY_SUFFIX}
+        try:
+            with self._client.messages.stream(
+                model=self._model,
+                max_tokens=MAX_TOKENS,
+                messages=[{"role": "user", "content": [jpeg_block(image), text_block]}],
+                output_config={"format": {"type": "json_schema", "schema": schema}},
+            ) as response:
+                yield from response.text_stream
+                final = response.get_final_message()
+        except anthropic.RateLimitError as error:
+            raise LlmBusyError("The AI model is busy. Try again in a minute.") from error
+        except anthropic.APIStatusError as error:
+            logger.warning("Vision stream failed: API status %s", error.status_code)
+            raise AiProviderError("The AI model could not answer. Try again.") from error
+        except anthropic.APIConnectionError as error:
+            raise LlmUnreachableError("The AI model could not be reached.") from error
+        if final.stop_reason == "refusal":
+            raise LlmUnreadableError("The AI model declined to analyse this photo.")

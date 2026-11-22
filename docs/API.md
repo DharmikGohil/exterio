@@ -183,6 +183,7 @@ interface Capabilities {
 | DELETE | `/api/projects/{id}` | – | 204 |
 | POST | `/api/projects/{id}/image` | multipart, field `file` | `Project` — 422 `IMAGE_002` if rejected |
 | POST | `/api/projects/{id}/regions/detect` | – | `Project` — replaces `auto` regions |
+| POST | `/api/projects/{id}/regions/detect/stream` | – | `text/event-stream`: `region` (a `Region`, as soon as the AI has written it, not yet saved) for each part, then `done` (the saved `Project`) or `error` (`{ message }`). Errors before the stream starts are ordinary JSON errors |
 | PUT | `/api/projects/{id}/regions` | `{ regions: RegionInput[] }` | `Project` — full replace |
 | PUT | `/api/projects/{id}/scale` | `ScaleReference` | `Project` |
 | PUT | `/api/projects/{id}/rates` | `{ overrides: Record<string, RateOverride> }` | `Project` — full replace |

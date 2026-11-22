@@ -6,6 +6,7 @@ import type {
   ProjectSummary,
   RateOverride,
   RateOverrides,
+  Region,
   RegionInput,
   ScaleReference,
 } from '@/domain/models/project';
@@ -53,8 +54,12 @@ export class ProjectService implements IProjectService {
     return this.projectRepository.uploadImage(projectId, file);
   }
 
-  detectRegions(projectId: string): Promise<Project> {
-    return this.projectRepository.detectRegions(projectId);
+  detectRegions(
+    projectId: string,
+    onRegion: (region: Region) => void,
+    signal?: AbortSignal
+  ): Promise<Project> {
+    return this.projectRepository.detectRegions(projectId, onRegion, signal);
   }
 
   async saveRegions(projectId: string, regions: RegionInput[]): Promise<Project> {

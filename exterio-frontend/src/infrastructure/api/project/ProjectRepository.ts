@@ -1,10 +1,12 @@
 import { ImageRejectedError } from '@/application/features/project/errors';
+import { AppError } from '@/application/shared/errors';
 import type { IProjectRepository } from '@/domain/interfaces/project';
 import type {
   Project,
   ProjectSummary,
   QualityReport,
   RateOverrides,
+  Region,
   RegionInput,
   ScaleReference,
 } from '@/domain/models/project';
@@ -17,6 +19,7 @@ enum ProjectErrorCode {
 }
 
 const IMAGE_FIELD = 'file';
+const DETECTION_FAILED = 'Region detection stopped before it finished. Try again.';
 
 function isQualityReport(value: unknown): value is QualityReport {
   if (typeof value !== 'object' || value === null) {
@@ -64,10 +67,25 @@ export class ProjectRepository extends BaseRepository implements IProjectReposit
     );
   }
 
-  detectRegions(projectId: string): Promise<Project> {
-    return this.execute(() =>
-      this.httpClient.post<Project>(`${this.projectUrl(projectId)}/regions/detect`)
-    );
+  detectRegions(
+    projectId: string,
+    onRegion: (region: Region) => void,
+    signal?: AbortSignal
+  ): Promise<Project> {
+    return this.execute(async () => {
+      const url = `${this.projectUrl(projectId)}/regions/detect/stream`;
+      for await (const { event, data } of this.httpClient.postEventStream(url, {}, signal)) {
+        if (event === 'region') {
+          onRegion(JSON.parse(data) as Region);
+        } else if (event === 'done') {
+          return JSON.parse(data) as Project;
+        } else if (event === 'error') {
+          const body = JSON.parse(data) as { message?: string };
+          throw new AppError(body.message ?? DETECTION_FAILED);
+        }
+      }
+      throw new AppError(DETECTION_FAILED);
+    });
   }
 
   saveRegions(projectId: string, regions: RegionInput[]): Promise<Project> {

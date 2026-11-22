@@ -38,9 +38,7 @@ export interface RegionCanvasProps {
   onFinishDrawing: () => void;
   /** Draw each region's name on the photo. */
   showNames: boolean;
-  /** Parts Auto-detect found that are not drawn yet (they appear one after another). */
-  hiddenIds?: ReadonlySet<string>;
-  /** Parts drawn during that reveal: their outline traces in and their tag pops up. */
+  /** Parts Auto-detect has just found: their outline traces in and their tag pops up. */
   freshIds?: ReadonlySet<string>;
 }
 
@@ -76,12 +74,9 @@ export function RegionCanvas({
   onAddDrawPoint,
   onFinishDrawing,
   showNames,
-  hiddenIds = NO_IDS,
   freshIds = NO_IDS,
 }: RegionCanvasProps) {
   const { svgRef, unitsPerPixel, toImagePoint } = useSvgCanvas(image.width, image.height);
-  const visibleRegions =
-    hiddenIds.size > 0 ? regions.filter((region) => !hiddenIds.has(region.id)) : regions;
   const [hoverPoint, setHoverPoint] = useState<Point | null>(null);
   const selectedRegion = regions.find((region) => region.id === selectedRegionId) ?? null;
 
@@ -122,7 +117,7 @@ export function RegionCanvas({
       onPointerLeave={() => setHoverPoint(null)}
       onContextMenu={(event) => event.preventDefault()}
     >
-      {sortByAreaDescending(visibleRegions).map((region) => {
+      {sortByAreaDescending(regions).map((region) => {
         if (region.id === selectedRegionId) {
           return null;
         }
@@ -230,8 +225,8 @@ export function RegionCanvas({
 
       {showNames &&
         !isDrawing &&
-        layoutNameTags(visibleRegions, unitsPerPixel).map((placement) => {
-          const region = visibleRegions.find((item) => item.id === placement.id);
+        layoutNameTags(regions, unitsPerPixel).map((placement) => {
+          const region = regions.find((item) => item.id === placement.id);
           return region ? (
             <RegionNameTag
               key={`name-${placement.id}`}

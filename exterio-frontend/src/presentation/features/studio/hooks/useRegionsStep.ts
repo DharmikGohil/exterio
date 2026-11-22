@@ -1,8 +1,7 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import type { Project, RegionLabel } from '@/domain/models/project';
 import { useRegionActions } from '@/presentation/features/projects/hooks/useRegionActions';
-import { orderForReveal } from '@/presentation/features/studio/utils/detectionReveal';
 import { toRegionInputs } from '@/presentation/features/studio/utils/regionDraft';
 import { useCapabilities } from '@/presentation/features/system/hooks/useCapabilities';
 import { STUDIO_PARAMS } from '@/presentation/routes/paths';
@@ -13,7 +12,9 @@ import { useUnsavedChangesGuard } from '@/presentation/shared/hooks/useUnsavedCh
 import { MIN_POLYGON_POINTS, useRegionDraft } from './useRegionDraft';
 import { useRegionDrawing } from './useRegionDrawing';
 import { useRegionEditorShortcuts } from './useRegionEditorShortcuts';
-import { useRegionReveal } from './useRegionReveal';
+
+/** How long "All done" stays on the photo after Auto-detect. */
+const DETECTED_NOTE_MS = 3000;
 
 /** Wires the Regions step together: local draft, selection, drawing, saving and detection. */
 export function useRegionsStep(project: Project) {
@@ -22,7 +23,8 @@ export function useRegionsStep(project: Project) {
   const actions = useRegionActions(project.id);
   const draft = useRegionDraft(project.regions);
   const drawing = useRegionDrawing();
-  const reveal = useRegionReveal();
+  // After Auto-detect: how many parts it found, shown as "All done" for a moment.
+  const [detectedCount, setDetectedCount] = useState<number | null>(null);
   const detectConfirm = useDisclosure();
   const leaveGuard = useUnsavedChangesGuard(draft.isDirty, STUDIO_PARAMS.step);
 
@@ -70,10 +72,10 @@ export function useRegionsStep(project: Project) {
   );
 
   const startDrawing = useCallback(() => {
-    reveal.stop();
+    setDetectedCount(null);
     selectRegion(null);
     drawing.startDrawing();
-  }, [drawing, reveal, selectRegion]);
+  }, [drawing, selectRegion]);
 
   const confirmDrawnRegion = useCallback(
     (label: RegionLabel, name: string) => {
@@ -99,10 +101,10 @@ export function useRegionsStep(project: Project) {
   }, [draft, selectRegion]);
 
   const undo = useCallback(() => {
-    reveal.stop();
+    setDetectedCount(null);
     draft.undo();
     setSelectedVertexIndex(null);
-  }, [draft, reveal]);
+  }, [draft]);
 
   const redo = useCallback(() => {
     draft.redo();
@@ -115,18 +117,41 @@ export function useRegionsStep(project: Project) {
     detectConfirm.close();
     drawing.cancelDrawing();
     selectRegion(null);
-    actions.detectRegions(undefined, {
+    setDetectedCount(null);
+    void actions.detectRegions({
       onSuccess: (updated) => {
-        // The parts are drawn one after another; the status pill on the photo says how many.
-        const found = orderForReveal(updated.regions);
-        if (found.length > 0) {
-          reveal.start(found);
+        const found = updated.regions.filter((region) => region.source === 'auto').length;
+        if (found > 0) {
+          setDetectedCount(found);
         } else {
           toast.info('No regions were found. You can draw them by hand.');
         }
       },
     });
-  }, [actions, detectConfirm, draft, drawing, reveal, selectRegion, toast]);
+  }, [actions, detectConfirm, draft, drawing, selectRegion, toast]);
+
+  useEffect(() => {
+    if (detectedCount === null) {
+      return undefined;
+    }
+    const timer = window.setTimeout(() => setDetectedCount(null), DETECTED_NOTE_MS);
+    return () => window.clearTimeout(timer);
+  }, [detectedCount]);
+
+  // While Auto-detect runs, the photo and the list show the parts drawn by hand (which it keeps)
+  // and every part found so far, each appearing the moment the AI has written it.
+  const { isDetectingRegions, detectedSoFar } = actions;
+  const displayedRegions = useMemo(
+    () =>
+      isDetectingRegions
+        ? [...draft.regions.filter((region) => region.source === 'user'), ...detectedSoFar]
+        : draft.regions,
+    [draft.regions, detectedSoFar, isDetectingRegions]
+  );
+  const freshRegionIds = useMemo(
+    () => new Set(isDetectingRegions ? detectedSoFar.map((region) => region.id) : []),
+    [detectedSoFar, isDetectingRegions]
+  );
 
   // Detection replaces earlier AI regions and discards unsaved edits, so ask first.
   const requestDetection = useCallback(() => {
@@ -184,7 +209,14 @@ export function useRegionsStep(project: Project) {
     isSaving: actions.isSavingRegions,
     discardChanges,
 
-    reveal,
+    displayedRegions,
+    freshRegionIds,
+    detection: {
+      isRunning: isDetectingRegions,
+      found: detectedSoFar.length,
+      latestLabel: detectedSoFar[detectedSoFar.length - 1]?.label ?? null,
+      doneCount: detectedCount,
+    },
 
     canAutoDetect: capabilities.autoDetect,
     isLoadingCapabilities,

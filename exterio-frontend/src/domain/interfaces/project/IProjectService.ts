@@ -2,6 +2,7 @@ import type {
   Project,
   ProjectSummary,
   RateOverrides,
+  Region,
   RegionInput,
   ScaleReference,
 } from '@/domain/models/project';
@@ -17,7 +18,12 @@ export interface IProjectService {
   /** Rejects with `ImageRejectedError` when the photo fails the quality check. */
   uploadImage(projectId: string, file: File): Promise<Project>;
   /** Replaces previously auto-detected regions with a fresh AI detection. */
-  detectRegions(projectId: string): Promise<Project>;
+  /** Auto-detect, handing over each part as the AI finds it; resolves with the saved project. */
+  detectRegions(
+    projectId: string,
+    onRegion: (region: Region) => void,
+    signal?: AbortSignal
+  ): Promise<Project>;
   /** Full replace of the project's regions. */
   saveRegions(projectId: string, regions: RegionInput[]): Promise<Project>;
   saveScale(projectId: string, scale: ScaleReference): Promise<Project>;

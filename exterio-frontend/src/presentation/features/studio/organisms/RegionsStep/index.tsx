@@ -203,7 +203,7 @@ export function RegionsStep({ project, image, onStepChange }: RegionsStepProps) 
         >
           <RegionCanvas
             image={image}
-            regions={editor.regions}
+            regions={editor.displayedRegions}
             selectedRegionId={editor.selectedRegionId}
             selectedVertexIndex={editor.selectedVertexIndex}
             isDrawing={editor.isDrawing}
@@ -217,21 +217,9 @@ export function RegionsStep({ project, image, onStepChange }: RegionsStepProps) 
             onAddDrawPoint={editor.addDrawPoint}
             onFinishDrawing={editor.finishDrawing}
             showNames={nameTags.isOn}
-            hiddenIds={editor.reveal.hiddenIds}
-            freshIds={editor.reveal.freshIds}
+            freshIds={editor.freshRegionIds}
           />
-          <DetectionProgress
-            isDetecting={editor.isDetecting}
-            reveal={{
-              isActive: editor.reveal.isActive,
-              isDone: editor.reveal.isDone,
-              shown: editor.reveal.shown,
-              total: editor.reveal.total,
-              latestLabel:
-                editor.regions.find((region) => region.id === editor.reveal.latestId)?.label ??
-                null,
-            }}
-          />
+          <DetectionProgress {...editor.detection} />
 
           <NameTagToggle
             isOn={nameTags.isOn}
@@ -253,10 +241,9 @@ export function RegionsStep({ project, image, onStepChange }: RegionsStepProps) 
 
         <RegionListPanel
           maxHeight={maxPhotoHeight(toolbarHeight)}
-          hiddenIds={editor.reveal.hiddenIds}
-          freshIds={editor.reveal.freshIds}
-          isLoading={editor.isDetecting}
-          regions={editor.regions}
+          freshIds={editor.freshRegionIds}
+          isLoading={editor.isDetecting && editor.detection.found === 0}
+          regions={editor.displayedRegions}
           selectedRegionId={editor.selectedRegionId}
           onSelect={editor.selectRegion}
           onChange={editor.updateRegion}

@@ -6,6 +6,7 @@ the repository.
 """
 
 import json
+from collections.abc import Iterator
 from pathlib import Path
 from typing import Any
 
@@ -134,3 +135,29 @@ class GeminiVisionJsonClient(VisionJsonClient):
             return extract_json_object(reply_text(response))
         except ValueError as error:
             raise LlmUnreadableError(UNREADABLE_ANSWER) from error
+
+    def stream_json_text(self, image: bytes, prompt: str, schema: dict[str, Any]) -> Iterator[str]:
+        if self._client is None:
+            raise AiProviderError("The vision model is not configured")
+        try:
+            for chunk in self._client.models.generate_content_stream(
+                model=self._model,
+                contents=types.Content(
+                    role="user",
+                    parts=[
+                        types.Part.from_bytes(data=image, mime_type="image/jpeg"),
+                        types.Part.from_text(text=prompt + JSON_ONLY_SUFFIX),
+                    ],
+                ),
+                config=types.GenerateContentConfig(
+                    response_mime_type="application/json",
+                    response_json_schema=schema,
+                ),
+            ):
+                if is_blocked(chunk):
+                    raise LlmUnreadableError("The AI model declined to analyse this photo.")
+                text = reply_text(chunk)
+                if text:
+                    yield text
+        except (genai_errors.APIError, httpx.HTTPError, OSError) as error:
+            raise translate_error(error, "The AI model") from error

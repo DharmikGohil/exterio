@@ -17,9 +17,7 @@ export interface RegionListPanelProps {
   onDelete: (regionId: string) => void;
   /** As tall as the photo may be, so the panel never pushes the step bar off screen. */
   maxHeight?: string;
-  /** Parts Auto-detect found that are not shown yet (they appear one after another). */
-  hiddenIds?: ReadonlySet<string>;
-  /** Parts shown during that reveal: their rows slide in. */
+  /** Parts Auto-detect has just found: their rows slide in. */
   freshIds?: ReadonlySet<string>;
 }
 
@@ -34,12 +32,9 @@ export function RegionListPanel({
   onChange,
   onDelete,
   maxHeight,
-  hiddenIds = NO_IDS,
   freshIds = NO_IDS,
 }: RegionListPanelProps) {
-  const visible =
-    hiddenIds.size > 0 ? regions.filter((region) => !hiddenIds.has(region.id)) : regions;
-  const groups = groupRegionsByLabel(visible);
+  const groups = groupRegionsByLabel(regions);
 
   return (
     <aside
@@ -51,7 +46,7 @@ export function RegionListPanel({
           Regions
           {!isLoading && (
             <span className="ml-1.5 text-sm font-normal tabular-nums text-stone-500">
-              · {visible.length}
+              · {regions.length}
             </span>
           )}
         </h3>

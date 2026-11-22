@@ -440,6 +440,38 @@ def test_detection_replaces_auto_regions_and_keeps_user_regions(ai):
     assert names["Pillar 1"]["surfaceMultiplier"] == 3.0
 
 
+def test_detection_streams_each_part_then_the_saved_project(ai):
+    client, _ = ai
+    headers = guest_headers(client)
+    sample = client.post("/api/projects/sample?key=craftsman", headers=headers).json()
+
+    actual = client.post(f"/api/projects/{sample['id']}/regions/detect/stream", headers=headers)
+
+    assert actual.status_code == 200
+    assert actual.headers["content-type"].startswith("text/event-stream")
+    events = _read_events(actual.text)
+    assert [name for name, _ in events] == ["region", "region", "region", "done"]
+    assert [data["name"] for _, data in events[:3]] == ["Wall 1", "Door 1", "Pillar 1"]
+    streamed_ids = {data["id"] for _, data in events[:3]}
+    saved = events[-1][1]
+    assert {region["id"] for region in saved["regions"]} == streamed_ids, (
+        "the saved project must hold exactly the parts that were streamed"
+    )
+    reloaded = client.get(f"/api/projects/{sample['id']}", headers=headers).json()
+    assert len(reloaded["regions"]) == 3
+
+
+def test_detection_stream_refuses_another_users_project_before_streaming(ai):
+    client, _ = ai
+    sample = client.post("/api/projects/sample?key=craftsman", headers=guest_headers(client)).json()
+
+    actual = client.post(
+        f"/api/projects/{sample['id']}/regions/detect/stream", headers=guest_headers(client)
+    )
+
+    assert actual.status_code == 404
+
+
 def test_photoreal_render_runs_in_background_and_is_capped_per_user(ai):
     client, fakes = ai
     headers = guest_headers(client)

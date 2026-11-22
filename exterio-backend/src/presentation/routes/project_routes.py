@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, status
+from fastapi.responses import StreamingResponse
 
 from domain.use_cases.design.create_design_usecase import CreateDesignUseCase
 from domain.use_cases.project.create_project_usecase import CreateProjectUseCase
@@ -28,6 +29,9 @@ from presentation.controllers.project.upload_project_image_controller import (
 )
 from presentation.controllers.region.detect_regions_controller import DetectRegionsController
 from presentation.controllers.region.replace_regions_controller import ReplaceRegionsController
+from presentation.controllers.region.stream_detect_regions_controller import (
+    StreamDetectRegionsController,
+)
 from presentation.routes.shared_wiring import SharedWiring
 from presentation.schemas.project_schema import (
     DesignResponse,
@@ -64,6 +68,7 @@ def build_project_router(registry: InfrastructureRegistry, shared: SharedWiring)
         project_repo, storage, registry.segmentation, reader, refresher
     )
     detect_regions = DetectRegionsController(detect_regions_use_case)
+    stream_detect_regions = StreamDetectRegionsController(detect_regions_use_case)
     replace_regions = ReplaceRegionsController(
         ReplaceRegionsUseCase(project_repo, reader, refresher)
     )
@@ -118,6 +123,13 @@ def build_project_router(registry: InfrastructureRegistry, shared: SharedWiring)
         detect_regions.handle,
         methods=["POST"],
         response_model=ProjectResponse,
+    )
+    router.add_api_route(
+        "/{project_id}/regions/detect/stream",
+        stream_detect_regions.handle,
+        methods=["POST"],
+        response_class=StreamingResponse,
+        summary="Auto-detect, streaming each part as server-sent events",
     )
     router.add_api_route(
         "/{project_id}/regions",

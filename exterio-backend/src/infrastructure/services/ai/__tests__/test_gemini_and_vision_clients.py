@@ -93,3 +93,36 @@ def test_detection_explains_each_kind_of_failure(error, expected):
         detection.detect(b"jpeg", 1000, 800)
 
     assert expected in str(raised.value)
+
+
+class StreamingJsonClient(FakeJsonClient):
+    """Writes its answer a few characters at a time, recording how far it has got."""
+
+    def __init__(self, text: str) -> None:
+        super().__init__()
+        self._text = text
+        self.written = 0
+
+    def stream_json_text(self, image: bytes, prompt: str, schema: dict[str, Any]):
+        for index in range(0, len(self._text), 5):
+            self.written = index + 5
+            yield self._text[index : index + 5]
+
+
+def test_detection_hands_over_each_part_before_the_model_has_finished():
+    answer = json.dumps(
+        {
+            "regions": [
+                {"label": "wall", "polygon": [[100, 100], [900, 100], [900, 700], [100, 700]]},
+                {"label": "door", "polygon": [[450, 490], [550, 490], [550, 700], [450, 700]]},
+            ]
+        }
+    )
+    client = StreamingJsonClient(answer)
+    stream = VisionLlmSegmentationService(client).detect_stream(b"jpeg", 1000, 800)
+
+    first = next(stream)
+
+    assert first.label == "wall"
+    assert client.written < len(answer), "the first part must arrive while the answer is written"
+    assert [region.label for region in stream] == ["door"]

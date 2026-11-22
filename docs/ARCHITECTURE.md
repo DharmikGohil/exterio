@@ -130,6 +130,14 @@ leniently, so an endpoint that ignores the schema (such as an Anthropic-compatib
 works. Both raise the same provider-neutral errors (busy, unreachable, unreadable), so the
 services explain a failure the same way whichever model is behind them.
 
+Detection streams. `VisionJsonClient.stream_json_text` gives the model's JSON as it is written
+(both providers stream), `JsonArrayObjectStream` picks each object out of the `regions` array the
+moment its closing brace arrives, and `ISegmentationService.detect_stream` yields each part.
+`DetectRegionsUseCase.stream` names each part as it comes and saves the project once at the end;
+the API sends the parts as server-sent events, so the UI draws each one while the model is still
+writing the rest. (Providers that cannot stream, such as SAM 3, hand everything over at the end
+through the default `detect_stream`.)
+
 Gemini runs on the user's own Google Cloud project through a service-account key. Gemini 3 Flash
 answers the photo check and the advisor (first words of an answer in about 3 to 6 s). When Gemini
 does outline parts (no Claude key), it uses Gemini 3.1 Pro, the better of the two at geometry.

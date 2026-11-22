@@ -8,6 +8,7 @@ provider it was.
 
 import json
 from abc import ABC, abstractmethod
+from collections.abc import Iterator
 from typing import Any
 
 from domain.errors.project_errors import AiProviderError
@@ -54,3 +55,11 @@ class VisionJsonClient(ABC):
         Raises LlmBusyError, LlmUnreachableError, LlmUnreadableError, or AiProviderError for
         any other provider failure.
         """
+
+    def stream_json_text(self, image: bytes, prompt: str, schema: dict[str, Any]) -> Iterator[str]:
+        """The same answer as JSON text, in pieces as the model writes it.
+
+        Raises the same errors as `request_json`. Providers that cannot stream give the whole
+        answer as one piece.
+        """
+        yield json.dumps(self.request_json(image, prompt, schema))

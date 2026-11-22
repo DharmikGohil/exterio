@@ -1,6 +1,7 @@
 """Contracts for everything that touches pixels. Implemented with OpenCV in infrastructure."""
 
 from abc import ABC, abstractmethod
+from collections.abc import Iterator
 from dataclasses import dataclass
 from enum import StrEnum
 
@@ -74,6 +75,11 @@ class ISegmentationService(ABC):
 
     @abstractmethod
     def detect(self, image: bytes, width: int, height: int) -> list[DetectedRegion]: ...
+
+    def detect_stream(self, image: bytes, width: int, height: int) -> Iterator[DetectedRegion]:
+        """Each region as soon as the provider has it. Providers that answer in one go give all
+        of them together at the end."""
+        yield from self.detect(image, width, height)
 
 
 class ISurfaceMeasurementService(ABC):
