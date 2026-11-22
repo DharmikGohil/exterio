@@ -25,8 +25,9 @@ web app's address.
    | `ANTHROPIC_API_KEY` | the Claude key (Auto-detect) | yes |
    | `ANTHROPIC_GATEWAY_URL` | the Anthropic-compatible gateway address, if one is used | yes |
    | `ANTHROPIC_MODEL` | `claude-opus-5-5` | no |
-   | `GOOGLE_VERTEX_CREDENTIALS` | the whole service-account key JSON, pasted as the value (photo check and advisor) | yes |
-   | `MODAL_RENDER_URL` | the Modal renderer's address | no |
+   | `GOOGLE_VERTEX_CREDENTIALS` | the whole service-account key JSON, pasted as the value (photo check, advisor and photoreal render) | yes |
+   | `PHOTOREAL_RENDERER` | `gemini` (default; Gemini renders first, Modal is the fallback) | no |
+   | `MODAL_RENDER_URL` | the Modal renderer's address (fallback renderer) | no |
    | `MODAL_RENDER_TOKEN` | the `RENDER_TOKEN` of the `exterio-render-auth` Modal secret | yes |
    | `DEMO_ACCOUNT_EMAIL`, `DEMO_ACCOUNT_PASSWORD` | the published reviewer sign-in (defaults: `demo@example.com` / `review-2026`) | no, it is published |
 
@@ -52,8 +53,8 @@ On the first start the API creates the database, the demo account and its four s
 - The sign-in page loads, and **Try it with a sample house** signs in to the demo account with
   its four houses at their stages.
 - Upload a photo; Auto-detect streams parts onto it; a finish, the estimate and the PDF work;
-  the advisor answers; Generate render returns a photoreal image (the first after an idle spell
-  takes about 30 s while Modal starts the GPU).
+  the advisor answers; Generate render returns a photoreal image in about 10 to 15 s (Gemini; if
+  it is busy, Modal takes over, and its first render after an idle spell takes about 50 s).
 
 ## Keys never go in the repository
 

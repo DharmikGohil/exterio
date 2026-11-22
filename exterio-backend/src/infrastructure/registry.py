@@ -52,6 +52,9 @@ from infrastructure.services.ai.anthropic_json import (
 from infrastructure.services.ai.fal_client import FalClient
 from infrastructure.services.ai.fal_photoreal_render_service import FalPhotorealRenderService
 from infrastructure.services.ai.fal_sam3_segmentation_service import FalSam3SegmentationService
+from infrastructure.services.ai.fallback_photoreal_render_service import (
+    FallbackPhotorealRenderService,
+)
 from infrastructure.services.ai.fallback_segmentation_service import FallbackSegmentationService
 from infrastructure.services.ai.gemini_client import GeminiVisionJsonClient, build_gemini_client
 from infrastructure.services.ai.gemini_photoreal_render_service import (
@@ -105,7 +108,7 @@ class InfrastructureConfig:
     gemini_model: str = "gemini-3-flash-preview"
     gemini_detection_model: str = "gemini-3.1-pro-preview"
     gemini_timeout_seconds: float = 150.0
-    photoreal_renderer: str = "modal"
+    photoreal_renderer: str = "gemini"
     gemini_image_model: str = "gemini-2.5-flash-image"
 
 
@@ -150,32 +153,7 @@ def build_registry(config: InfrastructureConfig) -> InfrastructureRegistry:
         ]
     )
 
-    # Exterio's own renderer on Modal is preferred when configured; fal.ai is the alternative.
-    modal_photoreal = ModalPhotorealRenderService(
-        config.modal_render_url,
-        config.modal_render_token,
-        config.modal_render_timeout_seconds,
-        config.daily_render_limit,
-    )
-    photoreal: IPhotorealRenderService = (
-        modal_photoreal
-        if modal_photoreal.is_available()
-        else FalPhotorealRenderService(
-            fal_client, config.fal_render_model, config.daily_render_limit
-        )
-    )
-    if config.photoreal_renderer == "gemini":
-        gemini_photoreal = GeminiPhotorealRenderService(
-            build_gemini_client(
-                config.google_vertex_credentials,
-                config.google_vertex_location,
-                config.gemini_timeout_seconds,
-            ),
-            config.gemini_image_model,
-            config.daily_render_limit,
-        )
-        if gemini_photoreal.is_available():
-            photoreal = gemini_photoreal
+    photoreal = _build_photoreal(config, fal_client)
 
     # Catalogue swatches are generated once at start-up from the same textures the preview uses.
     for material in material_repo.find_all():
@@ -245,3 +223,31 @@ def _build_language_models(config: InfrastructureConfig) -> _LanguageModels:
         ),
         advisor=GeminiAdvisorLanguageModel(gemini, config.gemini_model),
     )
+
+
+def _build_photoreal(
+    config: InfrastructureConfig, fal_client: FalClient
+) -> IPhotorealRenderService:
+    """Gemini's image model first (the most realistic), then Exterio's SDXL renderer on Modal,
+    then fal.ai, each used when the one before is not configured or fails. With
+    PHOTOREAL_RENDERER=modal, Modal goes first and Gemini last."""
+    gemini = GeminiPhotorealRenderService(
+        build_gemini_client(
+            config.google_vertex_credentials,
+            config.google_vertex_location,
+            config.gemini_timeout_seconds,
+        ),
+        config.gemini_image_model,
+        config.daily_render_limit,
+    )
+    modal = ModalPhotorealRenderService(
+        config.modal_render_url,
+        config.modal_render_token,
+        config.modal_render_timeout_seconds,
+        config.daily_render_limit,
+    )
+    fal = FalPhotorealRenderService(fal_client, config.fal_render_model, config.daily_render_limit)
+    order: list[IPhotorealRenderService] = (
+        [modal, fal, gemini] if config.photoreal_renderer == "modal" else [gemini, modal, fal]
+    )
+    return FallbackPhotorealRenderService(order)

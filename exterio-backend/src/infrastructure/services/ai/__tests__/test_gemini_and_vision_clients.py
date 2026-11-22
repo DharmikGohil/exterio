@@ -2,6 +2,7 @@ import json
 from typing import Any
 
 import pytest
+from google.genai import errors as genai_errors
 from google.genai import types
 
 from domain.errors.project_errors import AiProviderError
@@ -11,6 +12,7 @@ from infrastructure.services.ai.gemini_client import (
     load_service_account_info,
 )
 from infrastructure.services.ai.gemini_photoreal_render_service import (
+    BUSY_RETRY_SECONDS,
     GeminiPhotorealRenderService,
 )
 from infrastructure.services.ai.vision_json_client import (
@@ -174,3 +176,25 @@ def test_gemini_render_without_an_image_is_an_error():
 
     with pytest.raises(AiProviderError):
         renderer.render(b"preview", ())
+
+
+class _BusyThenFine(_FakeGemini):
+    """Rate limited on the first call, then answers."""
+
+    def generate_content(self, **kwargs):
+        self.calls.append(kwargs)
+        if len(self.calls) == 1:
+            raise genai_errors.ClientError(429, {"error": {"message": "busy"}})
+        return self._response
+
+
+def test_gemini_render_waits_and_retries_once_when_rate_limited():
+    client = _BusyThenFine(_image_response(b"edited"))
+    waits: list[float] = []
+    renderer = GeminiPhotorealRenderService(client, "m", 10, sleep=waits.append)  # type: ignore[arg-type]
+
+    actual = renderer.render(b"preview", ())
+
+    assert actual == b"edited"
+    assert len(client.calls) == 2
+    assert waits == [BUSY_RETRY_SECONDS]

@@ -112,7 +112,7 @@ and one fake used in tests:
 | Interface | Production implementation | Why it is swappable |
 |---|---|---|
 | `ISegmentationService` | `FalSam3SegmentationService`, then `VisionLlmSegmentationService`, chosen by `FallbackSegmentationService` | Model names and prices change often; the first configured provider is used |
-| `IPhotorealRenderService` | `ModalPhotorealRenderService` when `MODAL_RENDER_URL` is set, else `FalPhotorealRenderService` | Each one writes the prompt its model understands from the same list of finishes: a short description for SDXL, a full brief for an edit model |
+| `IPhotorealRenderService` | `FallbackPhotorealRenderService`: `GeminiPhotorealRenderService` first, then `ModalPhotorealRenderService`, then `FalPhotorealRenderService`, each used when the one before is not configured or fails (`PHOTOREAL_RENDERER=modal` puts Modal first) | Each one writes the prompt its model understands from the same list of finishes: a short description for SDXL, a full brief for an edit model |
 | `IVisionCheckService` | `VisionLlmCheckService` | Any vision LLM can answer the same structured question |
 | `IAdvisorLanguageModel` | `GeminiAdvisorLanguageModel`, else `AnthropicAdvisorLanguageModel` | Generation half of the advisor; both stream the answer |
 | `IKnowledgeRepository` | `TfidfKnowledgeRepository` | Retrieval half; the seam for an embedding model with pgvector |

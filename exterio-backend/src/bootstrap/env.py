@@ -60,9 +60,10 @@ class Settings(BaseSettings):
     # Used for outlining parts only when no Claude key is set; the better Gemini at geometry.
     gemini_detection_model: str = "gemini-3.1-pro-preview"
     gemini_timeout_seconds: float = 150.0
-    # Photoreal render: "modal" (Exterio's SDXL + ControlNet on Modal, the default) or "gemini"
-    # (Gemini's image-editing model on Vertex AI). See scripts/compare_photoreal.py.
-    photoreal_renderer: str = "modal"
+    # Which photoreal renderer goes first: "gemini" (Gemini's image-editing model on Vertex AI,
+    # the most realistic) or "modal" (Exterio's SDXL + ControlNet on Modal). The others stay as
+    # fallbacks when the first is busy or fails. See scripts/compare_photoreal.py.
+    photoreal_renderer: str = "gemini"
     gemini_image_model: str = "gemini-2.5-flash-image"
 
     @property

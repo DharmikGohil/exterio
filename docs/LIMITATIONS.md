@@ -105,8 +105,11 @@ Two providers implement detection; the first one configured is used.
   colours matched on three houses, but the craftsman house lost its porch furniture and its sage
   shingles came out a little more teal. Gemini also hit the project's rate limit on 2 of 6 calls
   (40 s when it went through after a wait). Modal kept every object and colour on every house,
-  7 to 9 s warm and about 50 s from cold. Modal stays the default (`PHOTOREAL_RENDERER=modal`);
-  Gemini is one setting away.
+  7 to 9 s warm and about 50 s from cold. Judged by eye, Gemini's renders are much more realistic
+  (real metal roofs, painted brick, lighting), so Gemini goes first (`PHOTOREAL_RENDERER=gemini`,
+  the default): a busy answer is retried once after 5 s, and any failure falls back to Modal,
+  then fal.ai (`FallbackPhotorealRenderService`). The risk that remains is Gemini dropping a
+  small object it was told to keep, inside a refinished part.
 - **The photoreal render depends on an image model.** Its realism varies between runs, and
   it can subtly restyle a surface it was asked only to relight. Geometry outside the edited regions
   is protected by pasting the original pixels back, but *inside* an edited region the model's
