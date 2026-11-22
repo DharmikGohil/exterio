@@ -9,6 +9,7 @@ is on. Run from exterio-backend after changing a sample house, the renderer or t
 """
 
 import json
+import subprocess
 import sys
 from datetime import UTC, datetime
 from pathlib import Path
@@ -174,6 +175,13 @@ def write_data(houses: list[dict[str, object]]) -> None:
         "import type { ShowcaseHouse } from './showcase';\n\n"
         f"export const SHOWCASE_DATA: readonly ShowcaseHouse[] = {body};\n",
         encoding="utf-8",
+    )
+    # Format it the way the frontend's own files are, so a re-run with no changes leaves no diff.
+    subprocess.run(
+        ["npx", "prettier", "--write", str(DATA_FILE)],
+        cwd=FRONTEND,
+        check=True,
+        capture_output=True,
     )
     print(f"{DATA_FILE.name}  {len(houses)} houses")
 
