@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 
+import { LogoMark } from '@/presentation/shared/atoms/Logo';
+import { useElementSize } from '@/presentation/shared/hooks/useElementSize';
 import { formatInr } from '@/presentation/shared/utils/format';
 import { cn } from '@/presentation/shared/utils/cn';
 import {
@@ -28,6 +30,8 @@ export function BeforeAfterShowcase({ houses = SHOWCASE_HOUSES }: BeforeAfterSho
   const house = houses[index];
   const next = (index + 1) % houses.length;
   const slots = labelSlots(house.callouts.length);
+  // Arrows are drawn in real pixels, so `pathLength` and the draw-on dash stay in step.
+  const { ref: frameRef, width, height } = useElementSize<HTMLDivElement>();
 
   // Fetch the next pair while this one plays, so the change is instant.
   useEffect(() => {
@@ -41,6 +45,7 @@ export function BeforeAfterShowcase({ houses = SHOWCASE_HOUSES }: BeforeAfterSho
     <figure className="space-y-4">
       <div
         key={house.key}
+        ref={frameRef}
         style={{ aspectRatio: house.aspect }}
         className="relative animate-fade-in overflow-hidden rounded-[3px] bg-mat-deep shadow-[0_2px_10px_rgb(0_0_0/0.35)]"
       >
@@ -60,34 +65,38 @@ export function BeforeAfterShowcase({ houses = SHOWCASE_HOUSES }: BeforeAfterSho
             alt={`${house.house} with the ${house.design} design`}
             className="absolute inset-0 h-full w-full"
           />
-          <span className={cn(CHIP, 'left-3')}>After</span>
+          <span className={cn(CHIP, 'left-3 inline-flex items-center gap-1.5 bg-brand-700/95')}>
+            <LogoMark className="h-3.5 w-3.5" />
+            After, in Exterio
+          </span>
         </div>
         <div
           aria-hidden="true"
           className="absolute inset-y-0 w-0.5 -translate-x-1/2 animate-divider bg-white shadow-[0_0_6px_rgb(0_0_0/0.4)] motion-reduce:hidden"
         />
 
-        {/* The arrows: drawn once the new finishes are on, from each label to its part. */}
-        <svg
-          aria-hidden="true"
-          viewBox="0 0 100 100"
-          preserveAspectRatio="none"
-          className="pointer-events-none absolute inset-0 h-full w-full"
-        >
-          {house.callouts.map((callout, calloutIndex) => (
-            <line
-              key={callout.finish}
-              x1={(slots[calloutIndex] + LABEL_WIDTH / 2) * 100}
-              y1={LABEL_BOTTOM * 100}
-              x2={callout.x * 100}
-              y2={callout.y * 100}
-              pathLength={1}
-              vectorEffect="non-scaling-stroke"
-              className="animate-draw stroke-white [stroke-dasharray:1] [stroke-width:1.5px] motion-reduce:animate-none"
-              style={{ filter: 'drop-shadow(0 0 2px rgb(0 0 0 / 0.6))' }}
-            />
-          ))}
-        </svg>
+        {/* The arrows: hidden until the new finishes are on, then drawn from each label to its part. */}
+        {width > 0 && (
+          <svg
+            aria-hidden="true"
+            viewBox={`0 0 ${width} ${height}`}
+            className="pointer-events-none absolute inset-0 h-full w-full animate-callouts motion-reduce:animate-none"
+          >
+            {house.callouts.map((callout, calloutIndex) => (
+              <line
+                key={callout.finish}
+                x1={(slots[calloutIndex] + LABEL_WIDTH / 2) * width}
+                y1={LABEL_BOTTOM * height}
+                x2={callout.x * width}
+                y2={callout.y * height}
+                pathLength={1}
+                strokeWidth={1.5}
+                className="animate-draw stroke-white [stroke-dasharray:1] motion-reduce:animate-none"
+                style={{ filter: 'drop-shadow(0 0 2px rgb(0 0 0 / 0.6))' }}
+              />
+            ))}
+          </svg>
+        )}
         <ul aria-label="What changes and what it costs" className="contents">
           {house.callouts.map((callout, calloutIndex) => (
             <li key={callout.finish} className="contents">

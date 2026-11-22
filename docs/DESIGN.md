@@ -132,7 +132,10 @@ left half of the sign-in screen, with the headline and a real house before and a
 mat (`BeforeAfterShowcase`). Each house takes 6 seconds: the photo as it is, the new finishes
 sweeping across behind a thin white line, then an arrow drawn from each of the three costliest
 finishes to the part it is on, with a label over the sky ("Roof · Charcoal metal roof · ₹17,348"),
-like the estimate drawn on the house. Then the next house. The caption names the house, the design
+like the estimate drawn on the house. The arrows stay hidden until the finishes are fully on, and
+are drawn in real pixels so each one grows from its label. The finished photo carries an "After,
+in Exterio" tag with the logo mark in the brand green: the product signs its own work, in its one
+accent colour rather than a new one. Then the next house. The caption names the house, the design
 and its total; dots pick a house. Photos, renders, costs and arrow points all come from the sample
 houses through the product's own preview and estimate (`exterio-backend/scripts/render_showcase.py`
 writes the images and `utils/showcaseData.ts`); each arrow lands on the point deepest inside its
@@ -215,7 +218,7 @@ No sparkle or wand icons; each icon says what its button does.
 | `RegionNameTag` | `shared/molecules` | Region name pinned on the photo; layout in `utils/nameTagLayout` |
 | `Skeleton`, `ShimmerOverlay` | `shared` | Loading states |
 | `StepFooter` | `features/studio` | The step bar pinned to the bottom of the studio |
-| `Logo` | `shared/atoms` | Wordmark and a flat gable-and-dimension mark |
+| `Logo`, `LogoMark` | `shared/atoms` | Wordmark and a flat gable-and-dimension mark; the mark alone for badges |
 
 The redesign followed the *unslop* method by Damir Sokolovsky
 ([@heydamir](https://x.com/heydamir), CC BY 4.0): audit, a written direction, then passes for
