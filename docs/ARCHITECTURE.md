@@ -34,7 +34,7 @@ flowchart LR
   I --> FS[(File storage)]
   I -->|region detection| SAM[SAM 3 on fal.ai]
   I -->|photoreal render| EDIT[SDXL + ControlNet on Modal, or an image-edit model on fal.ai]
-  I -->|photo check, advisor| LLM[Claude]
+  I -->|photo check, detection, advisor| LLM[Gemini on Vertex AI, or Claude]
 ```
 
 | Part | Technology | Responsibility |
@@ -45,7 +45,7 @@ flowchart LR
 | Reporting | pandas, ReportLab | Bill of quantities tables and the PDF |
 | Region detection | SAM 3 (text-prompted segmentation) via fal.ai, or a vision LLM when no segmentation model is configured | One polygon per building component |
 | Photoreal render | SDXL img2img with a Canny ControlNet on a Modal GPU (`exterio-render/`), or an instruction-based image-edit model via fal.ai | Makes the composited finishes look real |
-| Language model | Claude via the Anthropic SDK | "Is this a usable house photo?" check and the material advisor |
+| Language model | Gemini 3 Flash and 3.1 Pro on Google Cloud Vertex AI (google-genai SDK); Claude via the Anthropic SDK when no Vertex key is set | "Is this a usable house photo?" check, outlining parts when SAM 3 is not configured, and the material advisor |
 
 Every AI feature is optional. Without keys the API reports the capability as off, the UI hides or
 disables it, and the full flow still works with hand-drawn regions and the instant preview.
@@ -111,17 +111,27 @@ and one fake used in tests:
 
 | Interface | Production implementation | Why it is swappable |
 |---|---|---|
-| `ISegmentationService` | `FalSam3SegmentationService`, then `AnthropicVisionSegmentationService`, chosen by `FallbackSegmentationService` | Model names and prices change often; the first configured provider is used |
+| `ISegmentationService` | `FalSam3SegmentationService`, then `VisionLlmSegmentationService`, chosen by `FallbackSegmentationService` | Model names and prices change often; the first configured provider is used |
 | `IPhotorealRenderService` | `ModalPhotorealRenderService` when `MODAL_RENDER_URL` is set, else `FalPhotorealRenderService` | Each one writes the prompt its model understands from the same list of finishes: a short description for SDXL, a full brief for an edit model |
-| `IVisionCheckService` | `AnthropicVisionCheckService` | Any vision LLM can answer the same structured question |
-| `IAdvisorLanguageModel` | `AnthropicAdvisorLanguageModel` | Generation half of the advisor |
+| `IVisionCheckService` | `VisionLlmCheckService` | Any vision LLM can answer the same structured question |
+| `IAdvisorLanguageModel` | `GeminiAdvisorLanguageModel`, else `AnthropicAdvisorLanguageModel` | Generation half of the advisor; both stream the answer |
 | `IKnowledgeRepository` | `TfidfKnowledgeRepository` | Retrieval half; the seam for an embedding model with pgvector |
 
 Replacing a provider is a one-file change plus one line in the registry.
 
-The Claude-backed services request schema-constrained JSON and also parse the reply leniently,
-so they work both against Anthropic's API, which enforces the schema, and against an
-Anthropic-compatible gateway that does not (`ANTHROPIC_GATEWAY_URL`).
+The photo check and the detection fallback keep their prompts, JSON schemas and answer
+validation in one place and ask through a small `VisionJsonClient` (in `infrastructure`), with
+two implementations: `GeminiVisionJsonClient` and `AnthropicVisionJsonClient`. The registry picks
+Gemini when `GOOGLE_VERTEX_CREDENTIALS` is set and Claude otherwise, for the photo check,
+detection and the advisor together. Both request schema-constrained JSON and also parse the reply
+leniently, so an endpoint that ignores the schema (such as an Anthropic-compatible gateway) still
+works. Both raise the same provider-neutral errors (busy, unreachable, unreadable), so the
+services explain a failure the same way whichever model is behind them.
+
+Gemini runs on the user's own Google Cloud project through a service-account key. Gemini 3 Flash
+answers the photo check and the advisor (first words of an answer in about 3 to 6 s); Gemini
+3.1 Pro outlines parts, which needs better geometry and in testing was also faster (about 20 s
+for a house front, against about 50 s for Flash).
 
 ## The material advisor
 

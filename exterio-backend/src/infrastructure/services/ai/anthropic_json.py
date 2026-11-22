@@ -1,4 +1,4 @@
-"""Shared Claude plumbing: client construction and schema-constrained JSON requests.
+"""Claude plumbing: client construction and schema-constrained JSON requests about a photo.
 
 The request asks for a JSON schema through structured outputs, which
 Anthropic's API enforces. Some Anthropic-compatible gateways accept the
@@ -7,19 +7,24 @@ and surrounding prose are tolerated) and validated by the caller.
 """
 
 import base64
-import json
 from typing import Any
 
 import anthropic
 from anthropic.types import ImageBlockParam, TextBlockParam
 
 from domain.errors.project_errors import AiProviderError
+from infrastructure.services.ai.vision_json_client import (
+    JSON_ONLY_SUFFIX,
+    UNREADABLE_ANSWER,
+    LlmBusyError,
+    LlmUnreachableError,
+    LlmUnreadableError,
+    VisionJsonClient,
+    extract_json_object,
+)
+from infrastructure.utils.logger import logger
 
 MAX_TOKENS = 16000
-JSON_ONLY_SUFFIX = (
-    "\n\nRespond with a single JSON object that matches the required schema and nothing else: "
-    "no prose, no markdown, no code fences."
-)
 
 
 def build_anthropic_client(
@@ -42,17 +47,6 @@ def jpeg_block(image: bytes) -> ImageBlockParam:
     }
 
 
-def extract_json_object(text: str) -> dict[str, Any]:
-    """Pull the first JSON object out of a model reply."""
-    start, end = text.find("{"), text.rfind("}")
-    if start == -1 or end <= start:
-        raise ValueError("No JSON object in the model reply")
-    parsed = json.loads(text[start : end + 1])
-    if not isinstance(parsed, dict):
-        raise ValueError("The model reply is not a JSON object")
-    return parsed
-
-
 def request_json(
     client: anthropic.Anthropic,
     model: str,
@@ -73,9 +67,33 @@ def request_json(
         output_config={"format": {"type": "json_schema", "schema": schema}},
     )
     if response.stop_reason == "refusal":
-        raise AiProviderError("The AI model declined to analyse this photo.")
+        raise LlmUnreadableError("The AI model declined to analyse this photo.")
     text = "".join(block.text for block in response.content if block.type == "text")
     try:
         return extract_json_object(text)
     except ValueError as error:
-        raise AiProviderError("The AI model returned an unreadable answer. Try again.") from error
+        raise LlmUnreadableError(UNREADABLE_ANSWER) from error
+
+
+class AnthropicVisionJsonClient(VisionJsonClient):
+    """`VisionJsonClient` on Claude, through Anthropic's API or a compatible gateway."""
+
+    def __init__(self, client: anthropic.Anthropic | None, model: str) -> None:
+        self._client = client
+        self._model = model
+
+    def is_available(self) -> bool:
+        return self._client is not None
+
+    def request_json(self, image: bytes, prompt: str, schema: dict[str, Any]) -> dict[str, Any]:
+        if self._client is None:
+            raise AiProviderError("The vision model is not configured")
+        try:
+            return request_json(self._client, self._model, image, prompt, schema)
+        except anthropic.RateLimitError as error:
+            raise LlmBusyError("The AI model is busy. Try again in a minute.") from error
+        except anthropic.APIStatusError as error:
+            logger.warning("Vision request failed: API status %s", error.status_code)
+            raise AiProviderError("The AI model could not answer. Try again.") from error
+        except anthropic.APIConnectionError as error:
+            raise LlmUnreachableError("The AI model could not be reached.") from error

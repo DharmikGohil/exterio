@@ -1,7 +1,8 @@
 """Region detection with a vision LLM.
 
 A second implementation of ISegmentationService, used when no dedicated
-segmentation model is configured. The model is asked to outline each building
+segmentation model is configured. It runs on whichever vision model is configured (Gemini or
+Claude). The model is asked to outline each building
 component as a polygon in normalised coordinates. It is coarser than a
 segmentation model (corners, not pixel-exact edges), which is acceptable here
 because every region is reviewed and can be reshaped by the user.
@@ -9,14 +10,17 @@ because every region is reviewed and can be reshaped by the user.
 
 from typing import Any
 
-import anthropic
 from pydantic import BaseModel, ValidationError
 
 from domain.entities.region_entity import MIN_POLYGON_POINTS, Point, RegionLabel
 from domain.errors.project_errors import AiProviderError
 from domain.interfaces.services.image_services import DetectedRegion, ISegmentationService
-from infrastructure.services.ai.anthropic_json import request_json
-from infrastructure.utils.logger import logger
+from infrastructure.services.ai.vision_json_client import (
+    LlmBusyError,
+    LlmUnreachableError,
+    LlmUnreadableError,
+    VisionJsonClient,
+)
 
 COORDINATE_RANGE = 1000.0
 MAX_REGIONS = 60
@@ -109,29 +113,27 @@ class DetectionOutput(BaseModel):
     regions: list[DetectedPolygon]
 
 
-class AnthropicVisionSegmentationService(ISegmentationService):
-    def __init__(self, client: anthropic.Anthropic | None, model: str) -> None:
+class VisionLlmSegmentationService(ISegmentationService):
+    def __init__(self, client: VisionJsonClient) -> None:
         self._client = client
-        self._model = model
 
     def is_available(self) -> bool:
-        return self._client is not None
+        return self._client.is_available()
 
     def detect(self, image: bytes, width: int, height: int) -> list[DetectedRegion]:
-        if self._client is None:
+        if not self._client.is_available():
             raise AiProviderError("Automatic region detection is not configured")
         try:
-            raw = request_json(self._client, self._model, image, DETECTION_PROMPT, DETECTION_SCHEMA)
+            raw = self._client.request_json(image, DETECTION_PROMPT, DETECTION_SCHEMA)
             parsed = DetectionOutput.model_validate(self._normalise(raw))
-        except anthropic.RateLimitError as error:
+        except LlmBusyError as error:
             raise AiProviderError("Region detection is busy. Try again in a minute.") from error
-        except anthropic.APIStatusError as error:
-            logger.warning("Vision detection failed: API status %s", error.status_code)
-            raise AiProviderError("Region detection failed. Try again.") from error
-        except anthropic.APIConnectionError as error:
+        except LlmUnreachableError as error:
             raise AiProviderError("Region detection could not be reached. Try again.") from error
-        except ValidationError as error:
+        except (LlmUnreadableError, ValidationError) as error:
             raise AiProviderError("Region detection returned an unreadable answer.") from error
+        except AiProviderError as error:
+            raise AiProviderError("Region detection failed. Try again.") from error
 
         regions = [
             DetectedRegion(label=item.label, polygon=polygon, score=DEFAULT_SCORE, name=item.name)

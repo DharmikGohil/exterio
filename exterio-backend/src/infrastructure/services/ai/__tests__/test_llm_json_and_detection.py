@@ -3,12 +3,13 @@ import pytest
 from domain.entities.region_entity import RegionLabel
 from domain.errors.project_errors import AiProviderError
 from domain.interfaces.services.image_services import DetectedRegion, ISegmentationService
-from infrastructure.services.ai.anthropic_json import build_anthropic_client, extract_json_object
-from infrastructure.services.ai.anthropic_vision_segmentation_service import (
-    AnthropicVisionSegmentationService,
-    DetectedPoint,
-)
+from infrastructure.services.ai.anthropic_json import build_anthropic_client
 from infrastructure.services.ai.fallback_segmentation_service import FallbackSegmentationService
+from infrastructure.services.ai.vision_json_client import extract_json_object
+from infrastructure.services.ai.vision_llm_segmentation_service import (
+    DetectedPoint,
+    VisionLlmSegmentationService,
+)
 
 
 class StubSegmentation(ISegmentationService):
@@ -54,7 +55,7 @@ def test_detection_accepts_points_as_pairs_and_alternative_key_names():
         ]
     }
 
-    actual = AnthropicVisionSegmentationService._normalise(input_raw)
+    actual = VisionLlmSegmentationService._normalise(input_raw)
 
     assert actual["regions"][0] == {
         "label": "window",
@@ -89,7 +90,7 @@ def test_any_label_is_kept_known_ones_mapped_new_ones_named(raw_label, raw_name,
     if raw_name is not None:
         item["name"] = raw_name
 
-    actual = AnthropicVisionSegmentationService._normalise({"regions": [item]})["regions"][0]
+    actual = VisionLlmSegmentationService._normalise({"regions": [item]})["regions"][0]
 
     assert (actual["label"], actual["name"]) == expected
 
@@ -101,7 +102,7 @@ def test_normalised_corners_are_scaled_to_pixels_and_clamped():
         DetectedPoint(x=1200, y=1000),
     ]
 
-    actual = AnthropicVisionSegmentationService._to_pixels(input_points, 1600, 1000)
+    actual = VisionLlmSegmentationService._to_pixels(input_points, 1600, 1000)
 
     assert actual == ((0.0, 0.0), (800.0, 0.0), (1600.0, 1000.0))
 
@@ -110,8 +111,8 @@ def test_degenerate_polygons_are_dropped():
     two_points = [DetectedPoint(x=0, y=0), DetectedPoint(x=10, y=10)]
     sliver = [DetectedPoint(x=10, y=10), DetectedPoint(x=11, y=10), DetectedPoint(x=11, y=11)]
 
-    assert AnthropicVisionSegmentationService._to_pixels(two_points, 1600, 1000) is None
-    assert AnthropicVisionSegmentationService._to_pixels(sliver, 1600, 1000) is None
+    assert VisionLlmSegmentationService._to_pixels(two_points, 1600, 1000) is None
+    assert VisionLlmSegmentationService._to_pixels(sliver, 1600, 1000) is None
 
 
 def test_fallback_uses_the_first_available_provider():

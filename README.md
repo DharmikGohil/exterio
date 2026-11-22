@@ -82,7 +82,8 @@ No API keys are needed to run the full flow. Adding them switches on the AI feat
 |---|---|
 | `MODAL_RENDER_URL`, `MODAL_RENDER_TOKEN` | The photoreal render on Exterio's own SDXL renderer on Modal (see [`exterio-render/`](exterio-render/README.md)). Preferred over fal.ai when set |
 | `FAL_KEY` | Automatic region detection, and the photoreal render when Modal is not set. Without it the Design step simply shows no render button or render tab; the instant preview covers every finish |
-| `ANTHROPIC_API_KEY` | Vision check on uploaded photos, the material advisor, and region detection when `FAL_KEY` is not set |
+| `GOOGLE_VERTEX_CREDENTIALS` | Gemini on Google Cloud Vertex AI for the photo check, the material advisor, and region detection when `FAL_KEY` is not set. A service-account key: the path to its JSON file locally, or the JSON itself on a host. Preferred over Claude when set |
+| `ANTHROPIC_API_KEY` | The same three features on Claude, when no Vertex key is set |
 | `ANTHROPIC_GATEWAY_URL` | Optional Anthropic-compatible endpoint to use instead of Anthropic's API |
 
 ## Quality checks

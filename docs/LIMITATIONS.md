@@ -30,12 +30,14 @@ Two providers implement detection; the first one configured is used.
   parapets, pillars and roof edges, which often share the wall's colour. The integration was
   written against the published schema but has **not been run against the live service**; the
   tests use a fake provider.
-- **Vision LLM (needs only the Claude key).** Asks the model to outline each component as a polygon.
-  It returns corners rather than pixel-exact edges, so curved or irregular shapes are approximated,
-  and results vary a little between runs (the same photo gave 14 regions on one run and 16 on
-  another). On the drawn test house it matched the true outlines closely (overlap above 0.9 for
-  walls, windows, door, pillars and gate), but that is a clean drawing; it has **not been
-  evaluated on real photographs**, where clutter, shadows and occlusion will lower accuracy.
+- **Vision LLM (Gemini 3.1 Pro on Vertex AI, or Claude).** Asks the model to outline each
+  component as a polygon. It returns corners rather than pixel-exact edges, so curved or irregular
+  shapes are approximated, and results vary a little between runs (the same photo gave 14 regions
+  on one run and 16 on another). On the drawn test house it matched the true outlines closely
+  (overlap above 0.9 for walls, windows, door, pillars and gate). On two of the real sample photos,
+  checked by eye, Gemini 3.1 Pro traced windows, doors, garage doors and shutters tightly, but its
+  roof planes were coarse and overlapped each other. It has **not been measured against hand-traced
+  outlines on real photographs**, where clutter, shadows and occlusion will lower accuracy.
 - **Open-ended parts.** The vision model is asked to outline any exterior part a homeowner could
   refinish. Parts outside the fixed types come back as `other` with the model's own name (on a
   real photo it found "Entrance steps" unprompted), and an unknown label is kept as a named `other`

@@ -42,16 +42,24 @@ from infrastructure.repository.sqlalchemy.config.database import (
 from infrastructure.services.advisor.anthropic_advisor_language_model import (
     AnthropicAdvisorLanguageModel,
 )
-from infrastructure.services.ai.anthropic_json import build_anthropic_client
-from infrastructure.services.ai.anthropic_vision_check_service import AnthropicVisionCheckService
-from infrastructure.services.ai.anthropic_vision_segmentation_service import (
-    AnthropicVisionSegmentationService,
+from infrastructure.services.advisor.gemini_advisor_language_model import (
+    GeminiAdvisorLanguageModel,
+)
+from infrastructure.services.ai.anthropic_json import (
+    AnthropicVisionJsonClient,
+    build_anthropic_client,
 )
 from infrastructure.services.ai.fal_client import FalClient
 from infrastructure.services.ai.fal_photoreal_render_service import FalPhotorealRenderService
 from infrastructure.services.ai.fal_sam3_segmentation_service import FalSam3SegmentationService
 from infrastructure.services.ai.fallback_segmentation_service import FallbackSegmentationService
+from infrastructure.services.ai.gemini_client import GeminiVisionJsonClient, build_gemini_client
 from infrastructure.services.ai.modal_photoreal_render_service import ModalPhotorealRenderService
+from infrastructure.services.ai.vision_json_client import VisionJsonClient
+from infrastructure.services.ai.vision_llm_check_service import VisionLlmCheckService
+from infrastructure.services.ai.vision_llm_segmentation_service import (
+    VisionLlmSegmentationService,
+)
 from infrastructure.services.imaging.opencv_image_inspection_service import (
     OpenCvImageInspectionService,
 )
@@ -89,6 +97,11 @@ class InfrastructureConfig:
     anthropic_gateway_url: str
     anthropic_model: str
     anthropic_timeout_seconds: float
+    google_vertex_credentials: str = ""
+    google_vertex_location: str = "global"
+    gemini_model: str = "gemini-3-flash-preview"
+    gemini_detection_model: str = "gemini-3.1-pro-preview"
+    gemini_timeout_seconds: float = 150.0
 
 
 @dataclass(frozen=True)
@@ -123,14 +136,12 @@ def build_registry(config: InfrastructureConfig) -> InfrastructureRegistry:
     material_repo = JsonMaterialRepository()
     preview = OpenCvPreviewRenderService()
     fal_client = FalClient(config.fal_api_key, config.fal_timeout_seconds)
-    claude = build_anthropic_client(
-        config.anthropic_api_key, config.anthropic_gateway_url, config.anthropic_timeout_seconds
-    )
+    language = _build_language_models(config)
     # A dedicated segmentation model is preferred; a vision LLM is the fallback.
     segmentation = FallbackSegmentationService(
         [
             FalSam3SegmentationService(fal_client, config.fal_segmentation_model),
-            AnthropicVisionSegmentationService(claude, config.anthropic_model),
+            VisionLlmSegmentationService(language.detection),
         ]
     )
 
@@ -165,12 +176,42 @@ def build_registry(config: InfrastructureConfig) -> InfrastructureRegistry:
         password_hasher=BcryptPasswordHasher(),
         token_service=JwtTokenService(config.jwt_secret, config.jwt_expiry_days),
         inspection=OpenCvImageInspectionService(config.max_upload_mb),
-        vision=AnthropicVisionCheckService(claude, config.anthropic_model),
+        vision=VisionLlmCheckService(language.vision),
         segmentation=segmentation,
         measurement=OpenCvSurfaceMeasurementService(),
         preview=preview,
         photoreal=photoreal,
         sample_house=PhotoSampleHouseProvider(),
         report=ReportLabReportService(),
-        advisor_model=AnthropicAdvisorLanguageModel(claude, config.anthropic_model),
+        advisor_model=language.advisor,
+    )
+
+
+@dataclass(frozen=True)
+class _LanguageModels:
+    vision: VisionJsonClient
+    detection: VisionJsonClient
+    advisor: IAdvisorLanguageModel
+
+
+def _build_language_models(config: InfrastructureConfig) -> _LanguageModels:
+    """Gemini on Vertex AI when its key is set, otherwise Claude (when its key is set)."""
+    gemini = build_gemini_client(
+        config.google_vertex_credentials,
+        config.google_vertex_location,
+        config.gemini_timeout_seconds,
+    )
+    if gemini is not None:
+        return _LanguageModels(
+            vision=GeminiVisionJsonClient(gemini, config.gemini_model),
+            detection=GeminiVisionJsonClient(gemini, config.gemini_detection_model),
+            advisor=GeminiAdvisorLanguageModel(gemini, config.gemini_model),
+        )
+    claude = build_anthropic_client(
+        config.anthropic_api_key, config.anthropic_gateway_url, config.anthropic_timeout_seconds
+    )
+    return _LanguageModels(
+        vision=AnthropicVisionJsonClient(claude, config.anthropic_model),
+        detection=AnthropicVisionJsonClient(claude, config.anthropic_model),
+        advisor=AnthropicAdvisorLanguageModel(claude, config.anthropic_model),
     )

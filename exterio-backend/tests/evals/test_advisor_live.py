@@ -1,6 +1,7 @@
 """Live evaluation of the material advisor against the real model and gateway.
 
-These call the configured language model, so they cost tokens and need ANTHROPIC_API_KEY.
+These call the configured language model (Gemini when GOOGLE_VERTEX_CREDENTIALS is set, else
+Claude with ANTHROPIC_API_KEY), so they cost tokens.
 They are skipped unless EXTERIO_LIVE_EVALS=1:
 
     EXTERIO_LIVE_EVALS=1 uv run pytest tests/evals -q

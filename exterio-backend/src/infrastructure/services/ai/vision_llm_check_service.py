@@ -1,4 +1,4 @@
-"""Vision-LLM photo check with Claude.
+"""Vision-LLM photo check, on whichever vision model is configured (Gemini or Claude).
 
 Pixel heuristics can tell that a photo is sharp and bright, but not that it
 shows a house. This asks a vision model the questions a person would ask and
@@ -7,13 +7,12 @@ reads the answer as schema-validated JSON.
 
 from typing import Literal
 
-import anthropic
 from pydantic import BaseModel, ValidationError
 
 from domain.entities.project_entity import IssueSeverity, QualityIssue
 from domain.errors.project_errors import AiProviderError
 from domain.interfaces.services.image_services import IVisionCheckService, VisionVerdict
-from infrastructure.services.ai.anthropic_json import request_json
+from infrastructure.services.ai.vision_json_client import VisionJsonClient
 from infrastructure.utils.logger import logger
 
 VISION_PROMPT = """You are checking a photo a homeowner uploaded to plan an exterior renovation.
@@ -85,31 +84,21 @@ class VisionCheckOutput(BaseModel):
     issues: list[VisionIssue]
 
 
-class AnthropicVisionCheckService(IVisionCheckService):
-    def __init__(self, client: anthropic.Anthropic | None, model: str) -> None:
+class VisionLlmCheckService(IVisionCheckService):
+    def __init__(self, client: VisionJsonClient) -> None:
         self._client = client
-        self._model = model
 
     def is_available(self) -> bool:
-        return self._client is not None
+        return self._client.is_available()
 
     def check(self, image: bytes) -> VisionVerdict:
         """Never blocks an upload on a provider failure: the pixel checks already passed."""
         empty = VisionVerdict(issues=(), guidance=())
-        if self._client is None:
+        if not self._client.is_available():
             return empty
         try:
-            raw = request_json(self._client, self._model, image, VISION_PROMPT, VISION_SCHEMA)
+            raw = self._client.request_json(image, VISION_PROMPT, VISION_SCHEMA)
             parsed = VisionCheckOutput.model_validate(raw)
-        except anthropic.RateLimitError:
-            logger.warning("Vision check skipped: rate limited")
-            return empty
-        except anthropic.APIStatusError as error:
-            logger.warning("Vision check skipped: API status %s", error.status_code)
-            return empty
-        except anthropic.APIConnectionError:
-            logger.warning("Vision check skipped: connection error")
-            return empty
         except (AiProviderError, ValidationError) as error:
             logger.warning("Vision check skipped: %s", type(error).__name__)
             return empty
