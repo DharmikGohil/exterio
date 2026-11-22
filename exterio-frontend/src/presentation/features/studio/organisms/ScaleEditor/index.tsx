@@ -1,35 +1,29 @@
 import { Icon } from '@/presentation/shared/atoms/Icon';
 import { UnsavedChangesDialog } from '@/presentation/shared/molecules/UnsavedChangesDialog';
 import { cn } from '@/presentation/shared/utils/cn';
-import { useScaleStep } from '@/presentation/features/studio/hooks/useScaleStep';
+import { useScaleEditor } from '@/presentation/features/studio/hooks/useScaleEditor';
 import { ScaleMethodPicker } from '@/presentation/features/studio/molecules/ScaleMethodPicker';
-import { StepFooter } from '@/presentation/features/studio/molecules/StepFooter';
-import { StepHeader } from '@/presentation/features/studio/molecules/StepHeader';
 import { ScaleCanvas } from '@/presentation/features/studio/organisms/ScaleCanvas';
 import { ScaleMethodForm } from '@/presentation/features/studio/organisms/ScaleMethodForm';
 import { scaleSaveStatus } from '@/presentation/features/studio/utils/scaleSaveStatus';
-import type { StudioStep } from '@/presentation/routes/paths';
 import type { Project, ProjectImage } from '@/domain/models/project';
 
-export interface ScaleStepProps {
+export interface ScaleEditorProps {
   project: Project;
   image: ProjectImage;
-  onStepChange: (step: StudioStep) => void;
 }
 
-/** Step 3: outline the front wall on the photo and give one real size. Saves as you type. */
-export function ScaleStep({ project, image, onStepChange }: ScaleStepProps) {
-  const editor = useScaleStep(project, image);
+/**
+ * The real-world size: outline the front wall on the photo and give one real measurement.
+ * Saves as you type. Opened from the estimate, the only place the size is used.
+ */
+export function ScaleEditor({ project, image }: ScaleEditorProps) {
+  const editor = useScaleEditor(project, image);
   const doorRegions = project.regions.filter((region) => region.label === 'door');
   const status = scaleSaveStatus(editor);
 
   return (
-    <div className="space-y-5">
-      <StepHeader
-        title="Set the real-world size"
-        description="A photo only knows pixels. One real measurement turns your regions into square feet, and square feet into a cost."
-      />
-
+    <>
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_26rem]">
         <div className="relative min-w-0">
           <ScaleCanvas
@@ -80,18 +74,12 @@ export function ScaleStep({ project, image, onStepChange }: ScaleStepProps) {
         </aside>
       </div>
 
-      <StepFooter
-        step="scale"
-        onStepChange={onStepChange}
-        hint={editor.problem ? 'Set a size so the estimate is accurate.' : undefined}
-      />
-
       <UnsavedChangesDialog
         open={editor.leaveGuard.isBlocked}
         subject="Your scale changes"
         onStay={editor.leaveGuard.stay}
         onLeave={editor.leaveGuard.leave}
       />
-    </div>
+    </>
   );
 }

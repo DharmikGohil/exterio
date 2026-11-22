@@ -1,7 +1,14 @@
 # User Workflow
 
-The product is a five-step studio. A stepper at the top shows where the user is; any step can be
-revisited once a photo exists, and every change is saved to the project.
+The product is a four-step studio: Photo, Regions, Design, Estimate. A stepper at the top shows
+where the user is; any step can be revisited once a photo exists, and every change is saved to the
+project.
+
+The real-world size is not a step. It is only used to turn pixels into square feet, so it lives on
+the Estimate page, where its effect is seen: "Adjust size" opens the size view in place, and the
+total beside it follows each change. Until a size is given the estimate uses a rough default (a
+standard door, or two storeys of 10 ft) and says so with a "Set the size" prompt. Old
+`?step=scale` links open that size view.
 
 ```mermaid
 flowchart TD
@@ -10,13 +17,13 @@ flowchart TD
   A --> Q{Quality gate}
   Q -- rejected --> G[Show the reasons and how to retake it] --> A
   Q -- accepted, maybe with warnings --> B[2. Regions<br/>auto-detect or draw]
-  B --> B2[Review: relabel, reshape, add, delete] --> C
-  C[3. Scale<br/>mark the facade and give one real measurement] --> D
-  D[4. Design<br/>click a region, pick a material] --> D2{Happy?}
+  B --> B2[Review: relabel, reshape, add, delete] --> D
+  D[3. Design<br/>click a region, pick a material] --> D2{Happy?}
   D2 -- try another --> D3[Duplicate into Design B / C] --> D
   D2 -- yes --> R[Generate photoreal render<br/>compare before and after]
-  R --> E[5. Estimate and report<br/>areas, quantities, costs]
+  R --> E[4. Estimate and report<br/>areas, quantities, costs]
   E --> E2[Edit a rate, wastage or area<br/>totals recalculate] --> E
+  E --> SZ[Set the size<br/>mark the facade, give one real measurement] --> E
   E --> F([Download PDF for the contractor])
   E -. compare designs side by side .-> D
 ```
@@ -27,9 +34,8 @@ flowchart TD
 |---|---|---|
 | **1. Photo** | Uploads a JPG, PNG or WebP | Fixes orientation, resizes to a working size, scores sharpness, brightness and resolution, and (if configured) asks a vision model whether it is a usable house exterior. Bad photos are rejected with specific tips. |
 | **2. Regions** | Clicks "Auto-detect", then fixes anything wrong | Asks the configured AI provider to outline each component and turns the result into editable polygons. Hand-drawn regions survive a re-run of detection. |
-| **3. Scale** | Drags four corners onto the main wall and enters a wall size, one known length, a door height, or the number of floors | Removes perspective and converts pixels to feet. Shows how confident the result is for the chosen method. |
-| **4. Design** | Selects a region and a material; saves alternatives as separate designs | Re-renders the instant preview in well under a second. On request, produces a photoreal render in the background. |
-| **5. Estimate** | Sees the house with a card per kind of part (finish, size, cost) and a line to each part; opens the full breakdown to edit rates, wastage or an area if they know better | Computes net area, wastage, purchase quantity, material and labour cost per line, per category and in total, with a low–high range. Builds the PDF. |
+| **3. Design** | Selects a region and a material; saves alternatives as separate designs | Re-renders the instant preview in well under a second. On request, produces a photoreal render in the background. |
+| **4. Estimate** | Sees the house with a card per kind of part (finish, size, cost) and a line to each part; opens the full breakdown to edit rates, wastage or an area if they know better. From "Adjust size" (or "Set the size" while the size is a guess), drags four corners onto the main wall and enters a wall size, one known length, a door height, or the number of floors | Removes perspective and converts pixels to feet, with a confidence band per method. Computes net area, wastage, purchase quantity, material and labour cost per line, per category and in total, with a low–high range. Builds the PDF. |
 
 ## Design choices made for non-technical users
 

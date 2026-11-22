@@ -126,7 +126,7 @@ def test_sample_project_is_complete_and_listed(client, headers, sample):
     estimate = client.get(
         f"/api/designs/{sample['designs'][0]['id']}/estimate", headers=headers
     ).json()
-    assert actual_list[0]["progressStep"] == 5
+    assert actual_list[0]["progressStep"] == 4
     assert actual_list[0]["progressLabel"] == "Estimate ready"
     assert actual_list[0]["estimateTotal"] == estimate["totals"]["grandTotal"]
 
@@ -630,6 +630,6 @@ def test_samples_are_created_at_different_stages(client, headers):
         )
 
     assert stage("ranch") == (False, False, False, "Photo added")
-    assert stage("two-storey") == (True, False, False, "Marking parts")
+    assert stage("two-storey") == (True, False, False, "Designing")
     assert stage("brick") == (True, True, False, "Designing")
     assert stage("craftsman") == (True, True, True, "Estimate ready")

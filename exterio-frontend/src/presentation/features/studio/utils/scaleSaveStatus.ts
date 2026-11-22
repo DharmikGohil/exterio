@@ -27,6 +27,6 @@ export function scaleSaveStatus({ problem, isSaving, isSaved }: ScaleSaveState):
   }
   return {
     tone: 'unset',
-    text: 'Estimates use a rough guess of about 10 ft per floor until a size is set.',
+    text: 'Estimates use a rough guess from a standard door or storey height until a size is set.',
   };
 }

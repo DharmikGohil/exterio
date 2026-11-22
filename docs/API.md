@@ -117,7 +117,7 @@ interface Project {
 interface ProjectSummary {
   id: string; name: string; thumbnailUrl: string | null; designCount: number;
   progressStep: 1 | 2 | 3 | 4 | 5;  // the studio step to carry on at
-  progressLabel: string;            // "No photo yet", "Photo added", "Marking parts", "Designing", "Estimate ready"
+  progressLabel: string;            // "No photo yet", "Photo added", "Designing", "Estimate ready" (progressStep 1–4)
   estimateTotal: number | null;     // the latest priced design's grand total, once a design has a finish
   updatedAt: string;                // the last change to the project or any of its designs
 }

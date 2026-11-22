@@ -14,7 +14,7 @@ export interface StepFooterProps {
   onStepChange: (step: StudioStep) => void;
   /** Shown next to the button, e.g. a reminder to save first. Also makes Continue secondary. */
   hint?: string;
-  /** Replaces "Step n of 5 · Next, …" on the left. */
+  /** Replaces "Step n of 4 · Next, …" on the left. */
   meta?: string;
   /** The main action of the last step (which has no Continue), e.g. downloading the report. */
   primaryAction?: ReactNode;

@@ -118,7 +118,7 @@ class ProjectSummaryResponse(CamelModel):
     name: str
     thumbnail_url: str | None
     design_count: int
-    progress_step: int = Field(ge=1, le=5)
+    progress_step: int = Field(ge=1, le=4)
     progress_label: str
     estimate_total: float | None
     updated_at: datetime

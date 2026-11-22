@@ -2,21 +2,25 @@ import { useCallback, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 import type { Project } from '@/domain/models/project';
-import { STUDIO_PARAMS, type StudioStep } from '@/presentation/routes/paths';
+import { LEGACY_SCALE_STEP, STUDIO_PARAMS, type StudioStep } from '@/presentation/routes/paths';
 import { hasSeenPhotoCheck } from '@/presentation/features/studio/utils/photoCheckSeen';
 import { getDefaultStep, isStudioStep } from '@/presentation/features/studio/utils/steps';
 
 /**
  * The current Studio step, kept in the `?step=` query parameter.
  * Until a photo exists the only reachable step is `photo`; afterwards all steps are open.
+ * The size used to be a step of its own; an old `?step=scale` link opens the estimate's size view.
  */
 export function useStudioStep(project: Project) {
   const [searchParams, setSearchParams] = useSearchParams();
   const requested = searchParams.get(STUDIO_PARAMS.step);
   const hasPhoto = project.image !== null;
 
+  const isLegacyScale = requested === LEGACY_SCALE_STEP;
   let step: StudioStep = 'photo';
-  if (hasPhoto) {
+  if (hasPhoto && isLegacyScale) {
+    step = 'estimate';
+  } else if (hasPhoto) {
     step = isStudioStep(requested)
       ? requested
       : getDefaultStep(project, hasSeenPhotoCheck(project.id));
@@ -29,12 +33,15 @@ export function useStudioStep(project: Project) {
         (current) => {
           const next = new URLSearchParams(current);
           next.set(STUDIO_PARAMS.step, step);
+          if (isLegacyScale && step === 'estimate') {
+            next.set(STUDIO_PARAMS.view, 'size');
+          }
           return next;
         },
         { replace: true }
       );
     }
-  }, [requested, step, setSearchParams]);
+  }, [requested, step, isLegacyScale, setSearchParams]);
 
   const goToStep = useCallback(
     (next: StudioStep) => {

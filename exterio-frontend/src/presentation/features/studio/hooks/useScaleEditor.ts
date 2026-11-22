@@ -25,6 +25,9 @@ export type ScaleFieldPatch = Partial<
   >
 >;
 
+/** Leaving the estimate's size view, by changing step or view, counts as leaving the editor. */
+const LEAVE_PARAMS = [STUDIO_PARAMS.step, STUDIO_PARAMS.view] as const;
+
 /** How long typing must pause before the scale is saved. */
 export const SCALE_AUTOSAVE_DELAY_MS = 700;
 
@@ -32,11 +35,11 @@ export const SCALE_AUTOSAVE_DELAY_MS = 700;
  * Local draft of the scale reference, validated and saved automatically.
  *
  * A valid change is saved once typing pauses, and a pending change is sent straight away when
- * the step is left. The draft is keyed to the photo, not to the saved scale, so a save that
+ * the editor is closed. The draft is keyed to the photo, not to the saved scale, so a save that
  * returns while the user is still typing never replaces what they typed. Leaving is only
  * blocked when the values are invalid and so cannot be saved.
  */
-export function useScaleStep(project: Project, image: ProjectImage) {
+export function useScaleEditor(project: Project, image: ProjectImage) {
   const { saveScale, isSavingScale } = useScaleActions(project.id);
 
   const savedScale = useMemo(
@@ -88,7 +91,7 @@ export function useScaleStep(project: Project, image: ProjectImage) {
     [send]
   );
 
-  const leaveGuard = useUnsavedChangesGuard(isDirty && problem !== null, STUDIO_PARAMS.step);
+  const leaveGuard = useUnsavedChangesGuard(isDirty && problem !== null, LEAVE_PARAMS);
 
   const setMethod = useCallback(
     (method: ScaleMethod) => {

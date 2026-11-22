@@ -9,7 +9,7 @@ export interface StepProgressProps {
   label: string;
 }
 
-/** How far along a house is: five segments, one per studio step, and "Step 4 of 5 · Designing". */
+/** How far along a house is: four segments, one per studio step, and "Step 3 of 4 · Designing". */
 export function StepProgress({ step, label }: StepProgressProps) {
   const filled = completedSteps(step);
   const text = `Step ${step} of ${STUDIO_STEP_COUNT} · ${label}`;
@@ -23,7 +23,7 @@ export function StepProgress({ step, label }: StepProgressProps) {
         aria-valuemax={STUDIO_STEP_COUNT}
         aria-valuenow={filled}
         aria-valuetext={text}
-        className="grid grid-cols-5 gap-1"
+        className="grid grid-cols-4 gap-1"
       >
         {Array.from({ length: STUDIO_STEP_COUNT }, (_, index) => (
           <span
