@@ -154,8 +154,11 @@ Each one's parts, finished design and starting stage (photo only, parts, designe
 traced by hand in
 `exterio-backend/src/infrastructure/services/imaging/sample_houses/<name>/house.json`, so the
 samples work without AI detection. The before / after pairs on the sign-in page are rendered from
-them by the instant preview; after changing a sample or the renderer, run
-`uv run python scripts/render_showcase.py` in `exterio-backend`.
+them the way the studio does it, the instant preview followed by the photoreal pass on Gemini and
+merged back onto the photo; after changing a sample or the renderer, run
+`uv run python scripts/render_showcase.py` in `exterio-backend` (`--only <house>` re-renders one,
+`--instant` uses the instant preview alone). Each render was checked by eye for anything Gemini
+dropped or recoloured, and re-rendered when it had.
 
 ## How AI tools were used
 

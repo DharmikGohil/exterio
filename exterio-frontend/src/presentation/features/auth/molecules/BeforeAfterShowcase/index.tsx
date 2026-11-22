@@ -62,12 +62,12 @@ export function BeforeAfterShowcase({ houses = SHOWCASE_HOUSES }: BeforeAfterSho
         >
           <img
             src={showcaseImage(house.key, 'after')}
-            alt={`${house.house} with the ${house.design} design`}
+            alt={`${house.house} with the ${house.design} design, rendered by AI`}
             className="absolute inset-0 h-full w-full"
           />
           <span className={cn(CHIP, 'left-3 inline-flex items-center gap-1.5 bg-brand-700/95')}>
             <LogoMark className="h-3.5 w-3.5" />
-            After, in Exterio
+            After, rendered by AI
           </span>
         </div>
         <div

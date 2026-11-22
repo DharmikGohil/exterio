@@ -6,9 +6,9 @@ import { BeforeAfterShowcase } from '@/presentation/features/auth/molecules/Befo
 import { EmailAuthForm } from '@/presentation/features/auth/organisms/EmailAuthForm';
 import { SampleHouseAccess } from '@/presentation/features/auth/organisms/SampleHouseAccess';
 
-const HEADLINE = 'See your house in new finishes, and what they cost';
+const HEADLINE = 'See your house redesigned by AI, and what it will cost';
 const SUMMARY =
-  'Upload one photo, mark the walls, roof and doors, choose paint, stone or cladding, and get quantities and a rupee estimate to take to your contractor.';
+  'Upload one photo. AI finds the walls, roof and doors, shows them in the paint, stone or cladding you choose, and works out the quantities and a rupee estimate to take to your contractor.';
 
 function ProductStory() {
   return (

@@ -19,10 +19,9 @@ describe('BeforeAfterShowcase', () => {
       'src',
       `/showcase/${FIRST.key}-before.jpg`
     );
-    expect(screen.getByAltText(`${FIRST.house} with the ${FIRST.design} design`)).toHaveAttribute(
-      'src',
-      `/showcase/${FIRST.key}-after.jpg`
-    );
+    expect(
+      screen.getByAltText(`${FIRST.house} with the ${FIRST.design} design, rendered by AI`)
+    ).toHaveAttribute('src', `/showcase/${FIRST.key}-after.jpg`);
     expect(screen.getByText(`${FIRST.house} · ${FIRST.design}`)).toBeInTheDocument();
     expect(screen.getByText(/^Estimated ₹/)).toBeInTheDocument();
   });

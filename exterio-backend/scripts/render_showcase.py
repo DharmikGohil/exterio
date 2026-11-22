@@ -1,16 +1,22 @@
 """Renders the before / after pairs shown on the sign-in page, and the arrows drawn on them.
 
-Each sample house is rendered with its finished design by the same instant preview the studio
-uses, and priced by the same estimate, so the sign-in page shows exactly what the product does:
-the photo, the new finishes, and an arrow from each of the three costliest finishes to the part it
-is on. Run from exterio-backend after changing a sample house, the renderer or the rates:
+Each sample house is rendered with its finished design the way the studio does it: the instant
+preview, then the photoreal pass on Gemini's image model, merged back onto the photo (edited
+pixels inside the refinished parts, the original photo elsewhere). It is priced by the same
+estimate, so the sign-in page shows exactly what the product does: the photo, the new finishes,
+and an arrow from each of the three costliest finishes to the part it is on. Run from
+exterio-backend after changing a sample house, the renderer or the rates (needs
+GOOGLE_VERTEX_CREDENTIALS; --instant uses the instant preview instead):
 
     uv run python scripts/render_showcase.py
+    uv run python scripts/render_showcase.py --only craftsman   # re-render one house
 """
 
+import argparse
 import json
 import subprocess
 import sys
+import time
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -19,14 +25,20 @@ import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
+from bootstrap.env import load_settings
 from domain.entities.design_entity import Design
 from domain.entities.project_entity import Project, ProjectImage
 from domain.entities.region_entity import Region, RegionLabel
-from domain.interfaces.services.image_services import PreviewRequest, SampleHouse
+from domain.errors.project_errors import AiProviderError
+from domain.interfaces.services.image_services import PreviewRequest, RenderFinish, SampleHouse
 from domain.services.estimate_builder import build_estimate
 from domain.use_cases.estimate.measure_facade_usecase import MeasureFacadeUseCase
 from infrastructure.repository.implementation.material_repo_impl import (
     JsonMaterialRepository,
+)
+from infrastructure.services.ai.gemini_client import build_gemini_client
+from infrastructure.services.ai.gemini_photoreal_render_service import (
+    GeminiPhotorealRenderService,
 )
 from infrastructure.services.imaging.image_codec import decode_image
 from infrastructure.services.imaging.opencv_preview_render_service import (
@@ -45,6 +57,9 @@ DATA_FILE = FRONTEND / "src" / "presentation" / "features" / "auth" / "utils" / 
 WIDTH_PX = 1200
 JPEG_QUALITY = 82
 CALLOUTS_PER_HOUSE = 3
+RENDER_ATTEMPTS = 4
+# The Vertex project allows only a few image requests a minute.
+RENDER_RETRY_SECONDS = 25
 
 # How a finish is named on its arrow; anything else uses its catalogue name.
 FINISH_NAMES = {
@@ -66,29 +81,54 @@ PART_NAMES = {
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
+    parser.add_argument("--only", nargs="+", help="Re-render only these houses, e.g. craftsman")
+    parser.add_argument("--instant", action="store_true", help="Use the instant preview only")
+    args = parser.parse_args()
+
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    provider, materials, renderer = (
+    provider, materials, preview = (
         PhotoSampleHouseProvider(),
         JsonMaterialRepository(),
         OpenCvPreviewRenderService(),
     )
+    photoreal = None if args.instant else _photoreal()
     houses = []
     for summary in provider.samples():
         house = provider.build(summary.key)
         houses.append({"key": summary.key, **describe(house)})
-        request = PreviewRequest(
-            image=house.image,
-            regions=house.regions,
-            materials_by_region={
-                region_id: material
-                for region_id, material_id in house.assignments.items()
-                if (material := materials.find_by_id(material_id)) is not None
-            },
-            facade_corners=house.scale.facade_corners,
-            facade_width_ft=house.scale.facade_width_ft,
-            facade_height_ft=house.scale.facade_height_ft,
+        if args.only and summary.key not in args.only:
+            continue
+        by_region = {
+            region_id: material
+            for region_id, material_id in house.assignments.items()
+            if (material := materials.find_by_id(material_id)) is not None
+        }
+        after = preview.render(
+            PreviewRequest(
+                image=house.image,
+                regions=house.regions,
+                materials_by_region=by_region,
+                facade_corners=house.scale.facade_corners,
+                facade_width_ft=house.scale.facade_width_ft,
+                facade_height_ft=house.scale.facade_height_ft,
+            )
         )
-        for suffix, data in (("before", house.image), ("after", renderer.render(request))):
+        if photoreal is not None:
+            finishes: dict[RenderFinish, None] = {}
+            for region in house.regions:
+                if (material := by_region.get(region.id)) is not None:
+                    surface = region.label.replace("_", " ")
+                    finishes[
+                        RenderFinish(
+                            surface, material.name, material.description, material.color_hex
+                        )
+                    ] = None
+            edited = _render_with_retries(photoreal, after, tuple(finishes), summary.key)
+            after = preview.merge_with_original(
+                house.image, edited, house.regions, frozenset(by_region)
+            )
+        for suffix, data in (("before", house.image), ("after", after)):
             image = decode_image(data)
             height = round(image.shape[0] * WIDTH_PX / image.shape[1])
             resized = cv2.resize(image, (WIDTH_PX, height), interpolation=cv2.INTER_AREA)
@@ -96,6 +136,33 @@ def main() -> None:
             cv2.imwrite(str(path), resized, [cv2.IMWRITE_JPEG_QUALITY, JPEG_QUALITY])
             print(f"{path.name}  {path.stat().st_size // 1024} KB")
     write_data(houses)
+
+
+def _photoreal() -> GeminiPhotorealRenderService:
+    settings = load_settings()
+    client = build_gemini_client(
+        settings.google_vertex_credentials, settings.google_vertex_location, 150
+    )
+    if client is None:
+        raise SystemExit("GOOGLE_VERTEX_CREDENTIALS is not set; use --instant for the preview.")
+    return GeminiPhotorealRenderService(client, settings.gemini_image_model, 1000)
+
+
+def _render_with_retries(
+    renderer: GeminiPhotorealRenderService,
+    composite: bytes,
+    finishes: tuple[RenderFinish, ...],
+    key: str,
+) -> bytes:
+    for attempt in range(1, RENDER_ATTEMPTS + 1):
+        try:
+            return renderer.render(composite, finishes)
+        except AiProviderError as error:
+            if attempt == RENDER_ATTEMPTS:
+                raise
+            print(f"{key}: {error} Waiting {RENDER_RETRY_SECONDS}s.")
+            time.sleep(RENDER_RETRY_SECONDS)
+    raise AssertionError("unreachable")
 
 
 def describe(house: SampleHouse) -> dict[str, object]:
