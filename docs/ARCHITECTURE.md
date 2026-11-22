@@ -39,7 +39,7 @@ flowchart LR
 
 | Part | Technology | Responsibility |
 |---|---|---|
-| `exterio-frontend` | React, TypeScript, Vite, Tailwind, React Query | The four-step studio, region editor, estimate tables |
+| `exterio-frontend` | React, TypeScript, Vite, Tailwind, React Query | The five-step studio, region editor, estimate tables |
 | `exterio-backend` | Python 3.12, FastAPI, SQLAlchemy | REST API, all measurement and costing logic |
 | Imaging | OpenCV, NumPy | Photo quality gate, perspective removal, pixel measurement, material compositing |
 | Reporting | pandas, ReportLab | Bill of quantities tables and the PDF |

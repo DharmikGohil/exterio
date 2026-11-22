@@ -11,7 +11,7 @@ const project: ProjectSummary = {
   name: 'Patel residence',
   thumbnailUrl: null,
   designCount: 2,
-  progressStep: 3,
+  progressStep: 4,
   progressLabel: 'Designing',
   estimateTotal: null,
   updatedAt: '2026-11-21T10:00:00Z',
@@ -41,8 +41,8 @@ describe('ProjectCard', () => {
   it('shows how far along the house is', () => {
     renderCard();
 
-    expect(screen.getByText('Step 3 of 4 · Designing')).toBeInTheDocument();
-    expect(screen.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '2');
+    expect(screen.getByText('Step 4 of 5 · Designing')).toBeInTheDocument();
+    expect(screen.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '3');
     expect(screen.getByText(/2 designs · edited/)).toBeInTheDocument();
   });
 
@@ -52,7 +52,7 @@ describe('ProjectCard', () => {
   });
 
   it('shows the estimate total', () => {
-    renderCard({ estimateTotal: 68610, progressStep: 4, progressLabel: 'Estimate ready' });
+    renderCard({ estimateTotal: 68610, progressStep: 5, progressLabel: 'Estimate ready' });
 
     expect(screen.getByText('₹68,610')).toBeInTheDocument();
   });

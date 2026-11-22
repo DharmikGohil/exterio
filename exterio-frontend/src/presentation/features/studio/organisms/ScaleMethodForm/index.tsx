@@ -1,6 +1,6 @@
 import { Alert } from '@/presentation/shared/atoms/Alert';
 import { NumberField } from '@/presentation/shared/molecules/NumberField';
-import type { ScaleFieldPatch } from '@/presentation/features/studio/hooks/useScaleEditor';
+import type { ScaleFieldPatch } from '@/presentation/features/studio/hooks/useScaleStep';
 import type { ScaleReference } from '@/domain/models/project';
 
 export interface ScaleMethodFormProps {

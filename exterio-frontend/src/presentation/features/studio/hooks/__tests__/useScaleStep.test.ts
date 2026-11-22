@@ -2,9 +2,9 @@ import { act, renderHook } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
-  useScaleEditor,
+  useScaleStep,
   SCALE_AUTOSAVE_DELAY_MS,
-} from '@/presentation/features/studio/hooks/useScaleEditor';
+} from '@/presentation/features/studio/hooks/useScaleStep';
 import { buildDefaultScale } from '@/presentation/features/studio/utils/scaleDefaults';
 import type { Project, ProjectImage, ScaleReference } from '@/domain/models/project';
 
@@ -33,7 +33,7 @@ function savedProject(): Project {
   return { id: 'p1', scale, regions: [] } as unknown as Project;
 }
 
-describe('useScaleEditor autosave', () => {
+describe('useScaleStep autosave', () => {
   beforeEach(() => {
     vi.useFakeTimers();
     saveScale.mockClear();
@@ -43,7 +43,7 @@ describe('useScaleEditor autosave', () => {
   });
 
   it('saves a valid change once typing pauses, not before', () => {
-    const { result } = renderHook(() => useScaleEditor(savedProject(), image));
+    const { result } = renderHook(() => useScaleStep(savedProject(), image));
 
     act(() => result.current.setFields({ facadeWidthFt: 31 }));
     expect(result.current.isSaving).toBe(true);
@@ -57,7 +57,7 @@ describe('useScaleEditor autosave', () => {
   });
 
   it('waits for the last keystroke when typing continues', () => {
-    const { result } = renderHook(() => useScaleEditor(savedProject(), image));
+    const { result } = renderHook(() => useScaleStep(savedProject(), image));
 
     act(() => result.current.setFields({ facadeWidthFt: 3 }));
     act(() => vi.advanceTimersByTime(SCALE_AUTOSAVE_DELAY_MS / 2));
@@ -69,7 +69,7 @@ describe('useScaleEditor autosave', () => {
   });
 
   it('never saves values that are not usable, and says why', () => {
-    const { result } = renderHook(() => useScaleEditor(savedProject(), image));
+    const { result } = renderHook(() => useScaleStep(savedProject(), image));
 
     act(() => result.current.setFields({ facadeWidthFt: null }));
     act(() => vi.advanceTimersByTime(SCALE_AUTOSAVE_DELAY_MS * 3));
@@ -79,7 +79,7 @@ describe('useScaleEditor autosave', () => {
   });
 
   it('saves a pending change straight away when the step is left', () => {
-    const { result, unmount } = renderHook(() => useScaleEditor(savedProject(), image));
+    const { result, unmount } = renderHook(() => useScaleStep(savedProject(), image));
 
     act(() => result.current.setFields({ facadeHeightFt: 22 }));
     unmount();
@@ -89,7 +89,7 @@ describe('useScaleEditor autosave', () => {
   });
 
   it('does not send the same values twice', () => {
-    const { result, unmount } = renderHook(() => useScaleEditor(savedProject(), image));
+    const { result, unmount } = renderHook(() => useScaleStep(savedProject(), image));
 
     act(() => result.current.setFields({ facadeWidthFt: 31 }));
     act(() => vi.advanceTimersByTime(SCALE_AUTOSAVE_DELAY_MS * 3));
@@ -99,7 +99,7 @@ describe('useScaleEditor autosave', () => {
   });
 
   it('does nothing when nothing changed', () => {
-    const { unmount } = renderHook(() => useScaleEditor(savedProject(), image));
+    const { unmount } = renderHook(() => useScaleStep(savedProject(), image));
 
     act(() => vi.advanceTimersByTime(SCALE_AUTOSAVE_DELAY_MS * 3));
     unmount();

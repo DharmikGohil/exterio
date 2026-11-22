@@ -6,6 +6,7 @@ import { EstimateStep } from '@/presentation/features/estimate/organisms/Estimat
 import { useStudioStep } from '@/presentation/features/studio/hooks/useStudioStep';
 import { PhotoStep } from '@/presentation/features/studio/organisms/PhotoStep';
 import { RegionsStep } from '@/presentation/features/studio/organisms/RegionsStep';
+import { ScaleStep } from '@/presentation/features/studio/organisms/ScaleStep';
 import { StudioHeaderNav } from '@/presentation/features/studio/organisms/StudioHeaderNav';
 import type { StudioStep } from '@/presentation/routes/paths';
 import type { Project, ProjectImage } from '@/domain/models/project';
@@ -29,6 +30,8 @@ function StepContent({ step, project, image, onStepChange }: StepContentProps) {
   switch (step) {
     case 'regions':
       return <RegionsStep project={project} image={image} onStepChange={onStepChange} />;
+    case 'scale':
+      return <ScaleStep project={project} image={image} onStepChange={onStepChange} />;
     case 'design':
       return <DesignStep project={project} image={image} onStepChange={onStepChange} />;
     case 'estimate':

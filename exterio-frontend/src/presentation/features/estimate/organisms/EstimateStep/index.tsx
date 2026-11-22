@@ -15,7 +15,6 @@ import { useRateOverrides } from '@/presentation/features/estimate/hooks/useRate
 import { useReportDownload } from '@/presentation/features/estimate/hooks/useReportDownload';
 import { EstimateBreakdown } from '@/presentation/features/estimate/organisms/EstimateBreakdown';
 import { EstimateDiagram } from '@/presentation/features/estimate/organisms/EstimateDiagram';
-import { EstimateSizeView } from '@/presentation/features/estimate/organisms/EstimateSizeView';
 import { EstimateSummary } from '@/presentation/features/estimate/organisms/EstimateSummary';
 import { StepFooter } from '@/presentation/features/studio/molecules/StepFooter';
 import { StepHeader } from '@/presentation/features/studio/molecules/StepHeader';
@@ -79,7 +78,7 @@ function EstimateWorkspace({
   const areas = useAreaOverrides(project);
   const rates = useRateOverrides(project);
   const { downloadReport, isDownloading } = useReportDownload(project.name);
-  const { view, openBreakdown, openOverview, openSize } = useEstimateView();
+  const { view, openBreakdown, openOverview } = useEstimateView();
 
   const image = project.image;
   const groups = useMemo(
@@ -97,18 +96,6 @@ function EstimateWorkspace({
       Download PDF report
     </Button>
   );
-
-  if (view === 'size' && image) {
-    return (
-      <EstimateSizeView
-        project={project}
-        image={image}
-        estimate={estimate}
-        isRefreshing={isFetching}
-        onBack={openOverview}
-      />
-    );
-  }
 
   if (view === 'breakdown' && estimate) {
     return (
@@ -181,9 +168,8 @@ function EstimateWorkspace({
           <EstimateSummary
             totals={estimate.totals}
             scaleBasis={describeScaleBasis(project.scale)}
-            isSizeAssumed={project.scale === null}
             isRefreshing={isFetching}
-            onAdjustScale={openSize}
+            onAdjustScale={() => onStepChange('scale')}
             onOpenBreakdown={openBreakdown}
           />
 
@@ -205,7 +191,7 @@ function EstimateWorkspace({
       <StepFooter
         step="estimate"
         onStepChange={onStepChange}
-        meta="Step 4 of 4 · Estimates are advisory, not a binding quotation"
+        meta="Step 5 of 5 · Estimates are advisory, not a binding quotation"
         primaryAction={downloadButton}
       />
     </div>

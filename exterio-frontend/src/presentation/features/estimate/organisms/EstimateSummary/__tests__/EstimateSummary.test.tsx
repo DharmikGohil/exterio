@@ -64,37 +64,4 @@ describe('EstimateSummary', () => {
 
     expect(onOpenBreakdown).toHaveBeenCalledOnce();
   });
-
-  it('asks for a real size while the sizes are a guess, and opens the size from there', async () => {
-    const onAdjustScale = vi.fn();
-    render(
-      <EstimateSummary
-        totals={TOTALS}
-        scaleBasis="a rough guess"
-        isSizeAssumed
-        isRefreshing={false}
-        onAdjustScale={onAdjustScale}
-        onOpenBreakdown={vi.fn()}
-      />
-    );
-
-    expect(screen.getByText(/sizes are a rough guess/i)).toBeInTheDocument();
-    await userEvent.click(screen.getByRole('button', { name: 'Set the size' }));
-
-    expect(onAdjustScale).toHaveBeenCalledOnce();
-  });
-
-  it('says nothing about guessing once a size is given', () => {
-    render(
-      <EstimateSummary
-        totals={TOTALS}
-        scaleBasis="a wall of 30 × 20 ft"
-        isRefreshing={false}
-        onAdjustScale={vi.fn()}
-        onOpenBreakdown={vi.fn()}
-      />
-    );
-
-    expect(screen.queryByText(/rough guess/i)).not.toBeInTheDocument();
-  });
 });

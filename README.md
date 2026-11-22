@@ -14,13 +14,13 @@ and INR throughout.
 | Upload a photo, reject unusable ones with guidance | Step 1 — sharpness, brightness and resolution checks, plus an optional vision-model check |
 | Identify walls, windows, balconies, pillars, parapets, gates, roof edges | Step 2 — AI detection (segmentation model or vision LLM), returned as editable polygons |
 | Review and correct detected regions | Step 2 — reshape, relabel, add, delete, or draw from scratch |
-| Material catalogue, different materials on different parts | Step 3 — 20 materials across paint, texture, stone, tile, panels and railings |
-| Multiple combinations, switching between designs | Step 3 — any number of named designs per project, with a cost comparison |
-| Redesigned image that keeps the building's structure | Step 3 — instant composite, and an AI photoreal render with before/after slider |
-| Surface area per building part | Step 4 — perspective-corrected areas with a stated confidence band; the real-world size is set right there |
-| Quantities with wastage and coverage | Step 4 — litres of paint, tiles, sheets, sq ft of stone, running ft of railing |
-| Material, labour, per-category and grand total; editable rates | Step 4 — change a rate or wastage and the totals recalculate |
-| Downloadable report | Step 4 — PDF with both images, materials, quantities, costs and assumptions |
+| Material catalogue, different materials on different parts | Step 4 — 20 materials across paint, texture, stone, tile, panels and railings |
+| Multiple combinations, switching between designs | Step 4 — any number of named designs per project, with a cost comparison |
+| Redesigned image that keeps the building's structure | Step 4 — instant composite, and an AI photoreal render with before/after slider |
+| Surface area per building part | Step 5 — perspective-corrected areas with a stated confidence band |
+| Quantities with wastage and coverage | Step 5 — litres of paint, tiles, sheets, sq ft of stone, running ft of railing |
+| Material, labour, per-category and grand total; editable rates | Step 5 — change a rate or wastage and the totals recalculate |
+| Downloadable report | Step 5 — PDF with both images, materials, quantities, costs and assumptions |
 | Save and re-edit projects, multiple users | Accounts, a published demo account (or one-click guest access); every change is persisted |
 
 ## Documentation
@@ -49,7 +49,7 @@ structure is preserved by construction.
 
 ```
 exterio-backend/   Python 3.12, FastAPI — API, measurement, costing, PDF
-exterio-frontend/  React, TypeScript, Vite — the four-step studio
+exterio-frontend/  React, TypeScript, Vite — the five-step studio
 exterio-render/    Photoreal renderer on Modal — SDXL + ControlNet on a GPU
 docs/                 Architecture, workflow, estimation, limitations, API
 ```

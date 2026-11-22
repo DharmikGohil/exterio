@@ -54,7 +54,7 @@ Rules:
 ## Your houses: the home screen
 
 `ProjectListPage` lists every house as a card (`ProjectCard`): the photo, the name with a ⋯ menu
-(Rename, Delete), a four-segment bar and "Step 3 of 4 · Designing" (`StepProgress`), then
+(Rename, Delete), a five-segment bar and "Step 4 of 5 · Designing" (`StepProgress`), then
 "2 designs · edited 22 Nov 2026" and the estimate total, or "No estimate yet". The step and total
 come from the API, so they always match the studio. The first card is a dashed "Start a new
 house" (`NewHouseCard`), which also offers the sample house. Above the grid, a search box and a
@@ -91,13 +91,9 @@ Everything is in view without scrolling on screens from 1280×720 up.
 - **Design picker** (`DesignSwitcher`): the current design in a dark dropdown, labelled
   "Design: Warm stone and cream" so it reads as a design and not a house name, listing all designs,
   a "⋯" menu (`DropdownMenu`) to rename, duplicate or delete it, and New design.
-- **The size lives in the estimate** (`EstimateSizeView` around `ScaleEditor`, `?view=size`): the
-  summary card's "Adjust size" opens it in place, with "Back to your estimate", the live total and
-  Done. While no size is given, an amber strip on the summary says the sizes are a rough guess and
-  offers "Set the size".
-- **Size saves itself**: a segmented control picks how the size is known (Wall size, One length,
+- **Scale saves itself**: a segmented control picks how the size is known (Wall size, One length,
   Door, Floors); a valid change is saved 0.7 s after typing pauses, and a line under the inputs says
-  "Saving…" or "Scale saves automatically. Estimates use it." Leaving the size view sends a pending
+  "Saving…" or "Scale saves automatically. Estimates use it." Leaving the step sends a pending
   change at once; it only asks before leaving when the values are invalid and cannot be saved.
 - **Panels**: the title with its count ("Regions · 14"), groups in small capitals ("WALLS · 1"),
   rows with a colour dot (Regions) or a finish swatch (Design).
@@ -164,7 +160,7 @@ coloured, gridded page pulls the eye away from the text.
 Wherever the interface states a measured or estimated quantity, it can draw it as a dimension line:
 
 - `DimensionLine` (HTML) for figures in panels, like the estimate's likely range.
-- `SvgDimension` (SVG) on the photo, like the wall width and height in the size view, drawn
+- `SvgDimension` (SVG) on the photo, like the wall width and height in the Scale step, drawn
   outside the wall with extension lines, end ticks and the figure set into the middle.
 
 ## Type

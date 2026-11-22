@@ -8,7 +8,7 @@ export const PROJECT_SORT_OPTIONS: readonly { value: ProjectSort; label: string 
   { value: 'progress', label: 'Furthest along' },
 ];
 
-export const STUDIO_STEP_COUNT = 4;
+export const STUDIO_STEP_COUNT = 5;
 
 /** The houses whose name contains the search, in the chosen order. */
 export function filterAndSortProjects(

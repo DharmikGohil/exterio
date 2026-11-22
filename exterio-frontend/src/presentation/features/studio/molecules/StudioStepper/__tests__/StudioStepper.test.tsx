@@ -6,11 +6,11 @@ import { StudioStepper } from '@/presentation/features/studio/molecules/StudioSt
 
 describe('StudioStepper', () => {
   it('ticks done steps, fills the current one and numbers the rest', () => {
-    render(<StudioStepper currentStep="design" hasPhoto onStepChange={vi.fn()} />);
+    render(<StudioStepper currentStep="scale" hasPhoto onStepChange={vi.fn()} />);
 
     const done = screen.getByRole('button', { name: /regions/i });
-    const current = screen.getByRole('button', { name: /design/i });
-    const upcoming = screen.getByRole('button', { name: /estimate/i });
+    const current = screen.getByRole('button', { name: /scale/i });
+    const upcoming = screen.getByRole('button', { name: /design/i });
 
     expect(done.querySelector('svg')).not.toBeNull();
     expect(done).not.toHaveTextContent('2');

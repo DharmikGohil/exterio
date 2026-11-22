@@ -16,6 +16,10 @@ export const STUDIO_STEP_META: Record<StudioStep, StudioStepMeta> = {
     label: 'Regions',
     description: 'Mark the parts of the house: walls, windows, pillars and more.',
   },
+  scale: {
+    label: 'Scale',
+    description: 'Tell us one real measurement so areas come out in feet.',
+  },
   design: {
     label: 'Design',
     description: 'Apply finishes to each part and see the house change.',
@@ -30,6 +34,7 @@ export function isStudioStep(value: string | null): value is StudioStep {
   return value !== null && (STUDIO_STEPS as readonly string[]).includes(value);
 }
 
+/** Where to land when the URL does not name a step: the first thing still left to do. */
 /**
  * Where a project opens: the next thing left to do. A house with only its photo opens at the
  * Photo step the first time this browser sees it, so its check is shown before marking parts.
@@ -45,7 +50,10 @@ export function getDefaultStep(project: Project, photoCheckSeen = true): StudioS
   const hasFinishes = project.designs.some((design) =>
     Object.keys(design.assignments).some((regionId) => regionIds.has(regionId))
   );
-  return hasFinishes ? 'estimate' : 'design';
+  if (hasFinishes) {
+    return 'estimate';
+  }
+  return project.scale ? 'design' : 'scale';
 }
 
 export function getNextStep(step: StudioStep): StudioStep | null {

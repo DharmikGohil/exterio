@@ -21,8 +21,8 @@ function project(name: string, progressStep: number, updatedAt: string): Project
 
 const PROJECTS = [
   project('patel residence', 2, '2026-11-20T10:00:00Z'),
-  project('Shah villa', 4, '2026-11-19T10:00:00Z'),
-  project('Mehta house', 3, '2026-11-22T10:00:00Z'),
+  project('Shah villa', 5, '2026-11-19T10:00:00Z'),
+  project('Mehta house', 4, '2026-11-22T10:00:00Z'),
 ];
 
 const names = (items: ProjectSummary[]) => items.map((item) => item.name);
@@ -61,8 +61,8 @@ describe('completedSteps', () => {
   it.each([
     [1, 0],
     [2, 1],
-    [3, 2],
-    [4, 4],
+    [4, 3],
+    [5, 5],
   ])('fills %i as %i segments', (step, filled) => {
     expect(completedSteps(step)).toBe(filled);
   });

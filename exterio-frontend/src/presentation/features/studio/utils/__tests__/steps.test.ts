@@ -11,22 +11,20 @@ import type { Project } from '@/domain/models/project';
 const emptyProject = { image: null, regions: [], designs: [], scale: null } as unknown as Project;
 
 describe('studio steps', () => {
-  it('walks forward and back through the four steps', () => {
+  it('walks forward and back through the five steps', () => {
     expect(getNextStep('photo')).toBe('regions');
-    expect(getNextStep('regions')).toBe('design');
     expect(getNextStep('estimate')).toBeNull();
     expect(getPreviousStep('regions')).toBe('photo');
     expect(getPreviousStep('photo')).toBeNull();
   });
 
   it('recognises only real step names from the URL', () => {
-    expect(isStudioStep('design')).toBe(true);
-    expect(isStudioStep('scale')).toBe(false);
+    expect(isStudioStep('scale')).toBe(true);
     expect(isStudioStep('settings')).toBe(false);
     expect(isStudioStep(null)).toBe(false);
   });
 
-  it('opens a project at the first thing still left to do; the size never holds it back', () => {
+  it('opens a project at the first thing still left to do', () => {
     const withPhoto = { ...emptyProject, image: { url: '/x.jpg' } } as unknown as Project;
     const withRegions = { ...withPhoto, regions: [{ id: 'r1' }] } as unknown as Project;
     const withSize = { ...withRegions, scale: { method: 'facade_dimensions' } } as Project;
@@ -41,7 +39,7 @@ describe('studio steps', () => {
 
     expect(getDefaultStep(emptyProject)).toBe('photo');
     expect(getDefaultStep(withPhoto)).toBe('regions');
-    expect(getDefaultStep(withRegions)).toBe('design');
+    expect(getDefaultStep(withRegions)).toBe('scale');
     expect(getDefaultStep(withSize)).toBe('design');
     expect(getDefaultStep(designed)).toBe('estimate');
     expect(getDefaultStep(finishOnDeletedPart)).toBe('design');
@@ -53,6 +51,6 @@ describe('studio steps', () => {
 
     expect(getDefaultStep(withPhoto, false)).toBe('photo');
     expect(getDefaultStep(withPhoto, true)).toBe('regions');
-    expect(getDefaultStep(withRegions, false)).toBe('design');
+    expect(getDefaultStep(withRegions, false)).toBe('scale');
   });
 });
