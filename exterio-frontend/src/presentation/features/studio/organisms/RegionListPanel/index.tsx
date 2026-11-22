@@ -36,7 +36,7 @@ export function RegionListPanel({
       style={{ maxHeight }}
       className="flex max-h-[max(22rem,calc(100dvh-18.5rem))] min-h-64 flex-col self-start overflow-hidden rounded-2xl border border-stone-200 bg-white lg:sticky lg:top-6"
     >
-      <div className="mx-4 flex h-16 items-center border-b border-stone-200 px-1">
+      <div className="mx-4 flex h-16 shrink-0 items-center border-b border-stone-200 px-1">
         <h3 className="text-xl font-medium text-stone-900">
           Regions
           {!isLoading && (

@@ -112,6 +112,11 @@ const config: Config = {
           from: { transform: 'translateX(-100%)' },
           to: { transform: 'translateX(100%)' },
         },
+        // A scanning line passing down a photo while the AI looks at it.
+        scan: {
+          '0%': { top: '-6rem' },
+          '100%': { top: '100%' },
+        },
         // A light sweeping through a line of text, for a step that is still running.
         'text-shimmer': {
           from: { backgroundPosition: '100% 0' },
@@ -144,6 +149,7 @@ const config: Config = {
         'slide-in-right': 'slide-in-right 300ms cubic-bezier(0.22, 1, 0.36, 1)',
         shimmer: 'shimmer 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite',
         'text-shimmer': 'text-shimmer 1.8s linear infinite',
+        scan: 'scan 2.8s cubic-bezier(0.45, 0, 0.55, 1) infinite',
         reveal: 'reveal 6s cubic-bezier(0.65, 0, 0.35, 1) both',
         divider: 'divider 6s cubic-bezier(0.65, 0, 0.35, 1) both',
         draw: 'draw 6s cubic-bezier(0.22, 1, 0.36, 1) both',

@@ -30,7 +30,11 @@ import { useStoredToggle } from '@/presentation/shared/hooks/useStoredToggle';
 import { StepFooter } from '@/presentation/features/studio/molecules/StepFooter';
 import { StepHeader } from '@/presentation/features/studio/molecules/StepHeader';
 import { useCapabilities } from '@/presentation/features/system/hooks/useCapabilities';
-import { maxPhotoHeight, photoFrameStyle } from '@/presentation/shared/utils/photoFrame';
+import {
+  maxPhotoHeight,
+  photoFrameStyle,
+  photoGridStyle,
+} from '@/presentation/shared/utils/photoFrame';
 import type { StudioStep } from '@/presentation/routes/paths';
 import type { Design } from '@/domain/models/design';
 import type { Project, ProjectImage } from '@/domain/models/project';
@@ -167,17 +171,18 @@ function DesignWorkspace({
       />
 
       {/*
-        The row above the photo, as wide as it (or as wide as its controls on one line, if the
-        photo is narrower): the design picker on the left, and on the right
+        The row above the photo and the panel (so a tall, narrow photo never squeezes it): the design picker on the left, and on the right
         how you look at the photo (design or before / after) and which picture it is (the
         instant preview or the photoreal render). On the photo itself: names top right, the
         render button bottom centre.
       */}
-      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_26rem]">
+      <div
+        className="grid gap-5 lg:grid-cols-[minmax(0,var(--photo-col))_26rem] lg:justify-center"
+        style={photoGridStyle(image.width, image.height, toolbarHeight)}
+      >
         <div
           ref={toolbar.ref}
-          className="mx-auto flex min-w-fit max-w-full flex-wrap items-center justify-between gap-3"
-          style={photoFrameStyle(image.width, image.height, toolbarHeight)}
+          className="flex min-w-0 flex-wrap items-center justify-between gap-3 lg:col-span-2"
         >
           <DesignSwitcher project={project} activeDesign={design} onSelect={onSelectDesign} />
           <div className="flex flex-wrap items-center gap-2">
@@ -234,7 +239,10 @@ function DesignWorkspace({
         </Alert>
       )}
 
-      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_26rem]">
+      <div
+        className="grid gap-5 lg:grid-cols-[minmax(0,var(--photo-col))_26rem] lg:justify-center"
+        style={photoGridStyle(image.width, image.height, toolbarHeight)}
+      >
         <div
           className="relative mx-auto min-w-0"
           style={photoFrameStyle(image.width, image.height, toolbarHeight)}

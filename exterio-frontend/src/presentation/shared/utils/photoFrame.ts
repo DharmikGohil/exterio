@@ -33,3 +33,19 @@ export function photoFrameStyle(
   const ratio = imageWidth / Math.max(imageHeight, 1);
   return { width: `min(100%, calc((${maxPhotoHeight(rowAboveHeight)}) * ${ratio.toFixed(4)}))` };
 }
+
+/**
+ * For a grid of a photo beside a side panel: the photo column's widest size, as the CSS variable
+ * `--photo-col`. The grid uses `minmax(0, var(--photo-col))` for that column and centres its
+ * tracks, so a tall photo keeps its panel right beside it instead of leaving a gap between them.
+ */
+export function photoGridStyle(
+  imageWidth: number,
+  imageHeight: number,
+  rowAboveHeight = 0
+): CSSProperties {
+  const ratio = imageWidth / Math.max(imageHeight, 1);
+  return {
+    '--photo-col': `calc((${maxPhotoHeight(rowAboveHeight)}) * ${ratio.toFixed(4)})`,
+  } as CSSProperties;
+}

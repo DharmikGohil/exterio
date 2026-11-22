@@ -70,7 +70,7 @@ export function MaterialPanel({
         style={{ maxHeight }}
         className="flex max-h-[max(22rem,calc(100dvh-22rem))] min-h-64 flex-col self-start overflow-hidden rounded-2xl border border-stone-200 bg-white lg:sticky lg:top-6"
       >
-        <div className="mx-4 flex min-h-16 items-center justify-between gap-3 border-b border-stone-200 px-1 py-3">
+        <div className="mx-4 flex min-h-16 shrink-0 items-center justify-between gap-3 border-b border-stone-200 px-1 py-3">
           <h3 className="whitespace-nowrap text-lg font-medium text-stone-900">
             Parts of the house
             <span className="ml-1.5 text-sm font-normal text-stone-500">· {regions.length}</span>
@@ -147,7 +147,7 @@ export function MaterialPanel({
       style={{ maxHeight }}
       className="flex max-h-[max(22rem,calc(100dvh-22rem))] min-h-64 flex-col self-start overflow-hidden rounded-2xl border border-stone-200 bg-white lg:sticky lg:top-6"
     >
-      <div className="space-y-3 border-b border-stone-200 px-5 py-4">
+      <div className="shrink-0 space-y-3 border-b border-stone-200 px-5 py-4">
         <Button variant="link" size="inline" icon="arrow-left" onClick={() => onSelectRegion(null)}>
           All parts
         </Button>

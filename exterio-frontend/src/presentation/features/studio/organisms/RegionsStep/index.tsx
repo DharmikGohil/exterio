@@ -2,7 +2,6 @@ import { Alert } from '@/presentation/shared/atoms/Alert';
 import { Button } from '@/presentation/shared/atoms/Button';
 import { Icon } from '@/presentation/shared/atoms/Icon';
 import { Tooltip } from '@/presentation/shared/atoms/Tooltip';
-import { ShimmerOverlay } from '@/presentation/shared/molecules/ShimmerOverlay';
 import { NameTagToggle } from '@/presentation/shared/molecules/NameTagToggle';
 import { useElementSize } from '@/presentation/shared/hooks/useElementSize';
 import { useStoredToggle } from '@/presentation/shared/hooks/useStoredToggle';
@@ -11,12 +10,17 @@ import { FloatingSaveBar } from '@/presentation/shared/molecules/FloatingSaveBar
 import { UnsavedChangesDialog } from '@/presentation/shared/molecules/UnsavedChangesDialog';
 import { AdvisorButton } from '@/presentation/features/advisor/molecules/AdvisorButton';
 import { useRegionsStep } from '@/presentation/features/studio/hooks/useRegionsStep';
+import { DetectionProgress } from '@/presentation/features/studio/molecules/DetectionProgress';
 import { RegionLabelDialog } from '@/presentation/features/studio/molecules/RegionLabelDialog';
 import { StepFooter } from '@/presentation/features/studio/molecules/StepFooter';
 import { StepHeader } from '@/presentation/features/studio/molecules/StepHeader';
 import { RegionCanvas } from '@/presentation/features/studio/organisms/RegionCanvas';
 import { RegionListPanel } from '@/presentation/features/studio/organisms/RegionListPanel';
-import { maxPhotoHeight, photoFrameStyle } from '@/presentation/shared/utils/photoFrame';
+import {
+  maxPhotoHeight,
+  photoFrameStyle,
+  photoGridStyle,
+} from '@/presentation/shared/utils/photoFrame';
 import type { StudioStep } from '@/presentation/routes/paths';
 import type { Project, ProjectImage } from '@/domain/models/project';
 
@@ -74,17 +78,17 @@ export function RegionsStep({ project, image, onStepChange }: RegionsStepProps) 
       )}
 
       {/*
-        The tools sit in a row above the photo, as wide as it, so they never cover a part of the
-        house: drawing and detection on the left, undo and redo on the right. On the photo itself
+        The tools sit in a row above the photo and the panel, so they never cover a part of the
+        house: drawing and detection on the left over the photo, undo and redo on the right. On the photo itself
         only the names toggle (top right) and the save bar. The hint line under the tools is
         always there, so the photo never moves when it changes.
       */}
-      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_24rem]">
-        <div
-          ref={toolbar.ref}
-          className="mx-auto min-w-fit max-w-full space-y-2"
-          style={photoFrameStyle(image.width, image.height, toolbarHeight)}
-        >
+      <div
+        className="grid gap-5 lg:grid-cols-[minmax(0,var(--photo-col))_24rem] lg:justify-center"
+        style={photoGridStyle(image.width, image.height, toolbarHeight)}
+      >
+        {/* Spans the photo and the panel, so a tall, narrow photo never squeezes the tools. */}
+        <div ref={toolbar.ref} className="min-w-0 space-y-2 lg:col-span-2">
           <div
             role="toolbar"
             aria-label="Region tools"
@@ -189,7 +193,10 @@ export function RegionsStep({ project, image, onStepChange }: RegionsStepProps) 
         </div>
       </div>
 
-      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_24rem]">
+      <div
+        className="grid gap-5 lg:grid-cols-[minmax(0,var(--photo-col))_24rem] lg:justify-center"
+        style={photoGridStyle(image.width, image.height, toolbarHeight)}
+      >
         <div
           className="relative mx-auto min-w-0"
           style={photoFrameStyle(image.width, image.height, toolbarHeight)}
@@ -211,9 +218,7 @@ export function RegionsStep({ project, image, onStepChange }: RegionsStepProps) 
             onFinishDrawing={editor.finishDrawing}
             showNames={nameTags.isOn}
           />
-          {editor.isDetecting && (
-            <ShimmerOverlay status="Finding walls, windows, pillars and railings…" />
-          )}
+          <DetectionProgress isActive={editor.isDetecting} />
 
           <NameTagToggle
             isOn={nameTags.isOn}

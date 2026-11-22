@@ -12,7 +12,7 @@ const TOTALS = {
 };
 
 describe('DesignCostSummary', () => {
-  it('calls the total rough and points to the size step until a real size is given', () => {
+  it('calls the total rough until a real size is given', () => {
     render(
       <DesignCostSummary
         totals={TOTALS}
@@ -23,8 +23,7 @@ describe('DesignCostSummary', () => {
       />
     );
 
-    expect(screen.getByText('Rough total')).toBeInTheDocument();
-    expect(screen.getByText('Add a real size in the next step')).toBeInTheDocument();
+    expect(screen.getByText('Rough total · no size yet')).toBeInTheDocument();
   });
 
   it('shows a plain estimated total once the size is set', () => {
@@ -39,6 +38,6 @@ describe('DesignCostSummary', () => {
     );
 
     expect(screen.getByText('Estimated total')).toBeInTheDocument();
-    expect(screen.queryByText('Add a real size in the next step')).not.toBeInTheDocument();
+    expect(screen.queryByText('Rough total · no size yet')).not.toBeInTheDocument();
   });
 });

@@ -88,13 +88,23 @@ names stay as tooltips and accessible names.
   once done, a skeleton until the text starts, then the text typed out with a caret. Once
   answered, the steps fold into one line ("✓ Searched material notes · Checked your house ›")
   that opens them again.
-- **A row of tools above the photo**, as wide as it, so no tool ever covers part of the house:
+- **Photo and panel stay together** (`photoGridStyle`): the photo column is only as wide as the
+  photo can be at its tallest, and the two columns are centred as a pair, so a tall photo has its
+  panel right beside it (20px apart) instead of across an empty gap.
+- **A row of tools above the photo and its panel**, so no tool ever covers part of the house and a
+  tall, narrow photo never squeezes the tools:
   - Regions: Draw region and Auto-detect on the left (Finish shape, Undo point and Cancel while
     drawing; Remove point with a point selected), Undo and Redo on the right;
   - Design: the design picker on the left, the view switches (Design or Before / after, Preview
     or Photoreal, each with an icon) on the right.
   The row is measured, and the photo and the side panel give up its real height, so the step bar
   stays on screen even when the row wraps.
+- **Auto-detect progress** (`DetectionProgress`): while the AI works (about 25 to 40 s), a
+  scanning line sweeps down the photo and a card shows the seconds so far, a bar that slows as it
+  nears the usual time, and a checklist of what the AI looks for (walls and roof, windows and
+  doors, pillars and railings, naming and tidying). The AI reports nothing until it answers, so
+  the checklist is paced by time (`useDetectionProgress`), not by the model; after 55 s it says
+  the wait is longer than usual. The panel shows skeleton rows meanwhile.
 - **Undo and redo on Regions** (`useRegionDraft`): every change to the parts can be undone with
   Ctrl+Z (⌘Z) or the Undo button and redone with Ctrl+Shift+Z or Ctrl+Y. A corner dragged across
   the photo, or a name typed letter by letter, is one step; deleting a part, Discard and

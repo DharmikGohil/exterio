@@ -24,7 +24,14 @@ export function DesignCostSummary({
   return (
     <div aria-live="polite" className="min-w-[10rem] text-right">
       <div>
-        <p className="text-sm text-stone-500">{isRough ? 'Rough total' : 'Estimated total'}</p>
+        <p
+          className="text-sm text-stone-500"
+          title={
+            isRough ? 'No real size yet. Add one in the Scale step for a closer figure.' : undefined
+          }
+        >
+          {isRough ? 'Rough total · no size yet' : 'Estimated total'}
+        </p>
         {isLoading && <Skeleton className="ml-auto mt-1 h-10 w-36" />}
         {!isLoading && totals && (
           <>
@@ -39,7 +46,6 @@ export function DesignCostSummary({
             <p className="text-sm text-stone-500">
               {formatInr(totals.lowEstimate)} – {formatInr(totals.highEstimate)}
             </p>
-            {isRough && <p className="text-xs text-stone-500">Add a real size in the next step</p>}
           </>
         )}
         {!isLoading && !totals && (
