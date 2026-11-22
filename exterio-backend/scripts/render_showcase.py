@@ -18,23 +18,23 @@ import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from domain.entities.design_entity import Design  # noqa: E402
-from domain.entities.project_entity import Project, ProjectImage  # noqa: E402
-from domain.entities.region_entity import Region, RegionLabel  # noqa: E402
-from domain.interfaces.services.image_services import PreviewRequest, SampleHouse  # noqa: E402
-from domain.services.estimate_builder import build_estimate  # noqa: E402
-from domain.use_cases.estimate.measure_facade_usecase import MeasureFacadeUseCase  # noqa: E402
-from infrastructure.repository.implementation.material_repo_impl import (  # noqa: E402
+from domain.entities.design_entity import Design
+from domain.entities.project_entity import Project, ProjectImage
+from domain.entities.region_entity import Region, RegionLabel
+from domain.interfaces.services.image_services import PreviewRequest, SampleHouse
+from domain.services.estimate_builder import build_estimate
+from domain.use_cases.estimate.measure_facade_usecase import MeasureFacadeUseCase
+from infrastructure.repository.implementation.material_repo_impl import (
     JsonMaterialRepository,
 )
-from infrastructure.services.imaging.image_codec import decode_image  # noqa: E402
-from infrastructure.services.imaging.opencv_preview_render_service import (  # noqa: E402
+from infrastructure.services.imaging.image_codec import decode_image
+from infrastructure.services.imaging.opencv_preview_render_service import (
     OpenCvPreviewRenderService,
 )
-from infrastructure.services.imaging.opencv_surface_measurement_service import (  # noqa: E402
+from infrastructure.services.imaging.opencv_surface_measurement_service import (
     OpenCvSurfaceMeasurementService,
 )
-from infrastructure.services.imaging.photo_sample_house_provider import (  # noqa: E402
+from infrastructure.services.imaging.photo_sample_house_provider import (
     PhotoSampleHouseProvider,
 )
 
