@@ -9,9 +9,16 @@ export interface PhotoDropzoneProps {
   /** Opens the file browser. */
   onBrowse: () => void;
   isUploading: boolean;
+  /** Marks the drop zone for the guided tour. */
+  tourTarget?: string;
 }
 
-export function PhotoDropzone({ onFileSelected, onBrowse, isUploading }: PhotoDropzoneProps) {
+export function PhotoDropzone({
+  onFileSelected,
+  onBrowse,
+  isUploading,
+  tourTarget,
+}: PhotoDropzoneProps) {
   const [isDraggingOver, setIsDraggingOver] = useState(false);
 
   const handleDragOver = (event: DragEvent<HTMLButtonElement>) => {
@@ -31,6 +38,7 @@ export function PhotoDropzone({ onFileSelected, onBrowse, isUploading }: PhotoDr
   return (
     <button
       type="button"
+      data-tour={tourTarget}
       disabled={isUploading}
       onClick={onBrowse}
       onDragOver={handleDragOver}

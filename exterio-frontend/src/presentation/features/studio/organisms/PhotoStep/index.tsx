@@ -127,8 +127,11 @@ export function PhotoStep({ project, onStepChange }: PhotoStepProps) {
           </div>
         </div>
       ) : image ? (
-        <div className={`${PHOTO_GRID} animate-fade-in`} data-tour="photo-area">
-          <div className="overflow-hidden rounded-xl border border-stone-200 bg-stone-100">
+        <div className={`${PHOTO_GRID} animate-fade-in`}>
+          <div
+            className="overflow-hidden rounded-xl border border-stone-200 bg-stone-100"
+            data-tour="photo-area"
+          >
             <img
               src={resolveFileUrl(image.url)}
               alt={`Front of ${project.name}`}
@@ -140,8 +143,9 @@ export function PhotoStep({ project, onStepChange }: PhotoStepProps) {
           <QualityReportCard report={image.quality} className="self-start" />
         </div>
       ) : (
-        <div className={PHOTO_GRID} data-tour="photo-area">
+        <div className={PHOTO_GRID}>
           <PhotoDropzone
+            tourTarget="photo-area"
             onFileSelected={photo.uploadImage}
             onBrowse={photo.browseFiles}
             isUploading={photo.isUploading}
