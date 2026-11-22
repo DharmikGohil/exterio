@@ -8,6 +8,7 @@ import { StepHeader } from '@/presentation/features/studio/molecules/StepHeader'
 import { ScaleCanvas } from '@/presentation/features/studio/organisms/ScaleCanvas';
 import { ScaleMethodForm } from '@/presentation/features/studio/organisms/ScaleMethodForm';
 import { scaleSaveStatus } from '@/presentation/features/studio/utils/scaleSaveStatus';
+import { photoFrameStyle } from '@/presentation/shared/utils/photoFrame';
 import type { StudioStep } from '@/presentation/routes/paths';
 import type { Project, ProjectImage } from '@/domain/models/project';
 
@@ -34,7 +35,10 @@ export function ScaleStep({ project, image, onStepChange }: ScaleStepProps) {
       />
 
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_26rem]">
-        <div className="relative min-w-0">
+        <div
+          className="relative mx-auto min-w-0"
+          style={photoFrameStyle(image.width, image.height)}
+        >
           <ScaleCanvas
             image={image}
             scale={editor.scale}

@@ -14,6 +14,7 @@ import { StepFooter } from '@/presentation/features/studio/molecules/StepFooter'
 import { StepHeader } from '@/presentation/features/studio/molecules/StepHeader';
 import { RegionCanvas } from '@/presentation/features/studio/organisms/RegionCanvas';
 import { RegionListPanel } from '@/presentation/features/studio/organisms/RegionListPanel';
+import { photoFrameStyle } from '@/presentation/shared/utils/photoFrame';
 import type { StudioStep } from '@/presentation/routes/paths';
 import type { Project, ProjectImage } from '@/domain/models/project';
 
@@ -61,7 +62,10 @@ export function RegionsStep({ project, image, onStepChange }: RegionsStepProps) 
       )}
 
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_24rem]">
-        <div className="relative min-w-0">
+        <div
+          className="relative mx-auto min-w-0"
+          style={photoFrameStyle(image.width, image.height)}
+        >
           <RegionCanvas
             image={image}
             regions={editor.regions}
