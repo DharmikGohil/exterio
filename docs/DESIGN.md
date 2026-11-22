@@ -88,7 +88,8 @@ Everything is in view without scrolling on screens from 1280×720 up.
   - bottom centre, the one action the photo is waiting for: the unsaved-changes bar with Discard
     and Save regions (`FloatingSaveBar`, Regions, shown only when something changed) or Generate
     render (Design); on Scale, the instruction to drag the corners sits bottom left.
-- **Design picker** (`DesignSwitcher`): the current design in a dark dropdown listing all designs,
+- **Design picker** (`DesignSwitcher`): the current design in a dark dropdown, labelled
+  "Design: Warm stone and cream" so it reads as a design and not a house name, listing all designs,
   a "⋯" menu (`DropdownMenu`) to rename, duplicate or delete it, and New design.
 - **Scale saves itself**: a segmented control picks how the size is known (Wall size, One length,
   Door, Floors); a valid change is saved 0.7 s after typing pauses, and a line under the inputs says
@@ -120,8 +121,9 @@ The Estimate step answers "where does the money go?" on the house itself (`Estim
   part of the group nearest the card, so lines rarely cross. Lines are measured from the live
   layout (`useLeaderLines`) and redrawn on resize; on narrow screens the photo comes first and the
   cards stack under it without lines.
-- **Below**: one sentence on what is not counted, and See the full breakdown. Download PDF report
-  is the step bar's main button.
+- **See the full breakdown** is a link right under the total in the summary card, visible without
+  scrolling. The design picker in the header reads "Design: …". Below the drawing, one sentence on
+  what is not counted. Download PDF report is the step bar's main button.
 - **Full breakdown** (`EstimateBreakdown`, `?view=breakdown`): its own page in the step, with
   "Back to your estimate", the total, materials and labour as chips, and three tabs. What to buy
   (`WhatToBuyTable`) lists each material with where it goes ("Three walls"), how much to buy and

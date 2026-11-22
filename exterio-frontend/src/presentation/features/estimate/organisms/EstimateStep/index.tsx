@@ -130,9 +130,10 @@ function EstimateWorkspace({
           <DropdownMenu
             label="Design to estimate"
             align="end"
-            triggerClassName="flex h-12 max-w-[min(20rem,70vw)] items-center gap-3 rounded-xl border border-stone-300 bg-white px-5 text-[15px] font-medium text-stone-900 transition-colors hover:border-stone-400"
+            triggerClassName="flex h-12 max-w-[min(24rem,80vw)] items-center gap-2 rounded-xl border border-stone-300 bg-white px-5 text-[15px] font-medium text-stone-900 transition-colors hover:border-stone-400"
             trigger={
               <>
+                <span className="shrink-0 font-normal text-stone-500">Design:</span>
                 <span className="truncate">{design.name}</span>
                 <Icon name="chevron-down" className="h-4 w-4 shrink-0" />
               </>
@@ -169,6 +170,7 @@ function EstimateWorkspace({
             scaleBasis={describeScaleBasis(project.scale)}
             isRefreshing={isFetching}
             onAdjustScale={() => onStepChange('scale')}
+            onOpenBreakdown={openBreakdown}
           />
 
           {image && (
@@ -180,15 +182,9 @@ function EstimateWorkspace({
             />
           )}
 
-          <div className="flex flex-wrap items-start justify-between gap-x-10 gap-y-4">
-            <p className="max-w-3xl text-[15px] leading-relaxed text-stone-600">
-              {describeExclusions(groups)}
-            </p>
-            <Button variant="outline" size="lg" onClick={openBreakdown}>
-              See the full breakdown
-              <Icon name="arrow-right" className="h-4 w-4" />
-            </Button>
-          </div>
+          <p className="max-w-3xl text-[15px] leading-relaxed text-stone-600">
+            {describeExclusions(groups)}
+          </p>
         </>
       )}
 

@@ -20,6 +20,7 @@ describe('EstimateSummary', () => {
         scaleBasis="a wall of 30 × 20 ft"
         isRefreshing={false}
         onAdjustScale={vi.fn()}
+        onOpenBreakdown={vi.fn()}
       />
     );
 
@@ -38,11 +39,29 @@ describe('EstimateSummary', () => {
         scaleBasis="a wall of 30 × 20 ft"
         isRefreshing={false}
         onAdjustScale={onAdjustScale}
+        onOpenBreakdown={vi.fn()}
       />
     );
 
     await userEvent.click(screen.getByRole('button', { name: 'Adjust size' }));
 
     expect(onAdjustScale).toHaveBeenCalledOnce();
+  });
+
+  it('opens the full breakdown from right under the total', async () => {
+    const onOpenBreakdown = vi.fn();
+    render(
+      <EstimateSummary
+        totals={TOTALS}
+        scaleBasis="a wall of 30 × 20 ft"
+        isRefreshing={false}
+        onAdjustScale={vi.fn()}
+        onOpenBreakdown={onOpenBreakdown}
+      />
+    );
+
+    await userEvent.click(screen.getByRole('button', { name: 'See the full breakdown' }));
+
+    expect(onOpenBreakdown).toHaveBeenCalledOnce();
   });
 });

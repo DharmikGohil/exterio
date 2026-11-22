@@ -1,4 +1,5 @@
 import { Button } from '@/presentation/shared/atoms/Button';
+import { Icon } from '@/presentation/shared/atoms/Icon';
 import { cn } from '@/presentation/shared/utils/cn';
 import { formatInr } from '@/presentation/shared/utils/format';
 import type { EstimateTotals } from '@/domain/models/estimate';
@@ -10,6 +11,8 @@ export interface EstimateSummaryProps {
   /** Dims the figures while a new estimate is on its way. */
   isRefreshing: boolean;
   onAdjustScale: () => void;
+  /** Opens every line, quantity and rate behind the total. */
+  onOpenBreakdown: () => void;
 }
 
 /** The one figure that matters, its likely range, the split, and what the sizes rest on. */
@@ -18,6 +21,7 @@ export function EstimateSummary({
   scaleBasis,
   isRefreshing,
   onAdjustScale,
+  onOpenBreakdown,
 }: EstimateSummaryProps) {
   return (
     <section
@@ -33,6 +37,14 @@ export function EstimateSummary({
         <p className="mt-2 text-[15px] text-stone-600">
           Most likely between {formatInr(totals.lowEstimate)} and {formatInr(totals.highEstimate)}
         </p>
+        <button
+          type="button"
+          onClick={onOpenBreakdown}
+          className="mt-3 inline-flex items-center gap-1.5 rounded-md text-[15px] font-medium text-brand-700 underline-offset-4 transition-colors hover:text-brand-800 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+        >
+          See the full breakdown
+          <Icon name="arrow-right" className="h-4 w-4" />
+        </button>
       </div>
 
       <dl className={cn('flex gap-3 transition-opacity lg:mx-auto', isRefreshing && 'opacity-50')}>

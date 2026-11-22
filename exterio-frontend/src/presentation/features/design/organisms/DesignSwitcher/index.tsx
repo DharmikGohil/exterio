@@ -25,9 +25,10 @@ export function DesignSwitcher({ project, activeDesign, onSelect }: DesignSwitch
     <div className="flex min-w-0 flex-wrap items-center gap-3">
       <DropdownMenu
         label="Designs"
-        triggerClassName="flex h-11 max-w-[min(18rem,60vw)] items-center gap-3 rounded-xl bg-stone-900 px-5 text-[15px] font-medium text-white transition-colors hover:bg-stone-800"
+        triggerClassName="flex h-11 max-w-[min(22rem,70vw)] items-center gap-2 rounded-xl bg-stone-900 px-5 text-[15px] font-medium text-white transition-colors hover:bg-stone-800"
         trigger={
           <>
+            <span className="shrink-0 font-normal text-white/60">Design:</span>
             <span className="truncate">{activeDesign.name}</span>
             <Icon name="chevron-down" className="h-4 w-4 shrink-0" />
           </>
