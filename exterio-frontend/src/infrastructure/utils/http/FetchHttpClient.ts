@@ -1,6 +1,7 @@
 import type { ITokenStorage } from '@/domain/interfaces/auth';
 
 import { ApiError } from './ApiError';
+import { readServerSentEvents, type ServerSentEvent } from './serverSentEvents';
 import type { ApiErrorBody, HttpMethod, IHttpClient } from './types';
 
 const HTTP_UNAUTHORIZED = 401;
@@ -9,6 +10,8 @@ const HTTP_NO_CONTENT = 204;
 interface RequestOptions {
   data?: unknown;
   isAuthRequest?: boolean;
+  accept?: string;
+  signal?: AbortSignal;
 }
 
 /**
@@ -48,6 +51,22 @@ export class FetchHttpClient implements IHttpClient {
     return response.blob();
   }
 
+  async *postEventStream(
+    url: string,
+    data: unknown,
+    signal?: AbortSignal
+  ): AsyncGenerator<ServerSentEvent> {
+    const response = await this.send('POST', url, {
+      data,
+      accept: 'text/event-stream',
+      signal,
+    });
+    if (!response.body) {
+      throw new ApiError('The server sent a response we could not read.', response.status);
+    }
+    yield* readServerSentEvents(response.body);
+  }
+
   private async requestJson<T>(
     method: HttpMethod,
     url: string,
@@ -71,10 +90,10 @@ export class FetchHttpClient implements IHttpClient {
   private async send(
     method: HttpMethod,
     url: string,
-    { data, isAuthRequest = false }: RequestOptions = {}
+    { data, isAuthRequest = false, accept = 'application/json, */*', signal }: RequestOptions = {}
   ): Promise<Response> {
     const isFormData = data instanceof FormData;
-    const headers: Record<string, string> = { Accept: 'application/json, */*' };
+    const headers: Record<string, string> = { Accept: accept };
 
     // The browser sets the multipart boundary itself for FormData.
     if (data !== undefined && !isFormData) {
@@ -95,8 +114,11 @@ export class FetchHttpClient implements IHttpClient {
 
     let response: Response;
     try {
-      response = await fetch(`${this.baseUrl}${url}`, { method, headers, body });
-    } catch {
+      response = await fetch(`${this.baseUrl}${url}`, { method, headers, body, signal });
+    } catch (error) {
+      if (signal?.aborted) {
+        throw error;
+      }
       throw new ApiError('Could not reach the server. Check your connection and try again.', 0);
     }
 

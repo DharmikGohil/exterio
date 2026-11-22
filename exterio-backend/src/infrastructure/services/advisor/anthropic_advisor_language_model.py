@@ -1,5 +1,7 @@
 """Generation side of the material advisor, using Claude."""
 
+from collections.abc import Iterator
+
 import anthropic
 from anthropic.types.beta import BetaMessageParam
 
@@ -21,14 +23,15 @@ class AnthropicAdvisorLanguageModel(IAdvisorLanguageModel):
     def is_available(self) -> bool:
         return self._client is not None
 
-    def reply(self, system_prompt: str, messages: list[ChatMessageDTO]) -> str:
+    def stream(self, system_prompt: str, messages: list[ChatMessageDTO]) -> Iterator[str]:
         if self._client is None:
             raise AiProviderError("The material advisor is not configured")
         history = [self._to_param(message) for message in messages if message.role in ALLOWED_ROLES]
+        wrote_text = False
         try:
             # Server-side fallbacks re-run a declined request on another model in the
             # same call, so a rare false-positive refusal does not surface to the user.
-            response = self._client.beta.messages.create(
+            with self._client.beta.messages.stream(
                 model=self._model,
                 max_tokens=MAX_TOKENS,
                 system=system_prompt,
@@ -36,7 +39,11 @@ class AnthropicAdvisorLanguageModel(IAdvisorLanguageModel):
                 fallbacks="default",
                 output_config={"effort": "low"},
                 messages=history,
-            )
+            ) as response:
+                for text in response.text_stream:
+                    wrote_text = wrote_text or bool(text.strip())
+                    yield text
+                final = response.get_final_message()
         except anthropic.RateLimitError as error:
             raise AiProviderError("The advisor is busy. Try again in a minute.") from error
         except anthropic.APIStatusError as error:
@@ -45,12 +52,10 @@ class AnthropicAdvisorLanguageModel(IAdvisorLanguageModel):
         except anthropic.APIConnectionError as error:
             raise AiProviderError("The advisor could not be reached.") from error
 
-        if response.stop_reason == "refusal":
+        if final.stop_reason == "refusal":
             raise AiProviderError("The advisor could not answer that question.")
-        text = "".join(block.text for block in response.content if block.type == "text").strip()
-        if not text:
+        if not wrote_text:
             raise AiProviderError("The advisor returned an empty answer.")
-        return text
 
     @staticmethod
     def _to_param(message: ChatMessageDTO) -> BetaMessageParam:

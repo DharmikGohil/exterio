@@ -1,5 +1,6 @@
 """Builds the real application on an in-memory database with fake AI providers."""
 
+from collections.abc import Iterator
 from dataclasses import replace
 from pathlib import Path
 
@@ -57,9 +58,9 @@ class FakeAdvisorLanguageModel(IAdvisorLanguageModel):
     def is_available(self) -> bool:
         return True
 
-    def reply(self, system_prompt: str, messages: list[ChatMessageDTO]) -> str:
+    def stream(self, system_prompt: str, messages: list[ChatMessageDTO]) -> Iterator[str]:
         self.system_prompts.append(system_prompt)
-        return "Stone suits the pillars best."
+        yield from ("Stone ", "suits the ", "pillars best.")
 
 
 def build_test_client(

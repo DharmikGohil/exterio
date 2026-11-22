@@ -1,5 +1,13 @@
-import type { AdvisorChatParams, AdvisorReply } from '@/domain/models/advisor';
+import type { AdvisorChatParams, AdvisorStreamEvent } from '@/domain/models/advisor';
 
 export interface IAdvisorRepository {
-  chat(params: AdvisorChatParams): Promise<AdvisorReply>;
+  /**
+   * Asks the advisor and reports its work as it happens. Resolves when the answer is complete;
+   * rejects if it fails, including part way through.
+   */
+  chatStream(
+    params: AdvisorChatParams,
+    onEvent: (event: AdvisorStreamEvent) => void,
+    signal?: AbortSignal
+  ): Promise<void>;
 }

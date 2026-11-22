@@ -73,7 +73,12 @@ Everything is in view without scrolling on screens from 1280×720 up.
   their number. Projects are renamed only on the home screen (the ⋯ menu on each house card).
 - **Material advisor**: "Ask about materials" sits in the step header (Photo, Regions, Estimate)
   or in the panel header (Design). Its chat panel is mounted once for the studio
-  (`AdvisorDockProvider`), so the conversation survives moving between steps.
+  (`AdvisorDockProvider`), so the conversation survives moving between steps. While it answers,
+  the panel shows its work instead of a spinner: a timeline of steps (searching notes, checking
+  the house, writing), each with a spinner and a shimmering label while it runs and what it found
+  once done, a skeleton until the text starts, then the text typed out with a caret. Once
+  answered, the steps fold into one line ("✓ Searched material notes · Checked your house ›")
+  that opens them again.
 - **Tools float on the photo** (white cards with one soft shadow):
   - top left, the step's own tools: Draw region and Auto-detect (Regions). On Design, the view
     switches (Design or Before / after, Preview or Photoreal, each with an icon) sit instead in

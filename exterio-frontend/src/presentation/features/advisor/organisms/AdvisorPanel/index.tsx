@@ -34,8 +34,9 @@ export function AdvisorPanel({
 }: AdvisorPanelProps) {
   const chat = useAdvisorChat(projectId, designId);
   const [draft, setDraft] = useState('');
+  const latest = chat.entries[chat.entries.length - 1];
   const endRef = useScrollToLatest<HTMLDivElement>(
-    `${chat.entries.length}-${chat.isThinking}-${chat.errorMessage ?? ''}`
+    `${chat.entries.length}-${latest?.steps.length ?? 0}-${latest?.status ?? ''}-${chat.errorMessage ?? ''}`
   );
 
   const inputRef = useRef<HTMLInputElement>(null);
@@ -107,12 +108,6 @@ export function AdvisorPanel({
             {chat.entries.map((entry) => (
               <AdvisorMessageBubble key={entry.id} entry={entry} />
             ))}
-            {chat.isThinking && (
-              <li className="flex items-center gap-2 text-sm text-stone-500">
-                <Icon name="spinner" className="animate-spin" />
-                Thinking…
-              </li>
-            )}
           </ul>
         )}
 

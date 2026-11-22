@@ -194,6 +194,19 @@ interface Capabilities {
 | GET | `/api/designs/{id}/estimate` | – | `Estimate` |
 | GET | `/api/designs/{id}/report` | – | `application/pdf` download |
 | POST | `/api/advisor/chat` | `{ projectId, designId?, messages: [{ role: "user" \| "assistant", content }] }` | `{ reply: string, sources: [{ title: string }] }` |
+| POST | `/api/advisor/chat/stream` | same as `/api/advisor/chat` | `text/event-stream`, see below |
+
+The streamed advisor sends these events, in order:
+
+| Event | Data | Meaning |
+|---|---|---|
+| `step` | `{ key, label, status: "running" \| "done", detail }` | A stage of the work. Keys: `notes` (searching the knowledge notes; `detail` names those found), `project` (the house's parts, finishes and estimate), `answer` (the model writing). A later event for the same key replaces the earlier one. |
+| `text` | `{ text }` | The next piece of the answer. |
+| `done` | `{ reply, sources }` | The complete answer, as `/api/advisor/chat` returns it. Show `reply` as final. |
+| `error` | `{ message }` | The answer failed after the stream started. |
+
+Errors before the stream starts (not signed in, not your project, advisor not configured) are
+ordinary JSON error responses with their status.
 
 Notes
 

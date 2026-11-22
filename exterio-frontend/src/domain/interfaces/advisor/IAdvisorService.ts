@@ -1,5 +1,9 @@
-import type { AdvisorChatParams, AdvisorReply } from '@/domain/models/advisor';
+import type { AdvisorChatParams, AdvisorStreamEvent } from '@/domain/models/advisor';
 
 export interface IAdvisorService {
-  chat(params: AdvisorChatParams): Promise<AdvisorReply>;
+  chatStream(
+    params: AdvisorChatParams,
+    onEvent: (event: AdvisorStreamEvent) => void,
+    signal?: AbortSignal
+  ): Promise<void>;
 }

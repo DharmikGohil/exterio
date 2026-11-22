@@ -1,5 +1,7 @@
 """HTTP-level tests: routing, auth, validation, error mapping and the full user flow."""
 
+import json
+
 import numpy as np
 import pytest
 from tests.helpers.app_factory import build_test_client, guest_headers
@@ -500,6 +502,65 @@ def test_advisor_answers_with_retrieved_notes_and_project_figures(ai):
         "the project's own figures must be in the prompt"
     )
     assert "Grand total INR" in prompt
+
+
+def _read_events(body: str) -> list[tuple[str, dict]]:
+    events = []
+    for block in body.strip().split("\n\n"):
+        lines = dict(line.split(": ", 1) for line in block.splitlines())
+        events.append((lines["event"], json.loads(lines["data"])))
+    return events
+
+
+def test_advisor_stream_shows_each_step_then_the_answer_in_pieces(ai):
+    client, _ = ai
+    headers = guest_headers(client)
+    sample = client.post("/api/projects/sample?key=craftsman", headers=headers).json()
+
+    actual = client.post(
+        "/api/advisor/chat/stream",
+        headers=headers,
+        json={
+            "projectId": sample["id"],
+            "designId": sample["designs"][0]["id"],
+            "messages": [{"role": "user", "content": "Is stone cladding worth it?"}],
+        },
+    )
+
+    assert actual.status_code == 200
+    assert actual.headers["content-type"].startswith("text/event-stream")
+    events = _read_events(actual.text)
+    steps = [(data["key"], data["status"]) for name, data in events if name == "step"]
+    assert steps == [
+        ("notes", "running"),
+        ("notes", "done"),
+        ("project", "done"),
+        ("answer", "running"),
+        ("answer", "done"),
+    ]
+    notes = next(data for name, data in events if name == "step" and data["status"] == "done")
+    assert "Natural stone cladding" in notes["detail"], "the step must name the notes it found"
+    house = next(d for n, d in events if n == "step" and d["key"] == "project")
+    assert "₹" in house["detail"], "the step must state the design's estimate"
+    text = "".join(data["text"] for name, data in events if name == "text")
+    assert text == "Stone suits the pillars best."
+    assert events[-1][0] == "done"
+    assert events[-1][1]["reply"] == text
+    assert events[-1][1]["sources"][0]["title"].startswith("Natural stone cladding")
+
+
+def test_advisor_stream_refuses_another_users_project_before_streaming(ai):
+    client, _ = ai
+    owner = guest_headers(client)
+    sample = client.post("/api/projects/sample?key=craftsman", headers=owner).json()
+
+    actual = client.post(
+        "/api/advisor/chat/stream",
+        headers=guest_headers(client),
+        json={"projectId": sample["id"], "messages": [{"role": "user", "content": "hi"}]},
+    )
+
+    assert actual.status_code == 404
 
 
 def test_report_survives_markup_characters_in_user_supplied_names(client, headers, sample):

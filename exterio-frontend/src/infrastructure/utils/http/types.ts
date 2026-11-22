@@ -1,3 +1,5 @@
+import type { ServerSentEvent } from './serverSentEvents';
+
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
 export interface IHttpClient {
@@ -12,6 +14,15 @@ export interface IHttpClient {
   delete<T>(url: string): Promise<T>;
   /** GET that returns the raw response body (e.g. a PDF), sent with the auth header. */
   getBlob(url: string): Promise<Blob>;
+  /**
+   * POST that answers with server-sent events, read as they arrive. A failure before the
+   * stream starts rejects with an ApiError, like the other methods.
+   */
+  postEventStream(
+    url: string,
+    data: unknown,
+    signal?: AbortSignal
+  ): AsyncGenerator<ServerSentEvent>;
 }
 
 /** Shape of every non-2xx response body (see docs/API.md). */

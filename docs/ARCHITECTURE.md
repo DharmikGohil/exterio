@@ -137,6 +137,17 @@ answers use real figures.
   remaining vendor name before the reply is returned.
 - **Scope and safety.** Exterior finishes, this project, rough costs in INR. Off-topic requests are
   declined in one sentence; structural questions go to an engineer; no invented rates or brands.
+- **Streamed, with its work shown.** The app asks through `POST /api/advisor/chat/stream`, which
+  answers with server-sent events. `AskAdvisorUseCase.stream` reports each real stage as it
+  happens: the notes it searched (and which it found), the house it checked (parts, finishes,
+  estimate), then "Writing the answer" while the model's text arrives in pieces. The panel shows
+  these as a live step list with a skeleton, types the text out, and folds the steps into one
+  line once the answer is complete. Access and the design's figures are checked before the
+  stream starts, so a refusal is still an ordinary 403/404. The identity guard runs on the
+  stream too (`GuardedTextStream`): it holds back the last few words so a name split across
+  pieces ("Ki" + "ro") is rewritten before any of it is shown. The current gateway delivers the
+  whole reply at once at the end, so on it the text is typed out from that one piece; a provider
+  that streams tokens fills it in as they are written.
 - **Tested live.** `tests/evals/test_advisor_live.py` runs greetings, "which model are you",
   developer impersonation, prompt-injection, off-topic, cost and safety probes against the real
   model and checks both the raw answer and what the homeowner sees.

@@ -1,6 +1,6 @@
 import pytest
 
-from domain.services.advisor_reply_guard import guard_advisor_reply
+from domain.services.advisor_reply_guard import GuardedTextStream, guard_advisor_reply
 
 
 @pytest.mark.parametrize(
@@ -32,3 +32,33 @@ def test_ordinary_advice_is_left_alone():
 
 def test_words_that_only_contain_a_name_are_left_alone():
     assert guard_advisor_reply("Use a kirogami-style pattern.") == "Use a kirogami-style pattern."
+
+
+def _stream(pieces):
+    guarded = GuardedTextStream()
+    shown = [guarded.push(piece) for piece in pieces]
+    shown.append(guarded.finish())
+    return shown
+
+
+def test_a_name_split_across_pieces_never_reaches_the_screen():
+    pieces = ["Hi, I'm Ki", "ro", ". Texture paint lasts about seven years on a sunny wall."]
+
+    shown = _stream(pieces)
+
+    assert "".join(shown).startswith("Hi, I'm Exterio's material advisor."), (
+        "pieces joined must equal the guarded whole reply"
+    )
+    assert not any("Ki" in piece and "Kiro" not in piece for piece in shown), (
+        "a half name must be held back, not shown"
+    )
+
+
+def test_streamed_pieces_add_up_to_the_guarded_reply():
+    reply = "I am Claude. Stone cladding costs more but needs almost no upkeep for decades. " * 3
+    pieces = [reply[index : index + 7] for index in range(0, len(reply), 7)]
+
+    actual = "".join(_stream(pieces))
+
+    assert actual == guard_advisor_reply(reply).rstrip()
+    assert sum(1 for piece in _stream(pieces) if piece) > 2, "text must flow, not arrive at the end"

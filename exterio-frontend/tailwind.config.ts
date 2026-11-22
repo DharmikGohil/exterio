@@ -68,6 +68,9 @@ const config: Config = {
         raised: '0 8px 24px rgb(0 0 0 / 0.08)',
       },
       backgroundImage: {
+        // Muted text with a lighter band that `animate-text-shimmer` sweeps across it.
+        'text-shimmer':
+          'linear-gradient(90deg, #78716c 0%, #78716c 40%, #d6d3d1 50%, #78716c 60%, #78716c 100%)',
         // Major lines every 60px, minor every 12px, like a mat ruled in inches and tenths.
         'cutting-mat': [
           'linear-gradient(to right, rgb(223 233 198 / 0.22) 1px, transparent 1px)',
@@ -109,6 +112,11 @@ const config: Config = {
           from: { transform: 'translateX(-100%)' },
           to: { transform: 'translateX(100%)' },
         },
+        // A light sweeping through a line of text, for a step that is still running.
+        'text-shimmer': {
+          from: { backgroundPosition: '100% 0' },
+          to: { backgroundPosition: '-100% 0' },
+        },
         // Before / after on the sign-in page, one 6 s cycle per house: a moment of the photo as
         // it is, the new finishes sweep in, then the arrows draw and their labels hold.
         reveal: {
@@ -135,6 +143,7 @@ const config: Config = {
         'slide-up': 'slide-up 200ms cubic-bezier(0.22, 1, 0.36, 1)',
         'slide-in-right': 'slide-in-right 300ms cubic-bezier(0.22, 1, 0.36, 1)',
         shimmer: 'shimmer 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite',
+        'text-shimmer': 'text-shimmer 1.8s linear infinite',
         reveal: 'reveal 6s cubic-bezier(0.65, 0, 0.35, 1) both',
         divider: 'divider 6s cubic-bezier(0.65, 0, 0.35, 1) both',
         draw: 'draw 6s cubic-bezier(0.22, 1, 0.36, 1) both',

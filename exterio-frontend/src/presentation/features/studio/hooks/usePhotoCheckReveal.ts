@@ -4,6 +4,7 @@ import {
   hasSeenPhotoCheck,
   markPhotoCheckSeen,
 } from '@/presentation/features/studio/utils/photoCheckSeen';
+import { prefersReducedMotion } from '@/presentation/shared/utils/motion';
 
 export const PHOTO_REVEAL_STAGES = [
   'Loading your photo',
@@ -13,10 +14,6 @@ export const PHOTO_REVEAL_STAGES = [
 ] as const;
 
 export const REVEAL_STAGE_MS = 650;
-
-function prefersReducedMotion(): boolean {
-  return window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
-}
 
 /**
  * The first time this browser opens a house's photo (a sample, or a house uploaded elsewhere),
