@@ -54,6 +54,25 @@ Two providers implement detection; the first one configured is used.
   neighbouring building. Claude was ahead on every photo, so it outlines parts whenever its key
   is set. Four photos is a small set; the traces are one person's, and "parts right" undercounts
   real parts the traces leave out (fences, gutters).
+- **Choosing among the Claude models.** The same benchmark, now also timing the first part
+  (detection streams), on the three Claude models the gateway offers, two runs per photo each,
+  run side by side on 22 Nov 2026 (raw detections in
+  [benchmarks/detection-claude-models-2026-11-22.json](benchmarks/detection-claude-models-2026-11-22.json)):
+
+  | Model | Wall IoU | Mean surface IoU | Parts found | Parts right | Off-house area | First part | Time |
+  |---|---|---|---|---|---|---|---|
+  | Claude Opus 5.5 | **0.87** | 0.73 | **72%** | 59% | 3.0% | 27 s | 35 s |
+  | Claude Sonnet 5.5 | 0.84 | **0.74** | **72%** | **64%** | **2.8%** | **25 s** | **30 s** |
+  | Claude Haiku 5.5 | 0.86 | 0.72 | 65% | 57% | 3.7% | 40 s | 43 s |
+
+  The bar for switching was set before the run: no more than 0.02 lower on wall or mean IoU and
+  no more than 5 points lower on parts found than Opus. Sonnet's walls were 0.03 lower, for about
+  2 s sooner to the first part, and walls drive most of the cost, so Opus stays. Haiku, the
+  smallest model, was the slowest to start: most of the wait is the gateway before the model
+  writes anything (about 5 s to connect, then a long silence with no thinking in the reply), not
+  the size of the model. A direct Anthropic API key, not the gateway, is the likelier way to cut
+  that wait. Three runs at once may have slowed each other; the accuracy figures do not depend on
+  that.
 - **Open-ended parts.** The vision model is asked to outline any exterior part a homeowner could
   refinish. Parts outside the fixed types come back as `other` with the model's own name (on a
   real photo it found "Entrance steps" unprompted), and an unknown label is kept as a named `other`

@@ -10,6 +10,8 @@ real detection service, then scores:
   cost.
 - parts found (recall) and parts right (precision): a traced part counts as found when a
   detected part of the same kind overlaps it with IoU of at least 0.5.
+- first part: seconds until the first part arrives (detection streams, so this is when the
+  photo starts filling in); time: seconds until the last one.
 - off-house: the share of detected wall, roof and roof-edge area that lies outside the traced
   house (grown by 2% of the image width), which catches outlining a neighbouring building.
   Fences and gates are left out, because the traces do not include them.
@@ -17,6 +19,7 @@ real detection service, then scores:
 Detections are saved, so the scores can be recomputed without calling the models again.
 
     uv run python scripts/benchmark_detection.py --models claude gemini-pro --runs 2
+    uv run python scripts/benchmark_detection.py --models claude:claude-sonnet-5-5 --runs 2
     uv run python scripts/benchmark_detection.py --rescore benchmark_detection.json
 """
 
@@ -61,14 +64,16 @@ Part = dict[str, Any]
 
 
 def build_client(model_key: str) -> VisionJsonClient:
+    """`claude` (the configured Claude model), `claude:<model id>`, `gemini-pro`, `gemini-flash`."""
     settings = load_settings()
-    if model_key == "claude":
+    if model_key == "claude" or model_key.startswith("claude:"):
         claude = build_anthropic_client(
             settings.anthropic_api_key,
             settings.anthropic_gateway_url,
             settings.anthropic_timeout_seconds,
         )
-        return AnthropicVisionJsonClient(claude, settings.anthropic_model)
+        model = model_key.partition(":")[2] or settings.anthropic_model
+        return AnthropicVisionJsonClient(claude, model)
     gemini = build_gemini_client(
         settings.google_vertex_credentials,
         settings.google_vertex_location,
@@ -88,12 +93,20 @@ def load_truth(key: str) -> tuple[bytes, int, int, list[Part]]:
     return image, width, height, parts
 
 
-def detect(client: VisionJsonClient, image: bytes, width: int, height: int) -> list[Part]:
-    regions = VisionLlmSegmentationService(client).detect(image, width, height)
-    return [
-        {"label": region.label.value, "polygon": [list(point) for point in region.polygon]}
-        for region in regions
-    ]
+def detect(
+    client: VisionJsonClient, image: bytes, width: int, height: int
+) -> tuple[list[Part], float | None]:
+    """The parts found, and the seconds until the first one arrived (detection streams)."""
+    started = time.monotonic()
+    first: float | None = None
+    parts: list[Part] = []
+    for region in VisionLlmSegmentationService(client).detect_stream(image, width, height):
+        if first is None:
+            first = round(time.monotonic() - started, 1)
+        parts.append(
+            {"label": region.label.value, "polygon": [list(point) for point in region.polygon]}
+        )
+    return parts, first
 
 
 def mask(polygons: list[Polygon], width: int, height: int) -> np.ndarray:
@@ -168,15 +181,16 @@ def run(models: list[str], runs: int) -> dict[str, Any]:
             image, width, height, _ = load_truth(key)
             for attempt in range(1, runs + 1):
                 started = time.monotonic()
+                first: float | None = None
                 try:
-                    found = detect(client, image, width, height)
+                    found, first = detect(client, image, width, height)
                     error = None
                 except Exception as failure:  # a failed run is recorded, not fatal
                     found, error = [], str(failure)
                 seconds = round(time.monotonic() - started, 1)
                 print(
-                    f"{model_key:12} {key:10} run {attempt}: {len(found)} parts, {seconds}s"
-                    + (f"  ERROR {error}" if error else ""),
+                    f"{model_key:12} {key:10} run {attempt}: {len(found)} parts, "
+                    f"first at {first}s, all by {seconds}s" + (f"  ERROR {error}" if error else ""),
                     flush=True,
                 )
                 results["detections"].append(
@@ -185,6 +199,7 @@ def run(models: list[str], runs: int) -> dict[str, Any]:
                         "sample": key,
                         "run": attempt,
                         "seconds": seconds,
+                        "first_seconds": first,
                         "error": error,
                         "parts": found,
                     }
@@ -202,18 +217,19 @@ def report(results: dict[str, Any]) -> str:
             continue
         scores = score(truth, item["parts"], width, height)
         scores["seconds"] = item["seconds"]
+        scores["first_seconds"] = item.get("first_seconds")
         rows[item["model"]].append(scores)
         per_sample[(item["model"], item["sample"])].append(scores["mean_iou"])
 
     lines = [
         "| Model | Runs ok | Mean surface IoU | Wall IoU | Parts found | Parts right | "
-        "Off-house area | Parts (traced) | Time |",
-        "|---|---|---|---|---|---|---|---|---|",
+        "Off-house area | Parts (traced) | First part | Time |",
+        "|---|---|---|---|---|---|---|---|---|---|",
     ]
     for model, items in rows.items():
         ok = [item for item in items if not item.get("failed")]
         if not ok:
-            lines.append(f"| {model} | 0 / {len(items)} | | | | | | | |")
+            lines.append(f"| {model} | 0 / {len(items)} | | | | | | | | |")
             continue
         lines.append(
             f"| {model} | {len(ok)} / {len(items)} "
@@ -223,6 +239,7 @@ def report(results: dict[str, Any]) -> str:
             f"| {mean(i['precision'] for i in ok):.0%} "
             f"| {mean(i['off_house'] for i in ok):.1%} "
             f"| {mean(i['parts'] for i in ok):.0f} ({mean(i['truth_parts'] for i in ok):.0f}) "
+            f"| {_first(ok)} "
             f"| {mean(i['seconds'] for i in ok):.0f} s |"
         )
     lines += [
@@ -241,13 +258,19 @@ def report(results: dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
+def _first(items: list[dict[str, Any]]) -> str:
+    """Mean seconds to the first part, or a dash for runs saved before it was measured."""
+    values = [item["first_seconds"] for item in items if item.get("first_seconds") is not None]
+    return f"{mean(values):.0f} s" if values else "-"
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     parser.add_argument(
         "--models",
         nargs="+",
         default=["claude", "gemini-pro"],
-        choices=["claude", "gemini-pro", "gemini-flash"],
+        help="claude, claude:<model id>, gemini-pro or gemini-flash",
     )
     parser.add_argument("--runs", type=int, default=2)
     parser.add_argument("--out", type=Path, default=Path("benchmark_detection.json"))
